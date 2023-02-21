@@ -1,0 +1,20 @@
+FROM registry.access.redhat.com/ubi9/nodejs-18-minimal:1-18
+
+USER root
+
+# Create and change to the app directory
+WORKDIR /opt/app-root
+
+# Copy application dependency manifests to the container image
+COPY package.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy local code to the container image
+COPY . ./
+
+USER 1001
+
+# Run the web service on container startup
+CMD [ "npm", "start" ]

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "branchPrefix": "renovate/",
+  "ignorePaths": [
+    // Keep original Dockerfile untouched
+    "src/app/Dockerfile$",
+    // Keep original application + dependencies untouched
+    "src/app/package.json",
+    // Disable updates due to Node LTS versions issue: https://github.com/renovatebot/renovate/issues/5990
+    "src/app/Dockerfile-node-18-alpine",
+    "src/app/Dockerfile-node-18-debian-slim",
+  ],
+  "labels": ["renovate", "renovate/{{replace '.*/' '' depName}}", "renovate/{{updateType}}"],
+  "packageRules": [
+    {
+      "description": "Update all 'patch' versions without waiting for tests",
+      "matchUpdateTypes": ["patch"],
+      "automergeType": "branch",
+      // Do not wait for tests - this will speed up the whole process - updating many branches + running many tests
+      "ignoreTests": true,
+      "automerge": true,
+    },
+    {
+      "description": "Ignore frequent renovate updates",
+      "matchPackageNames": ["renovatebot/github-action"],
+      "matchUpdateTypes": ["patch"],
+      "enabled": false
+    },
+    {
+      "description": "Update renovate once per week only if there is a new version",
+      "matchPackageNames": ["renovatebot/github-action"],
+      "matchUpdateTypes": ["major", "minor"],
+      "automergeType": "branch",
+      "automerge": true,
+      "schedule": ["* 0,2,4 1-7 * 0"],
+    },
+    {
+      "description": "Update all github-actions by default",
+      "matchManagers": ["github-actions"],
+      "automergeType": "branch",
+      "automerge": true,
+    },
+    {
+      "description": "Update megalinter automatically",
+      "matchPackageNames": ["megalinter/github-action"],
+      "automergeType": "branch",
+      "automerge": true,
+    },
+    {
+      "matchDatasources": ["docker"],
+      "matchPaths": ["**/Dockerfile*ubi*"],
+      "matchPackagePatterns": ["registry.access.redhat.com/ubi9/nodejs-.*-minimal"],
+      "versioning": "regex:^(?<major>\\d+)-(?<minor>\\d+)\\.*(?<patch>\\d*)$"
+    },
+  ],
+  "prBodyTemplate": "{{{table}}}{{{notes}}}{{{changelogs}}}",
+  "rebaseWhen": "behind-base-branch",
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "Dockerfile*",
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)( versioning=(?<versioning>.+?))?( extractVersion=(?<extractVersion>.+?))?( registryUrl=(?<registryUrl>.+?))?\\s.*[=:]\\s*\"?(?<currentValue>.+?)\"?\\s",
+        // Renovate for GH releases like: https://github.com/cert-manager/cert-manager/releases/download/v1.9.0/cert-manager.crds.yaml located in kustomization.yaml
+        "# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)( versioning=(?<versioning>.+?))?( extractVersion=(?<extractVersion>.+?))?\\s.*\\/releases\\/download\\/(?<currentValue>.+?)\\/.*",
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
+      "extractVersionTemplate": "{{#if extractVersion}}{{{extractVersion}}}{{else}}^v?(?<version>.+)${{/if}}",
+    },
+  ],
+  "separateMinorPatch": true,
+}
