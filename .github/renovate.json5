@@ -50,7 +50,14 @@
       "matchDatasources": ["docker"],
       "matchPaths": ["**/Dockerfile*ubi*"],
       "matchPackagePatterns": ["registry.access.redhat.com/ubi9/nodejs-.*-minimal"],
-      "versioning": "regex:^(?<major>\\d+)-(?<minor>\\d+)\\.*(?<patch>\\d*)$"
+      "versioning": "regex:^(?<major>\\d+)-(?<minor>\\d+)\\.*(?<patch>\\d*)$",
+    },
+    {
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["registry.access.redhat.com/ubi*"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automergeType": "branch",
+      "automerge": true,
     },
   ],
   "prBodyTemplate": "{{{table}}}{{{notes}}}{{{changelogs}}}",
