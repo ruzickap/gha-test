@@ -1,7 +1,7 @@
 initContainers:
   - name: velero-plugin-for-aws
     # renovate: datasource=docker depName=docker.io/velero/velero versioning=docker
-    image: velero/velero-plugin-for-aws:v1.5.3
+    image: velero/velero-plugin-for-aws:1.5.4
     imagePullPolicy: Always
     volumeMounts:
       - mountPath: /target
