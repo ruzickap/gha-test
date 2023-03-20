@@ -104,6 +104,12 @@ env:
   COSIGN_PRIVATE_KEY: ${{ secrets.cosign_private_key }}
   COSIGN_PRIVATE_KEY_PASSWORD: ${{ secrets.cosign_private_key_password }}
 
+permissions:
+  actions: read
+  contents: write
+  id-token: write
+  packages: write
+
 jobs:
   temporary-container-build:
     runs-on: ubuntu-latest

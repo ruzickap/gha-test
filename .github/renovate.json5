@@ -32,7 +32,7 @@
       "matchUpdateTypes": ["major", "minor"],
       "automergeType": "branch",
       "automerge": true,
-      "schedule": ["* 0,2,4 1-7 * 0"],
+      // "schedule": ["* 0,2,4 1-7 * 0"],
     },
     {
       "description": "Update all github-actions by default",
@@ -75,6 +75,7 @@
     {
       "fileMatch": [
         "Dockerfile*",
+        "^container/helm_values-velero.yml$",
       ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)( versioning=(?<versioning>.+?))?( extractVersion=(?<extractVersion>.+?))?( registryUrl=(?<registryUrl>.+?))?\\s.*[=:]\\s*\"?(?<currentValue>.+?)\"?\\s",

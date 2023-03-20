@@ -6,6 +6,8 @@ on:
     paths:
       - .github/workflows/virt-check.yml
 
+permissions: read-all
+
 jobs:
   virt-check-ubuntu:
     runs-on: ubuntu-latest
@@ -21,11 +23,11 @@ jobs:
           df -h
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-          sudo apt-get remove -y '^dotnet-.*'
-          sudo apt-get remove -y '^llvm-.*'
-          sudo apt-get remove -y 'php.*'
-          sudo apt-get remove -y azure-cli google-cloud-sdk google-chrome-stable firefox powershell
-          sudo apt-get autoremove -y
+          sudo apt-get remove -qy '^dotnet-.*'
+          sudo apt-get remove -qy '^llvm-.*'
+          sudo apt-get remove -qy 'php.*'
+          sudo apt-get remove -qy azure-cli google-cloud-sdk google-chrome-stable firefox powershell
+          sudo apt-get autoremove -qy
           sudo apt-get clean
           rm -rf /usr/share/dotnet/
           df -h
@@ -40,7 +42,7 @@ jobs:
           sysctl -a | grep machdep.cpu.features
           sysctl -a | grep -o VMX
           df -h /
-          brew uninstall --formula ant aws-sam-cli aspell azure-cli cmake composer gcc gcc@11 go@1.17 gradle harfbuzz icu4c kotlin maven mongodb-community@5.0 mongosh mongodb-database-tools node node@18 openjdk openblas php postgresql@14 r sbt selenium-server
+          brew uninstall --formula ant aws-sam-cli aspell azure-cli cmake composer gcc gcc@11 go@1.17 gradle harfbuzz icu4c kotlin maven mongodb-community@5.0 mongosh mongodb-database-tools node@16 node@18 openjdk openblas php postgresql@14 r sbt selenium-server
           df -h /
           brew uninstall --cask chromedriver firefox google-chrome julia
           df -h /
@@ -55,5 +57,5 @@ jobs:
           brew list --formula | xargs  -P8 -I {} \
             sh -c "brew info {} | egrep '[0-9]* files, ' | sed 's/^.*[0-9]* files, \(.*\)).*$/{} \1/'" | \
             sort -h -r -k2 - | column -t | grep MB | sort -k2 -g
-          echo "*** This will take around 40 minutes to complete..."
+          # echo "*** This will take around 40 minutes to complete..."
           # sudo du -sh /* 2>/dev/null || true
