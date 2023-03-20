@@ -6,6 +6,8 @@ on:
     paths:
       - .github/workflows/virt-check.yml
 
+permissions: read-all
+
 jobs:
   virt-check-ubuntu:
     runs-on: ubuntu-latest

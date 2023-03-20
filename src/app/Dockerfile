@@ -12,4 +12,7 @@ RUN npm install
 COPY . /usr/src/app
 
 USER node
+
+HEALTHCHECK NONE
+
 CMD [ "npm", "start" ]

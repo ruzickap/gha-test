@@ -6,6 +6,8 @@ on:
     paths:
       - .github/workflows/env-check.yml
 
+permissions: read-all
+
 jobs:
   env-checker:
     runs-on: ubuntu-latest

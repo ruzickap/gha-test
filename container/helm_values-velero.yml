@@ -1,0 +1,15 @@
+initContainers:
+  - name: velero-plugin-for-aws
+    # renovate: datasource=docker depName=docker.io/velero/velero-plugin-for-aws versioning=docker extractVersion=^v(?<version>.+)$
+    image: velero/velero-plugin-for-aws:v1.5.3
+    imagePullPolicy: Always
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+  - name: velero-plugin-for-csi
+    # renovate: datasource=docker depName=docker.io/velero/velero-plugin-for-csi versioning=docker extractVersion="^(v?<version>.+)$"
+    image: velero/velero-plugin-for-csi:v0.4.1
+    imagePullPolicy: Always
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
