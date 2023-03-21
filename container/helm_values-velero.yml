@@ -8,7 +8,7 @@ initContainers:
         name: plugins
   - name: velero-plugin-for-csi
     # renovate: datasource=docker depName=velero/velero-plugin-for-csi extractVersion=^(?<version>.+)$
-    image: velero/velero-plugin-for-csi:v0.4.1
+    image: velero/velero-plugin-for-csi:v0.4.2
     imagePullPolicy: Always
     volumeMounts:
       - mountPath: /target
