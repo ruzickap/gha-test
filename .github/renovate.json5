@@ -25,6 +25,14 @@
       "automerge": true,
       // "schedule": ["* 0,2,4 1-7 * 0"],
     },
+    // {
+    //   "description": "Helm - not working",
+    //   "matchPackageNames": ["helm/kube-prometheus-stack"],
+    //   "matchUpdateTypes": ["major", "minor"],
+    //   "automergeType": "branch",
+    //   "ignoreTests": true,
+    //   "automerge": true,
+    // },
     {
       "description": "Helm",
       "matchDatasources": ["helm"],
