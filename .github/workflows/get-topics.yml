@@ -1,0 +1,30 @@
+name: get-topics
+
+on:
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  get-topics:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get GH Pages URL
+        id: gh_topics
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            let result = await github.request('GET /repos/:owner/:repo/topics', {
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            console.log(result.data)
+            console.log(result.data.names)
+            console.log(result.data.names.find(value => /^productid-/.test(value)).replace("productid-","product_id="))
+            return (result.data.names.find(value => /^productid-/.test(value)).replace("productid-","product_id="))
+          result-encoding: string
+
+      - name: Link Checker
+        run: |
+          echo "${{ steps.gh_topics.outputs.result }}"
