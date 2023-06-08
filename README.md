@@ -30,28 +30,28 @@ Version test:
 
 [//]: # (x-release-please-start-minor)
 
-* Full Release: 1.0.0
-* Minor Release: 1
-* Minor Release: test@1
+* Full Release: 0.0.0
+* Minor Release: 0
+* Minor Release: test@0
 
 ```bash
-* Full Release: 1.0.0
-* Minor Release: 1
-* Minor Release: test@1
+* Full Release: 0.0.0
+* Minor Release: 0
+* Minor Release: test@0
 ```
 
 [//]: # (x-release-please-end)
 
 [//]: # (x-release-please-start-patch)
 
-* Full Release: 1.0.0
-* Patch Release: 1
-* Patch Release: test@1
+* Full Release: 0.0.0
+* Patch Release: 0
+* Patch Release: test@0
 
 ```bash
-* Full Release: 1.0.0
-* Patch Release: 1
-* Patch Release: test@1
+* Full Release: 0.0.0
+* Patch Release: 0
+* Patch Release: test@0
 ```
 
 [//]: # (x-release-please-end)
