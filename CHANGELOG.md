@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.2 (2023-06-08)
+
+## What's Changed
+* docs(readme): small update by @ruzickap in https://github.com/ruzickap/gha-test/pull/22
+* refactor(gha): add signoff to release-please by @ruzickap in https://github.com/ruzickap/gha-test/pull/23
+
+
+**Full Changelog**: https://github.com/ruzickap/gha-test/compare/v1.0.1...v1.0.2
+
 ## 1.0.1 (2023-06-08)
 
 ## What's Changed

@@ -6,10 +6,10 @@ Version test...
 
 [//]: # (x-release-please-start-version)
 
-* Full Release: 1.0.1
+* Full Release: 1.0.2
 
 ```bash
-* Full Release: 1.0.1
+* Full Release: 1.0.2
 ```
 
 [//]: # (x-release-please-end)
@@ -44,14 +44,14 @@ Version test...
 
 [//]: # (x-release-please-start-patch)
 
-* Full Release: 1.0.0
-* Patch Release: 1
-* Patch Release: test@1
+* Full Release: 2.0.0
+* Patch Release: 2
+* Patch Release: test@2
 
 ```bash
-* Full Release: 1.0.0
-* Patch Release: 1
-* Patch Release: test@1
+* Full Release: 2.0.0
+* Patch Release: 2
+* Patch Release: test@2
 ```
 
 [//]: # (x-release-please-end)
