@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.4 (2023-06-09)
+
+## What's Changed
+* ci(gha): fix release for container-build by @ruzickap in https://github.com/ruzickap/gha-test/pull/26
+
+
+**Full Changelog**: https://github.com/ruzickap/gha-test/compare/v1.0.3...v1.0.4
+
 ## 1.0.3 (2023-06-09)
 
 ## What's Changed
