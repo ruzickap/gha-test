@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.3 (2023-06-09)
+
+## What's Changed
+* ci(container-build): run build only when there is a new release by @ruzickap in https://github.com/ruzickap/gha-test/pull/24
+
+
+**Full Changelog**: https://github.com/ruzickap/gha-test/compare/v1.0.2...v1.0.3
+
 ## 1.0.2 (2023-06-08)
 
 ## What's Changed
