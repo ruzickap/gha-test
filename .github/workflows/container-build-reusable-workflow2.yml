@@ -224,10 +224,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags/') || inputs.container_registry_push || github.event_name == 'schedule' }}
     needs: temporary-container-build
-    permissions:
-      contents: write
-      id-token: write
-      packages: write
     outputs:
       container_image_digest: ${{ steps.build-push-action-container-registry.outputs.digest }}
       container_image_name: ${{ steps.variables.outputs.CONTAINER_IMAGE_NAME }}

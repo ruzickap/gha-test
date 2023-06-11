@@ -45,5 +45,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE: src/app/server.js
           PRINT_ALPACA: false
+          REPOSITORY_TRIVY_ARGUMENTS: --skip-files src/app/Dockerfile
           # Needed for scanning generated README.sh file
           VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }}
