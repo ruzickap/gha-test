@@ -81,13 +81,6 @@ jobs:
             container_image_platforms: linux/amd64
             container_image_logo_url: https://raw.githubusercontent.com/cncf/artwork/40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/icon/color/kubernetes-icon-color.svg
 
-          # - container_image: c8n.io/ruzickap-github/malware-cryptominer-container-test
-          #   container_image_repository_url: https://quay.io/repository/petr_ruzicka/malware-cryptominer-container-test?tab=tags
-          #   container_image_dockerfile_location: src/malware-cryptominer-container/Dockerfile
-          #   container_image_tag_suffix: ""
-          #   container_image_platforms: linux/amd64,linux/arm64,linux/arm/v7
-          #   container_image_logo_url: https://raw.githubusercontent.com/MISP/intelligence-icons/513abc840b7ac92e4f8a4a7ecab2964007bf25f5/svg/threat_actor.svg
-
     uses: ./.github/workflows/container-build-reusable-workflow2.yml
     permissions:
       actions: read
@@ -124,19 +117,82 @@ jobs:
       wiz_client_id: ${{ secrets.WIZ_CLIENT_ID }}
       wiz_client_secret: ${{ secrets.WIZ_CLIENT_SECRET }}
 
-  create-release:
-    runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+  container-build-pipeline2:
+    name: "💡 ${{ matrix.container_image_dockerfile_location }}"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Contains several vulnerabilities
+          - container_image: quay.io/petr_ruzicka/myc-hello-kubernetes-test
+            container_image_repository_url: https://quay.io/repository/petr_ruzicka/myc-hello-kubernetes-test?tab=tags
+            container_image_dockerfile_location: src/app/Dockerfile
+            # This is the "default Dockerfile", which will create tags without any suffix (like 'latest')
+            container_image_tag_suffix: ""
+            container_image_platforms: linux/amd64,linux/arm64,linux/arm/v7
+            container_image_logo_url: https://raw.githubusercontent.com/cncf/artwork/40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/icon/color/kubernetes-icon-color.svg
+
+          - container_image: quay.io/petr_ruzicka/myc-hello-kubernetes-test
+            container_image_repository_url: https://quay.io/repository/petr_ruzicka/myc-hello-kubernetes-test?tab=tags
+            container_image_dockerfile_location: src/app/Dockerfile-node-18-alpine
+            container_image_tag_suffix: "-alpine"
+            container_image_platforms: linux/amd64,linux/arm64,linux/arm/v7
+            container_image_logo_url: https://raw.githubusercontent.com/cncf/artwork/40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/icon/color/kubernetes-icon-color.svg
+
+          # "only" Grype finds some critical vulnerabilities
+          - container_image: quay.io/petr_ruzicka/myc-hello-kubernetes-test
+            container_image_repository_url: https://quay.io/repository/petr_ruzicka/myc-hello-kubernetes-test?tab=tags
+            container_image_dockerfile_location: src/app/Dockerfile-node-18-debian-slim
+            container_image_tag_suffix: "-debian-slim"
+            container_image_platforms: linux/amd64,linux/arm64,linux/arm/v7
+            container_image_logo_url: https://raw.githubusercontent.com/cncf/artwork/40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/icon/color/kubernetes-icon-color.svg
+
+          - container_image: quay.io/petr_ruzicka/myc-hello-kubernetes-test
+            container_image_repository_url: https://quay.io/repository/petr_ruzicka/myc-hello-kubernetes-test?tab=tags
+            container_image_dockerfile_location: src/app/Dockerfile-nodejs-16-ubi
+            container_image_tag_suffix: "-ubi"
+            container_image_platforms: linux/amd64,linux/arm64
+            container_image_logo_url: https://raw.githubusercontent.com/cncf/artwork/40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/icon/color/kubernetes-icon-color.svg
+
+          - container_image: quay.io/petr_ruzicka/myc-hello-kubernetes-test
+            container_image_repository_url: https://quay.io/repository/petr_ruzicka/myc-hello-kubernetes-test?tab=tags
+            container_image_dockerfile_location: src/app/Dockerfile-nodejs18-distroless
+            container_image_tag_suffix: "-distroless"
+            container_image_platforms: linux/amd64
+            container_image_logo_url: https://raw.githubusercontent.com/cncf/artwork/40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/icon/color/kubernetes-icon-color.svg
+
+    uses: ./.github/workflows/container-build-reusable-workflow.yml
     permissions:
+      actions: read
       contents: write
       id-token: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Create Release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euxo pipefail
-          gh release create ${{ github.ref_name }} --generate-notes
+      packages: write
+    with:
+      container_image_dockerfile_location: ${{ matrix.container_image_dockerfile_location }}
+      container_image_tag_suffix: ${{ matrix.container_image_tag_suffix }}
+      # The following variables can not be easily taken to `env` variables, because it is not supported :-(
+      container_image_destination: ${{ matrix.container_image }}
+      container_image_platforms: ${{ matrix.container_image_platforms }}
+      container_image_product_id: 12345
+      container_image_vendor: MyCompany
+      container_image_authors: petr.ruzicka@gmail.com
+      container_image_authors_name: Petr Ruzicka
+      container_image_logo_url: ${{ matrix.container_image_logo_url }}
+      container_image_repository_url: ${{ matrix.container_image_repository_url }}
+      container_image_expires_after: ${{ inputs.container_image_expires_after || '300' }} # days
+      # https://github.com/actions/runner/issues/1483 (there are no "inputs" when not running using 'workflow_dispatch')
+      container_image_skip_vulnerability_checks: ${{ inputs.container_image_skip_vulnerability_checks == true && true || false }}
+      container_registry_push: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || inputs.container_registry_push }}
+      push_to_ghcr: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || ( inputs.container_registry_push && inputs.push_to_ghcr ) }}
+    secrets:
+      container_registry_user: ${{ secrets.CONTAINER_REGISTRY_USER }}
+      container_registry_password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+      # Prisma Cloud credentials (optional)
+      pcc_console_url: ${{ secrets.PCC_CONSOLE_URL }}
+      pcc_pass: ${{ secrets.PCC_PASS }}
+      pcc_user: ${{ secrets.PCC_USER }}
+      # Snyk credentials (optional)
+      snyk_token: ${{ secrets.SNYK_TOKEN }}
+      # Wiz credentials (optional)
+      wiz_client_id: ${{ secrets.WIZ_CLIENT_ID }}
+      wiz_client_secret: ${{ secrets.WIZ_CLIENT_SECRET }}
