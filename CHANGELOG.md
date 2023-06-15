@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.0 (2023-06-15)
+
+## What's Changed
+* ci(gha): add signoff to release-please additional tags by @ruzickap in https://github.com/ruzickap/gha-test/pull/29
+* ci(gha): put back tag trigger for container-build by @ruzickap in https://github.com/ruzickap/gha-test/pull/30
+
+
+**Full Changelog**: https://github.com/ruzickap/gha-test/compare/v1.0.4...v1.1.0
+
 ## 1.0.5 (2023-06-09)
 
 ## What's Changed
