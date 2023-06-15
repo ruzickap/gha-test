@@ -18,11 +18,11 @@ on:
         type: string
         required: false
         default: "30"
-      push_to_ghcr:
-        description: "If 'Push the image to Container Registry' is enabled - push image to ghcr.io too"
-        type: boolean
-        required: false
-        default: true
+      # push_to_ghcr:
+      #   description: "If 'Push the image to Container Registry' is enabled - push image to ghcr.io too"
+      #   type: boolean
+      #   required: false
+      #   default: true
   release:
     types: [published]
   # push:
@@ -100,7 +100,7 @@ jobs:
       # https://github.com/actions/runner/issues/1483 (there are no "inputs" when not running using 'workflow_dispatch')
       container_image_skip_vulnerability_checks: ${{ inputs.container_image_skip_vulnerability_checks == true && true || false }}
       container_registry_push: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || inputs.container_registry_push }}
-      push_to_ghcr: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || ( inputs.container_registry_push && inputs.push_to_ghcr ) }}
+      # push_to_ghcr: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || ( inputs.container_registry_push && inputs.push_to_ghcr ) }}
     secrets:
       container_registry_user: ${{ secrets.HARBOR_CONTAINER_REGISTRY_USER }}
       container_registry_password: ${{ secrets.HARBOR_CONTAINER_REGISTRY_PASSWORD }}
@@ -175,7 +175,7 @@ jobs:
       # https://github.com/actions/runner/issues/1483 (there are no "inputs" when not running using 'workflow_dispatch')
       container_image_skip_vulnerability_checks: ${{ inputs.container_image_skip_vulnerability_checks == true && true || false }}
       container_registry_push: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || inputs.container_registry_push }}
-      push_to_ghcr: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || ( inputs.container_registry_push && inputs.push_to_ghcr ) }}
+      # push_to_ghcr: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || ( inputs.container_registry_push && inputs.push_to_ghcr ) }}
     secrets:
       container_registry_user: ${{ secrets.CONTAINER_REGISTRY_USER }}
       container_registry_password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
