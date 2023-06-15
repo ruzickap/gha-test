@@ -23,6 +23,8 @@ on:
         type: boolean
         required: false
         default: true
+  release:
+    types: [published]
   # push:
   #   tags:
   #     # For code tagging use 'v' prefix, but 'v' prefix should not be part of container tag
