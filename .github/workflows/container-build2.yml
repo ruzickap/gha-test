@@ -23,6 +23,8 @@ on:
         type: boolean
         required: false
         default: true
+  release:
+    types: [published]
   # push:
   #   tags:
   #     # For code tagging use 'v' prefix, but 'v' prefix should not be part of container tag
@@ -156,7 +158,7 @@ jobs:
             container_image_platforms: linux/amd64
             container_image_logo_url: https://raw.githubusercontent.com/cncf/artwork/40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/icon/color/kubernetes-icon-color.svg
 
-    uses: ./.github/workflows/container-build-reusable-workflow.yml
+    uses: ./.github/workflows/container-build-reusable-workflow2.yml
     with:
       container_image_dockerfile_location: ${{ matrix.container_image_dockerfile_location }}
       container_image_tag_suffix: ${{ matrix.container_image_tag_suffix }}

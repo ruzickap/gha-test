@@ -112,6 +112,7 @@ permissions:
 
 jobs:
   temporary-container-build:
+    name: tmp-build-${{ inputs.container_image_destination }}
     runs-on: ubuntu-latest
     outputs:
       container_image_temporary_metadata: ${{ steps.build-push-action-temporary-container-registry.outputs.metadata }}
@@ -221,6 +222,7 @@ jobs:
           ./wizcli docker scan --image "temporary_container-${{ github.run_id }}:latest" --tag product_id="${{ inputs.container_image_product_id }}"
 
   container-build:
+    name: build-${{ inputs.container_image_destination }}
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags/') || inputs.container_registry_push || github.event_name == 'schedule' }}
     needs: temporary-container-build
@@ -327,7 +329,6 @@ jobs:
           context: ${{ steps.variables.outputs.CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY }}
           push: true
           platforms: ${{ inputs.container_image_platforms }}
-          provenance: true
           sbom: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
