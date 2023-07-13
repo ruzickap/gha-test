@@ -23,6 +23,7 @@ on:
       #   type: boolean
       #   required: false
       #   default: true
+  # Not working after release-please
   release:
     types: [published]
   # push:
