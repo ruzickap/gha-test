@@ -1,3 +1,7 @@
+# Test
+
+Code:
+
 ```bash
 # renovate: datasource=helm depName=kube-prometheus-stack registryUrl=https://prometheus-community.github.io/helm-charts
 KUBE_PROMETHEUS_STACK_HELM_CHART_VERSION="48.2.3"
