@@ -1,6 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "branchPrefix": "renovate/",
+  "ignorePaths": [
+    // Keep original Dockerfile untouched
+    "src/app/Dockerfile$",
+    // Keep original application + dependencies untouched
+    "src/app/package.json",
+  ],
   "labels": ["renovate", "renovate/{{replace '.*/' '' depName}}", "renovate/{{updateType}}"],
   "packageRules": [
     {
@@ -54,6 +60,8 @@
   "regexManagers": [
     {
       "fileMatch": [
+        "Dockerfile*",
+        "^\\.github/workflows/.*\\.ya?ml$",
         ".*\\.md$",
       ],
       "matchStrings": [
