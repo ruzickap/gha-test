@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     git = {
-      source = "metio/git"
+      source  = "metio/git"
       version = "2023.10.20"
     }
   }
