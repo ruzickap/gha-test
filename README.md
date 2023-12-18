@@ -48,6 +48,14 @@ Version test...
 * Patch Release: 5
 * Patch Release: test@5
 
+MP4 Video:
+
+<https://github.com/ruzickap/gha-test/assets/1434387/d2f6c337-2679-4ba4-92f7-c8afb5ed88a5>
+
+AV1 Video:
+
+<https://github.com/ruzickap/gha-test/assets/1434387/287b4432-89bc-48a7-b593-a1e1841136a3>
+
 ```bash
 * Full Release: 5.0.0
 * Patch Release: 5
@@ -59,5 +67,3 @@ Version test...
 End...
 
 Updated by: My Lab User
-
-Test 123
