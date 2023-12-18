@@ -1,0 +1,30 @@
+name: changed-files-test
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/changed-files-test.yml
+      - terraform/**
+
+permissions: read-all
+
+jobs:
+  changed-files-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get changed files in the docs folder
+        if: github.event_name == 'push'
+        id: changed-files
+        uses: tj-actions/changed-files@v40
+        with:
+          path: ./terraform
+          separator: '\n'
+          dir_names: true
+          dir_names_max_depth: 1
+
+      - name: List all changed files
+        run: |
+          echo ${{ steps.changed-files.outputs.all_changed_files }}
