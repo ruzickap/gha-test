@@ -49,7 +49,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
 
-      - uses: actions/create-github-app-token@f04aa94d10cf56334d1c580e077ce2e3569e805d # v1
+      - uses: actions/create-github-app-token@cb1fcdda590f1dd2a7c771cfa62e50bb4ac1cfa5 # v1.0.5
         id: app-token
         with:
           app-id: ${{ secrets.MY_RENOVATE_GITHUB_APP_ID }}
