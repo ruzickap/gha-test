@@ -1,95 +1,63 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "ignorePaths": [
-    // Keep original Dockerfile untouched
-    "src/app/Dockerfile$",
-    // Keep original application + dependencies untouched
-    "src/app/package.json",
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  automerge: true,
+  automergeType: "branch",
+  ignoreTests: true,
+  labels: [
+    "renovate",
+    "renovate/{{replace '.*/' '' depName}}",
+    "renovate/{{updateType}}",
   ],
-  "labels": ["renovate", "renovate/{{replace '.*/' '' depName}}", "renovate/{{updateType}}"],
-  "packageRules": [
+  packageRules: [
     {
-      "description": "Update all 'patch' versions without waiting for tests",
-      "matchUpdateTypes": ["patch"],
-      "automergeType": "branch",
-      // Do not wait for tests - this will speed up the whole process - updating many branches + running many tests
-      "ignoreTests": true,
-      "automerge": true,
+      "extends": [
+        "helpers:pinGitHubActionDigests"
+      ],
+      "extractVersion": "^(?<version>v\\d+\\.\\d+\\.\\d+)$",
+      "versioning": "regex:^v(?<major>\\d+)(\\.(?<minor>\\d+)\\.(?<patch>\\d+))?$"
     },
     {
-      "description": "Ignore frequent renovate updates",
-      "matchPackageNames": ["renovatebot/github-action"],
-      "matchUpdateTypes": ["patch"],
-      "enabled": false
+      matchUpdateTypes: ["patch"],
     },
     {
-      "description": "Update renovate once per week only if there is a new version",
-      "matchPackageNames": ["renovatebot/github-action"],
-      "matchUpdateTypes": ["major", "minor"],
-      "automergeType": "branch",
-      "automerge": true,
-      // "schedule": ["* 0,2,4 1-7 * 0"],
-    },
-    // {
-    //   "description": "Helm - not working",
-    //   "matchPackageNames": ["helm/kube-prometheus-stack"],
-    //   "matchUpdateTypes": ["major", "minor"],
-    //   "automergeType": "branch",
-    //   "ignoreTests": true,
-    //   "automerge": true,
-    // },
-    {
-      "description": "Helm",
-      "matchDatasources": ["helm"],
-      "matchPackagePatterns": ["(^|\\/)kube-prometheus-stack$"],
-      "matchUpdateTypes": ["major", "minor"],
-      "automergeType": "branch",
-      "automerge": true,
+      description: "Ignore frequent renovate updates",
+      enabled: false,
+      matchPackageNames: ["renovatebot/github-action"],
+      matchUpdateTypes: ["patch"],
     },
     {
-      "description": "Grafana Dashboards",
-      "matchDatasources": ["custom.grafana-dashboards"],
-      "matchUpdateTypes": ["major"],
-      "automergeType": "branch",
-      "automerge": true,
+      ignoreTests: false,
+      matchPackageNames: ["renovatebot/github-action"],
+      matchUpdateTypes: ["minor"],
+      // schedule: ["* * * * 0"],
+    },
+    {
+      description: "Update all github-actions by default",
+      ignoreTests: false,
+      matchManagers: ["github-actions"],
+    },
+    {
+      "matchDepTypes": [
+        "action"
+      ],
+      "pinDigests": true,
     },
   ],
-  "prBodyTemplate": "{{{table}}}{{{notes}}}{{{changelogs}}}",
-  "rebaseWhen": "behind-base-branch",
-  "regexManagers": [
+  prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}",
+  rebaseWhen: "behind-base-branch",
+  regexManagers: [
     {
-      "fileMatch": [
-        "Dockerfile*",
-        "^\\.github/workflows/.*\\.ya?ml$",
-        ".*\\.md$",
+      extractVersionTemplate: "{{#if extractVersion}}{{{extractVersion}}}{{else}}^v?(?<version>.+)${{/if}}",
+      fileMatch: ["\\.ya?ml$", "\\.md$"],
+      matchStrings: [
+        '# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)( versioning=(?<versioning>.+?))?( extractVersion=(?<extractVersion>.+?))?( registryUrl=(?<registryUrl>.+?))?\\s.*[=:]\\s*"?(?<currentValue>.+?)"?\\s',
       ],
-      "matchStrings": [
-        "# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)( versioning=(?<versioning>.+?))?( extractVersion=(?<extractVersion>.+?))?( registryUrl=(?<registryUrl>.+?))?\\s.*[=:]\\s*\"?(?<currentValue>.+?)\"?\\s",
-        // Renovate for GH releases like: https://github.com/cert-manager/cert-manager/releases/download/v1.9.0/cert-manager.crds.yaml located in kustomization.yaml
-        "# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)( versioning=(?<versioning>.+?))?( extractVersion=(?<extractVersion>.+?))?\\s.*\\/releases\\/download\\/(?<currentValue>.+?)\\/.*",
-      ],
-      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
-      "extractVersionTemplate": "{{#if extractVersion}}{{{extractVersion}}}{{else}}^v?(?<version>.+)${{/if}}",
-    },
-    {
-      "fileMatch": [
-        ".*\\.md$",
-      ],
-      "matchStrings": [
-        "#\\s+renovate:\\s+depName=\"(?<depName>.*)\"\\n\\s+gnetId:\\s+(?<packageName>.*?)\\n\\s+revision:\\s+(?<currentValue>.*)"
-      ],
-      "versioningTemplate": "regex:^(?<major>\\d+)$",
-      "datasourceTemplate": "custom.grafana-dashboards"
+      versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
     },
   ],
-  "customDatasources": {
-    "grafana-dashboards": {
-      "defaultRegistryUrlTemplate": "https://grafana.com/api/dashboards/{{packageName}}",
-      "format": "json",
-      "transformTemplates": [
-        "{\"releases\":[{\"version\": $string(revision)}]}"
-      ],
-    },
-  },
-  "separateMinorPatch": true,
+  separateMinorPatch: true,
+//  vulnerabilityAlerts: {
+//    commitMessagePrefix: "chore(renovate): Security update",
+//    labels: ["security"],
+//  },
 }
