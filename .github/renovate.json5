@@ -4,14 +4,13 @@
   automergeType: "branch",
   extends: [
     "config:recommended",
-    ":disableDependencyDashboard",
+    // ":disableDependencyDashboard",
     ":disableRateLimiting",
     ":enableVulnerabilityAlertsWithLabel(security)",
     "helpers:pinGitHubActionDigestsToSemver",
     "security:openssf-scorecard",
   ],
   ignoreTests: true,
-  internalChecksAsSuccess: true,
   labels: [
     "renovate",
     "renovate/{{replace '.*/' '' depName}}",
@@ -37,9 +36,6 @@
       description: "Update all github-actions by default",
       // ignoreTests: false,
       matchManagers: ["github-actions"],
-    },
-    {
-      matchDepTypes: ["action"],
     },
   ],
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}",
