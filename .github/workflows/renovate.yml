@@ -19,8 +19,11 @@ on:
     paths:
       - .github/workflows/renovate.yml
       - .github/renovate.json5
-  schedule:
-    - cron: "0 0,2,4 * * *"
+    branches:
+      - main
+      - "!renovate/*"
+  # schedule:
+  #   - cron: "0 0,2,4 * * *"
 
 env:
   # https://docs.renovatebot.com/self-hosted-configuration/#repositories

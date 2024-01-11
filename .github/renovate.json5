@@ -2,20 +2,22 @@
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   automerge: true,
   automergeType: "branch",
+  extends: [
+    "config:recommended",
+    ":disableDependencyDashboard",
+    ":disableRateLimiting",
+    ":enableVulnerabilityAlertsWithLabel(security)",
+    "helpers:pinGitHubActionDigestsToSemver",
+    "security:openssf-scorecard",
+  ],
   ignoreTests: true,
+  internalChecksAsSuccess: true,
   labels: [
     "renovate",
     "renovate/{{replace '.*/' '' depName}}",
     "renovate/{{updateType}}",
   ],
   packageRules: [
-    {
-      "extends": [
-        "helpers:pinGitHubActionDigests"
-      ],
-      "extractVersion": "^(?<version>v\\d+\\.\\d+\\.\\d+)$",
-      "versioning": "regex:^v(?<major>\\d+)(\\.(?<minor>\\d+)\\.(?<patch>\\d+))?$"
-    },
     {
       matchUpdateTypes: ["patch"],
     },
@@ -33,18 +35,16 @@
     },
     {
       description: "Update all github-actions by default",
-      ignoreTests: false,
+      // ignoreTests: false,
       matchManagers: ["github-actions"],
     },
     {
-      "matchDepTypes": [
-        "action"
-      ],
-      "pinDigests": true,
+      matchDepTypes: ["action"],
     },
   ],
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}",
   rebaseWhen: "behind-base-branch",
+  recreateClosed: "always",
   regexManagers: [
     {
       extractVersionTemplate: "{{#if extractVersion}}{{{extractVersion}}}{{else}}^v?(?<version>.+)${{/if}}",
@@ -56,8 +56,4 @@
     },
   ],
   separateMinorPatch: true,
-//  vulnerabilityAlerts: {
-//    commitMessagePrefix: "chore(renovate): Security update",
-//    labels: ["security"],
-//  },
 }
