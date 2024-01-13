@@ -60,4 +60,4 @@ jobs:
       - name: 💡 Self-hosted Renovate
         uses: renovatebot/github-action@f9c81dddc9b589e4e6ae0326d1e36f6bc415d230 # v39.2.4
         with:
-          token: "x-access-token:${{ steps.app-token.outputs.token }}"
+          token: "${{ steps.app-token.outputs.token }}"
