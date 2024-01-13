@@ -1,4 +1,6 @@
 ---
+# This file is managed by OpenTofu - do not make changes
+
 name: Renovate
 
 on:
