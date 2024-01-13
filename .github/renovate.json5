@@ -10,7 +10,6 @@
     "helpers:pinGitHubActionDigestsToSemver",
     "security:openssf-scorecard",
   ],
-  ignoreTests: true,
   labels: [
     "renovate",
     "renovate/{{replace '.*/' '' depName}}",
@@ -27,15 +26,10 @@
       matchUpdateTypes: ["patch"],
     },
     {
-      ignoreTests: false,
+      description: "Update renovatebot/github-action minor updates on Sundays",
       matchPackageNames: ["renovatebot/github-action"],
       matchUpdateTypes: ["minor"],
       schedule: ["* * * * 0"],
-    },
-    {
-      description: "Update all github-actions by default",
-      ignoreTests: false,
-      matchManagers: ["github-actions"],
     },
   ],
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}",
