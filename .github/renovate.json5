@@ -16,8 +16,12 @@
     "renovate/{{updateType}}",
   ],
   packageRules: [
+    // {
+    //   matchUpdateTypes: ["minor", "patch"],
+    // },
     {
-      matchUpdateTypes: ["minor", "patch"],
+      matchUpdateTypes: ["major"],
+      automerge: false,
     },
     {
       description: "Ignore frequent renovate updates",
