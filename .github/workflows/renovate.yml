@@ -24,8 +24,8 @@ on:
     branches:
       - main
       - "!renovate/*"
-    schedule:
-      - cron: "0 0,2,4 * * *"
+  schedule:
+    - cron: "0 0,2,4 * * *"
 
 env:
   # https://docs.renovatebot.com/troubleshooting/#log-debug-levels
