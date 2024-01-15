@@ -117,7 +117,7 @@ jobs:
       container_image_temporary_metadata: ${{ steps.build-push-action-temporary-container-registry.outputs.metadata }}
     steps:
       - name: Checkout
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
 
       - name: Check if the tag exists in registry
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -233,7 +233,7 @@ jobs:
       container_image_name: ${{ steps.variables.outputs.CONTAINER_IMAGE_NAME }}
     steps:
       - name: Checkout
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
 
       - name: Set GitHub variables
         id: variables
