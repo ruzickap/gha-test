@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.0](https://github.com/ruzickap/gha-test/compare/v1.3.0...v1.4.0) (2024-01-28)
+
+
+### Features
+
+* **code:** restore files form backup ([#79](https://github.com/ruzickap/gha-test/issues/79)) ([18b5960](https://github.com/ruzickap/gha-test/commit/18b59605ff0664e99a29fb8278240ae5491c582e))
+* **gha:** add megalinter config file ([dd70e8d](https://github.com/ruzickap/gha-test/commit/dd70e8db62417a38ff4ccb6a593e0d5acb4eab73))
+* **gha:** test markdown code ([#78](https://github.com/ruzickap/gha-test/issues/78)) ([15558ca](https://github.com/ruzickap/gha-test/commit/15558ca67da1ff07919de6d7943c0b450ad81cf9))
+* **gha:** unify GHA - renovate, megalinter, markdown, and others ([#106](https://github.com/ruzickap/gha-test/issues/106)) ([1d7cfa1](https://github.com/ruzickap/gha-test/commit/1d7cfa15f82c9e1f7a62580fe04bcb681ac477c2))
+* **megalinter:** disable kics ([741e640](https://github.com/ruzickap/gha-test/commit/741e640e24ea1dbceb16a435594ea3409bf67c1b))
+* **megalinter:** enable kics ([368b538](https://github.com/ruzickap/gha-test/commit/368b538fb61fc0bc40b46827eea503a4c62a08fb))
+* **src:** remove sample application in src dir ([#100](https://github.com/ruzickap/gha-test/issues/100)) ([f3d8762](https://github.com/ruzickap/gha-test/commit/f3d87627f19ea92026dd029675ec47a2f0df1caa))
+
 ## [1.3.0](https://github.com/ruzickap/gha-test/compare/v1.2.0...v1.3.0) (2024-01-13)
 
 
