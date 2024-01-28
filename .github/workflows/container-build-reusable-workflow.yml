@@ -152,7 +152,7 @@ jobs:
       #########################
 
       - name: Trivy - scan container image
-        uses: aquasecurity/trivy-action@0.16.1
+        uses: aquasecurity/trivy-action@d43c1f16c00cfd3978dde6c07f4bbcf9eb6993ca # 0.16.1
         if: ${{ always() && steps.build-push-action-temporary-container-registry.outcome == 'success' }}
         continue-on-error: ${{ inputs.container_image_skip_vulnerability_checks || false }}
         with:
@@ -180,7 +180,7 @@ jobs:
       #########################
 
       - name: Snyk - scan container image
-        uses: snyk/actions/docker@0.4.0
+        uses: snyk/actions/docker@b98d498629f1c368650224d6d212bf7dfa89e4bf # 0.4.0
         if: ${{ always() && steps.build-push-action-temporary-container-registry.outcome == 'success' && env.SNYK_TOKEN != '' }}
         continue-on-error: ${{ inputs.container_image_skip_vulnerability_checks || false }}
         env:
@@ -349,7 +349,7 @@ jobs:
       #########################
 
       - name: Trivy - create SBOM - ${{ inputs.container_image_destination }}:${{ steps.docker_meta.outputs.version }}
-        uses: aquasecurity/trivy-action@0.16.1
+        uses: aquasecurity/trivy-action@d43c1f16c00cfd3978dde6c07f4bbcf9eb6993ca # 0.16.1
         if: ${{ github.event_name != 'schedule' }}
         with:
           image-ref: ${{ inputs.container_image_destination }}:${{ steps.docker_meta.outputs.version }}
@@ -368,7 +368,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Trivy - create SBOM - ghcr.io/${{ github.repository_owner }}/${{ steps.variables.outputs.CONTAINER_IMAGE_NAME }}:${{ steps.docker_meta.outputs.version }}
-        uses: aquasecurity/trivy-action@0.16.1
+        uses: aquasecurity/trivy-action@d43c1f16c00cfd3978dde6c07f4bbcf9eb6993ca # 0.16.1
         if: ${{ github.event_name != 'schedule' && inputs.push_to_ghcr }}
         with:
           image-ref: ghcr.io/${{ github.repository_owner }}/${{ steps.variables.outputs.CONTAINER_IMAGE_NAME }}:${{ steps.docker_meta.outputs.version }}
