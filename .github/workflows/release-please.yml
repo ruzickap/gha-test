@@ -12,9 +12,50 @@ permissions:
   pull-requests: write
 
 jobs:
-  release-please-pr:
+  release-please:
+    name: Run Release Please action
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      upload_url: ${{ steps.release.outputs.upload_url }}
     steps:
       - uses: google-github-actions/release-please-action@cc61a07e2da466bebbc19b3a7dd01d6aecb20d1e # v4.0.2
+        id: release
         with:
           release-type: simple
+
+  latex-build:
+    name: Build LaTeX
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - uses: xu-cheng/texlive-action@v2
+        with:
+          run: |
+            apk add poppler-utils
+            make jpg pdf png svg
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: latex-build
+          path: macos_cheatsheet.{jpg,pdf,png,svg}
+          retention-days: 1
+
+  upload-release:
+    name: Upload release to GitHub
+    needs: [release-please, latex-build]
+    if: needs.release-please.outputs.release_created
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: latex-build
+
+      - name: Upload Release Artifact
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ steps.release-please.outputs.tag_name }} macos_cheatsheet.{jpg,pdf,png,svg}
