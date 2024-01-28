@@ -16,9 +16,6 @@
     "renovate/{{updateType}}",
   ],
   packageRules: [
-    // {
-    //   matchUpdateTypes: ["minor", "patch"],
-    // },
     {
       matchUpdateTypes: ["major"],
       automerge: false,
@@ -37,11 +34,11 @@
     },
   ],
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}",
-  // rebaseWhen: "behind-base-branch",
+  rebaseWhen: "behind-base-branch",
   regexManagers: [
     {
       extractVersionTemplate: "{{#if extractVersion}}{{{extractVersion}}}{{else}}^v?(?<version>.+)${{/if}}",
-      fileMatch: ["\\.ya?ml$", "\\.md$"],
+      fileMatch: ["\\.ya?ml$", "\\.md$", "^Dockerfile$", "^entrypoint\\.sh$"],
       matchStrings: [
         '# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)( versioning=(?<versioning>.+?))?( extractVersion=(?<extractVersion>.+?))?( registryUrl=(?<registryUrl>.+?))?\\s.*[=:]\\s*"?(?<currentValue>.+?)"?\\s',
       ],

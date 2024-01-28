@@ -4,12 +4,8 @@
 BASH_SHFMT_ARGUMENTS: --indent 2 --space-redirects
 
 DISABLE_LINTERS:
-  - CSS_STYLELINT
-  - JAVASCRIPT_STANDARD
   - MARKDOWN_MARKDOWN_LINK_CHECK # Using lychee instead
-  - REPOSITORY_DEVSKIM
   - REPOSITORY_KICS
-  - REPOSITORY_TRIVY
   - SPELL_CSPELL
 
 # Remove: To receive reports as email, please set variable EMAIL_REPORTER_EMAIL
@@ -21,9 +17,8 @@ FILTER_REGEX_EXCLUDE: CHANGELOG.md
 
 FORMATTERS_DISABLE_ERRORS: false
 
-HTML_HTMLHINT_FILTER_REGEX_EXCLUDE: ^index.html
-
 MARKDOWN_MARKDOWNLINT_CONFIG_FILE: .markdownlint.yml
+MARKDOWN_MARKDOWNLINT_FILTER_REGEX_EXCLUDE: CHANGELOG.md
 
 # Remove initial MegaLinter graphic
 PRINT_ALPACA: false
@@ -31,10 +26,19 @@ PRINT_ALPACA: false
 # Disable creating report directory
 REPORT_OUTPUT_FOLDER: none
 
-RUBY_RUBOCOP_FILTER_REGEX_EXCLUDE: ^_plugins
+# Issue: https://github.com/bridgecrewio/checkov/issues/3839
+# The build output cannot be affected by user parameters other than the build entry point and the top-level source location. GitHub Actions workflow_dispatch inputs MUST be empty
+REPOSITORY_CHECKOV_ARGUMENTS: --skip-check CKV_GHA_7
 
-YAML_PRETTIER_FILTER_REGEX_EXCLUDE: (^_data/|^_config.yml)
+# Do not leave debug code in production, Insecure URL
+REPOSITORY_DEVSKIM_ARGUMENTS: --ignore-globs CHANGELOG.md --ignore-rule-ids DS162092,DS137138
 
-YAML_V8R_FILTER_REGEX_EXCLUDE: (^_data/|^_config.yml)
+# Communication Over HTTP
+REPOSITORY_KICS_ARGUMENTS: --exclude-queries 2e8d4922-8362-4606-8c14-aa10466a1ce3
+
+TERRAFORM_TFLINT_UNSECURED_ENV_VARIABLES:
+  - GITHUB_TOKEN
+
+TYPESCRIPT_PRETTIER_ARGUMENTS: --html-whitespace-sensitivity=ignore
 
 VALIDATE_ALL_CODEBASE: true
