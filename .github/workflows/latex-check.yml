@@ -1,0 +1,23 @@
+---
+name: release-please
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions: read-all
+
+jobs:
+  latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - uses: xu-cheng/texlive-action@v2
+        with:
+          scheme: small
+          run: |
+            make lint

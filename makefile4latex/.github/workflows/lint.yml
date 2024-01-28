@@ -1,0 +1,40 @@
+name: Lint
+
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron: '0 0 1 * *' # monthly
+  workflow_dispatch:
+
+jobs:
+  gitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install gitlint
+
+      - name: Run gitlint
+        run: gitlint
+
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.0
