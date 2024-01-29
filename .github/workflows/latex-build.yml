@@ -6,6 +6,8 @@ on:
   push:
     branches-ignore:
       - main
+    paths:
+      - "**.tex"
 
 permissions: read-all
 
