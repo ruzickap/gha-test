@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/ruzickap/gha-test/compare/v1.5.0...v1.5.1) (2024-01-29)
+
+
+### Bug Fixes
+
+* **release:** debug release issue ([#115](https://github.com/ruzickap/gha-test/issues/115)) ([da0417a](https://github.com/ruzickap/gha-test/commit/da0417ae6c3eaacacd3bd39e2f52c259504081be))
+
 ## [1.5.0](https://github.com/ruzickap/gha-test/compare/v1.4.0...v1.5.0) (2024-01-29)
 
 
