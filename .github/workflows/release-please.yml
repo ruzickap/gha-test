@@ -30,8 +30,6 @@ jobs:
     needs: [release-please]
     if: needs.release-please.outputs.release_created
     runs-on: ubuntu-latest
-    outputs:
-      file_name: ${{ steps.texlive.outputs.file_name }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -42,6 +40,8 @@ jobs:
         uses: xu-cheng/texlive-action@v2
         with:
           run: |
+            set -euxo pipefail
+
             apk add poppler-utils
             make ${{ env.LATEX_OUTPUT_FILE_TYPES }} mostlyclean
 
@@ -51,5 +51,5 @@ jobs:
         run: |
           set -euxo pipefail
 
-          FILE_NAME=$(ls -1 *.tex | sed  -n 's/\(.*\).tex$/\1/p')
-          gh release upload ${{ steps.release-please.outputs.tag_name }} ${FILE_NAME}.*
+          FILE_NAME=$(find ./*.tex | sed 's@^\./\(.*\)\.tex@\1@')
+          gh release upload ${{ needs.release-please.outputs.tag_name }} "${FILE_NAME}".*
