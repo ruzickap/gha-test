@@ -7,13 +7,15 @@ on:
     branches:
       - main
 
+env:
+  LATEX_OUTPUT_FILE_TYPES: "jpg pdf png svg"
+
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
   release-please:
-    name: Run Release Please action
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
@@ -26,27 +28,36 @@ jobs:
           release-type: simple
 
   latex-build:
-    name: Build LaTeX
     runs-on: ubuntu-latest
+    outputs:
+      file_name: ${{ steps.texlive.outputs.file_name }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          submodules: true
 
-      - uses: xu-cheng/texlive-action@v2
+      - name: Use TeXLive to build document
+        uses: xu-cheng/texlive-action@v2
         with:
           run: |
             apk add poppler-utils
-            make jpg pdf png svg
+            make ${{ env.LATEX_OUTPUT_FILE_TYPES }} mostlyclean
+
+      - name: Set output file name
+        id: set_output_file_name
+        run: |
+          FILE_NAME=$(ls -1 *.tex | sed  -n 's/\(.*\).tex$/\1/p')
+          echo "file_name=${FILE_NAME}" >> "${GITHUB_OUTPUT}"
 
       - name: Upload artifact
         uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         with:
           name: latex-build
-          path: macos_cheatsheet.{jpg,pdf,png,svg}
+          path: ${{ steps.set_output_file_name.outputs.file_name }}.*
           retention-days: 1
 
   upload-release:
-    name: Upload release to GitHub
     needs: [release-please, latex-build]
     if: needs.release-please.outputs.release_created
     runs-on: ubuntu-latest
@@ -58,4 +69,5 @@ jobs:
       - name: Upload Release Artifact
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ steps.release-please.outputs.tag_name }} macos_cheatsheet.{jpg,pdf,png,svg}
+          FILE_NAME: ${{ needs.latex-build.outputs.file_name }}
+        run: gh release upload ${{ steps.release-please.outputs.tag_name }} ${FILE_NAME}.*
