@@ -8,6 +8,7 @@ on:
       - main
     paths:
       - "**.tex"
+      - .github/workflows/latex-build.yml
 
 permissions: read-all
 
@@ -17,14 +18,12 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-        with:
-          submodules: true
 
       - name: Run script to build document
         id: build
         run: |
           ./run.sh
-          FILE_NAME=$(ls -1 *.tex | sed  -n 's/\(.*\).tex$/\1/p')
+          FILE_NAME=$(find ./*.tex | sed 's@^\./\(.*\)\.tex@\1@')
           echo "file_name=${FILE_NAME}" >> "${GITHUB_OUTPUT}"
 
       - name: Upload artifact
