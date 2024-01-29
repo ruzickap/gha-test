@@ -28,7 +28,7 @@ jobs:
           echo "file_name=${FILE_NAME}" >> "${GITHUB_OUTPUT}"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4
         with:
           name: latex-build
           path: ${{ steps.build.outputs.file_name }}.*
