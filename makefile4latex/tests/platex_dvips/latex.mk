@@ -1,1 +1,0 @@
-TOOLCHAIN = platex_dvips
