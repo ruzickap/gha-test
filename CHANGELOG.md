@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.0](https://github.com/ruzickap/gha-test/compare/v1.5.1...v1.6.0) (2024-01-29)
+
+
+### Features
+
+* **code:** add submodule ([#117](https://github.com/ruzickap/gha-test/issues/117)) ([e191008](https://github.com/ruzickap/gha-test/commit/e1910085a8fb812cbd690ab39750aea3b1d48c0d))
+* **code:** add submodule ([#119](https://github.com/ruzickap/gha-test/issues/119)) ([3a6b368](https://github.com/ruzickap/gha-test/commit/3a6b36866349e34eeee421b9edee8d71a155bba7))
+* **gha:** enable megalinter ([#120](https://github.com/ruzickap/gha-test/issues/120)) ([1c50483](https://github.com/ruzickap/gha-test/commit/1c50483753ad7950fe5512cf6d1ca85c45c2152d))
+
 ## [1.5.1](https://github.com/ruzickap/gha-test/compare/v1.5.0...v1.5.1) (2024-01-29)
 
 
