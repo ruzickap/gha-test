@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.5.0](https://github.com/ruzickap/gha-test/compare/v1.4.0...v1.5.0) (2024-01-29)
+
+
+### Features
+
+* **latex:** add feature ([#114](https://github.com/ruzickap/gha-test/issues/114)) ([916aff9](https://github.com/ruzickap/gha-test/commit/916aff96d3b330a7039afb32dd3424ccf21abe03))
+* **latex:** add latex example to test gha ([#107](https://github.com/ruzickap/gha-test/issues/107)) ([8d842cf](https://github.com/ruzickap/gha-test/commit/8d842cf6b6b115524d662ed847fa6e3180626985))
+* **latex:** add latex example to test gha ([#107](https://github.com/ruzickap/gha-test/issues/107)) ([#109](https://github.com/ruzickap/gha-test/issues/109)) ([a6222f8](https://github.com/ruzickap/gha-test/commit/a6222f8e52b7b86c9142c0e78cf351ffb5a32675))
+
+
+### Bug Fixes
+
+* **latex:** fix latex build ([#110](https://github.com/ruzickap/gha-test/issues/110)) ([dd7175f](https://github.com/ruzickap/gha-test/commit/dd7175f4462a8e0f3d9eebdf79bcd6716de3bd20))
+* **release:** fix latex release ([#111](https://github.com/ruzickap/gha-test/issues/111)) ([a499e04](https://github.com/ruzickap/gha-test/commit/a499e04e16169bd0abdfc48739d29f21644e7dd4))
+* **release:** improve release - simplify ([#112](https://github.com/ruzickap/gha-test/issues/112)) ([7e5158e](https://github.com/ruzickap/gha-test/commit/7e5158e06ec4e420e075aa451de1d5fd329d09a2))
+
 ## [1.4.0](https://github.com/ruzickap/gha-test/compare/v1.3.0...v1.4.0) (2024-01-28)
 
 
