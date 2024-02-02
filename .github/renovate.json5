@@ -2,11 +2,12 @@
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: [
     "config:recommended",
+    // "config:js-app",
     ":disableDependencyDashboard",
     ":disableRateLimiting",
     ":enableVulnerabilityAlertsWithLabel(security)",
+    ":pinAllExceptPeerDependencies",
     "helpers:pinGitHubActionDigestsToSemver",
-    // "npm:unpublishSafe",
     "security:openssf-scorecard",
   ],
   labels: [
@@ -16,8 +17,7 @@
   ],
   lockFileMaintenance: {
     enabled: true,
-    // schedule: ["before 6am on sunday"],
-    schedule: ["at any time"],
+    // schedule: ["before 6am on Sunday"],
   },
   packageRules: [
     {
