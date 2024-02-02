@@ -6,6 +6,7 @@
     ":disableRateLimiting",
     ":enableVulnerabilityAlertsWithLabel(security)",
     "helpers:pinGitHubActionDigestsToSemver",
+    // "npm:unpublishSafe",
     "security:openssf-scorecard",
   ],
   labels: [
@@ -13,6 +14,11 @@
     "renovate/{{replace '.*/' '' depName}}",
     "renovate/{{updateType}}",
   ],
+  lockFileMaintenance: {
+    enabled: true,
+    // schedule: ["before 6am on sunday"],
+    schedule: ["at any time"],
+  },
   packageRules: [
     {
       matchUpdateTypes: ["major"],
