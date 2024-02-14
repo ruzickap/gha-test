@@ -1,7 +1,7 @@
 # Configuration file for MegaLinter
 # See all available variables at https://megalinter.io/latest/configuration/ and in linters documentation
 
-BASH_SHFMT_ARGUMENTS: --indent 2 --space-redirects
+BASH_SHFMT_ARGUMENTS: --case-indent --indent 2 --space-redirects
 
 DISABLE_LINTERS:
   - MARKDOWN_MARKDOWN_LINK_CHECK # Using lychee instead
