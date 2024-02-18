@@ -81,3 +81,5 @@ echo "Test: $(date +'%F')"
 ```shell
 echo "Test: $(date +'%F')"
 ```
+
+[Pod limit on Node - AWS EKS](https://stackoverflow.com/questions/57970896/pod-limit-on-node-aws-eks/57971006)
