@@ -27,6 +27,18 @@
       matchUpdateTypes: ["major"],
       automerge: false,
     },
+    // {
+    //   description: "Disable automerge for minor updates in all posts except latest",
+    //   enabled: false,
+    //   matchFileNames: ["_posts/2022/**"],
+    //   matchUpdateTypes: ["minor"],
+    // },
+    {
+      description: "AutoMerge all for latest post",
+      matchFileNames: ["_posts/2023/2023-09-25-secure-cheap-amazon-eks.md"],
+      matchUpdateTypes: ["major", "minor"],
+      enabled: true,
+    },
     {
       description: "Ignore frequent renovate updates",
       enabled: false,
