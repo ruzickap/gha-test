@@ -1,43 +1,33 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  customDatasources: {
+    "grafana-dashboards": {
+      defaultRegistryUrlTemplate: "https://grafana.com/api/dashboards/{{packageName}}",
+      format: "json",
+      transformTemplates: ['{"releases":[{"version": $string(revision)}]}'],
+    },
+  },
   extends: [
     "config:recommended",
-    "docker:pinDigests",
-    "helpers:pinGitHubActionDigestsToSemver",
-    "security:openssf-scorecard",
     ":disableDependencyDashboard",
-    ":docker",
     ":disableRateLimiting",
     ":enableVulnerabilityAlertsWithLabel(security)",
+    "helpers:pinGitHubActionDigestsToSemver",
+    "security:openssf-scorecard",
   ],
-  "git-submodules": {
-    enabled: true,
-  },
+  // ignore chirpy dependencies
+  // https://renovatebot.com/docs/configuration-options/#ignoredeps
+  ignoreDeps: ["http_parser.rb", "html-proofer"],
+  ignorePaths: ["_posts/2022/**", "_posts/2023/2023-0[1-8]*.md"],
   labels: [
     "renovate",
     "renovate/{{replace '.*/' '' depName}}",
     "renovate/{{updateType}}",
   ],
-  lockFileMaintenance: {
-    enabled: true,
-    schedule: ["before 6am on Sunday"],
-  },
   packageRules: [
     {
       matchUpdateTypes: ["major"],
       automerge: false,
-    },
-    // {
-    //   description: "Disable automerge for minor updates in all posts except latest",
-    //   enabled: false,
-    //   matchFileNames: ["_posts/2022/**"],
-    //   matchUpdateTypes: ["minor"],
-    // },
-    {
-      description: "AutoMerge all for latest post",
-      matchFileNames: ["_posts/2023/2023-09-25-secure-cheap-amazon-eks.md"],
-      matchUpdateTypes: ["major", "minor"],
-      enabled: true,
     },
     {
       description: "Ignore frequent renovate updates",
@@ -51,6 +41,20 @@
       matchUpdateTypes: ["minor"],
       schedule: ["* * * * 0"],
     },
+    {
+      commitBody: "[skip ci]",
+      description: "AutoMerge all for specific post",
+      ignoreTests: true,
+      matchFileNames: ["_posts/2023/2023-09-25-secure-cheap-amazon-eks.md"],
+      matchUpdateTypes: ["major", "minor"],
+    },
+    {
+      commitBody: "[skip ci]",
+      description: "Grafana Dashboards",
+      ignoreTests: true,
+      matchDatasources: ["custom.grafana-dashboards"],
+      matchUpdateTypes: ["major"],
+    },
   ],
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}",
   rebaseWhen: "behind-base-branch",
@@ -62,6 +66,14 @@
         '# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)( versioning=(?<versioning>.+?))?( extractVersion=(?<extractVersion>.+?))?( registryUrl=(?<registryUrl>.+?))?\\s.*[=:]\\s*"?(?<currentValue>.+?)"?\\s',
       ],
       versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
+    },
+    {
+      datasourceTemplate: "custom.grafana-dashboards",
+      fileMatch: ["\\.md$"],
+      matchStrings: [
+        '#\\s+renovate:\\s+depName="(?<depName>.*)"\\n\\s+gnetId:\\s+(?<packageName>.*?)\\n\\s+revision:\\s+(?<currentValue>.*)',
+      ],
+      versioningTemplate: "regex:^(?<major>\\d+)$",
     },
   ],
   separateMinorPatch: true,
