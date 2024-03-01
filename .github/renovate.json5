@@ -42,6 +42,7 @@
       schedule: ["* * * * 0"],
     },
     {
+      automerge: true,
       commitBody: "[skip ci]",
       description: "Grafana Dashboards",
       ignoreTests: true,
@@ -49,6 +50,7 @@
       matchUpdateTypes: ["major"],
     },
     {
+      automerge: true,
       commitBody: "[skip ci]",
       description: "AutoMerge all for specific post",
       ignoreTests: true,
