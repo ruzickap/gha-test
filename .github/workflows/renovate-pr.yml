@@ -17,6 +17,7 @@ on:
           - trace
   push:
     branches:
+      - "*"
       - "!main"
       - "!renovate/*"
 env:
@@ -31,6 +32,10 @@ env:
   # https://docs.renovatebot.com/self-hosted-configuration/#dryrun
   # Run renovate in dry-run mode if executed in branches other than main - prevents versions in PRs/branches from being updated
   RENOVATE_DRY_RUN: "${{ inputs.dryRun }}"
+  # Revovate Config File
+  RENOVATE_CONFIG_FILE: ".github/renovate-pr.json5"
+  # Set the base branch
+  RENOVATE_BASE_BRANCHES: ${{ github.ref_name }}
   # Renovate Automerge
   RENOVATE_AUTOMERGE_TYPE: "branch"
   RENOVATE_AUTOMERGE: "true"
@@ -38,7 +43,7 @@ env:
 permissions: read-all
 
 jobs:
-  renovate:
+  renovate-pr:
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
@@ -59,11 +64,10 @@ jobs:
 
       - name: List all changed files
         run: |
-          echo "${{ steps.changed-files.outputs.all_changed_files }}"
+          set -euxo pipefail
+          echo "RENOVATE_INCLUDE_PATHS=${{ steps.changed-files.outputs.all_changed_files }}" | tee -a "${GITHUB_ENV}"
 
-      # - name: 💡 Self-hosted Renovate
-      #   uses: renovatebot/github-action@89bd050bafa5a15de5d9383e3129edf210422004 # v40.1.5
-      #   env:
-      #     RENOVATE_INCLUDE_PATHS: ${{ steps.changed-files.outputs.all_changed_files }}
-      #   with:
-      #     token: ${{ steps.app-token.outputs.token }}
+      - name: 💡 Self-hosted Renovate
+        uses: renovatebot/github-action@89bd050bafa5a15de5d9383e3129edf210422004 # v40.1.5
+        with:
+          token: ${{ steps.app-token.outputs.token }}
