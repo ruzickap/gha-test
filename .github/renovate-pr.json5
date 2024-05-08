@@ -1,6 +1,7 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   // Keep the extends started with ":" at the end of the list to allow overriding
+  branchPrefix: "renovate-pr/",
   extends: [
     "config:recommended",
     "docker:pinDigests",
@@ -16,30 +17,20 @@
     enabled: true,
   },
   labels: [
-    "renovate",
-    "renovate/{{replace '.*/' '' depName}}",
-    "renovate/{{updateType}}",
+    "renovate-pr",
+    "renovate-pr/{{replace '.*/' '' depName}}",
+    "renovate-pr/{{updateType}}",
   ],
   lockFileMaintenance: {
     enabled: true,
-    schedule: ["before 6am on Sunday"],
   },
   packageRules: [
     {
-      matchUpdateTypes: ["major"],
-      automerge: false,
-    },
-    {
-      description: "Ignore frequent renovate updates",
-      enabled: false,
-      matchPackageNames: ["renovatebot/github-action"],
-      matchUpdateTypes: ["patch"],
-    },
-    {
-      description: "Update renovatebot/github-action minor updates on Sundays",
-      matchPackageNames: ["renovatebot/github-action"],
-      matchUpdateTypes: ["minor"],
-      schedule: ["* * * * 0"],
+      automerge: true,
+      commitBody: "[skip ci]",
+      ignoreTests: true,
+      packagePatterns: ["*"],
+      // matchUpdateTypes: ["major", "minor", "patch"],
     },
   ],
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}",
