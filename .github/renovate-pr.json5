@@ -1,7 +1,14 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
-  // Keep the extends started with ":" at the end of the list to allow overriding
   branchPrefix: "renovate-pr/",
+  customDatasources: {
+    "grafana-dashboards": {
+      defaultRegistryUrlTemplate: "https://grafana.com/api/dashboards/{{packageName}}",
+      format: "json",
+      transformTemplates: ['{"releases":[{"version": $string(revision)}]}'],
+    },
+  },
+  // Keep the extends started with ":" at the end of the list to allow overriding
   extends: [
     "config:recommended",
     "docker:pinDigests",
@@ -13,30 +20,25 @@
     ":enableVulnerabilityAlertsWithLabel(security)",
     ":pinSkipCi",
   ],
-  "git-submodules": {
-    enabled: true,
-  },
+  // ignore chirpy dependencies
+  // https://renovatebot.com/docs/configuration-options/#ignoredeps
   labels: [
     "renovate-pr",
     "renovate-pr/{{replace '.*/' '' depName}}",
     "renovate-pr/{{updateType}}",
   ],
-  lockFileMaintenance: {
-    enabled: true,
-  },
   packageRules: [
     {
       automerge: true,
-      commitBody: "[skip ci]",
       ignoreTests: true,
-      packagePatterns: ["*"],
-      // matchUpdateTypes: ["major", "minor", "patch"],
+      matchPackagePatterns: ["*"],
     },
   ],
   prBodyTemplate: "{{{table}}}{{{notes}}}{{{changelogs}}}",
   rebaseWhen: "behind-base-branch",
-  regexManagers: [
+  customManagers: [
     {
+      customType: "regex",
       extractVersionTemplate: "{{#if extractVersion}}{{{extractVersion}}}{{else}}^v?(?<version>.+)${{/if}}",
       fileMatch: ["\\.ya?ml$", "\\.md$", "^Dockerfile$", "^entrypoint\\.sh$"],
       matchStrings: [
@@ -44,6 +46,24 @@
       ],
       versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
     },
+    {
+      customType: "regex",
+      datasourceTemplate: "custom.grafana-dashboards",
+      fileMatch: ["\\.md$"],
+      matchStrings: [
+        '# renovate: depName="(?<depName>.*)"\\n\\s+gnetId:\\s+(?<packageName>.*?)\\n\\s+revision:\\s+(?<currentValue>.*)',
+      ],
+      versioningTemplate: "regex:^(?<major>\\d+)$",
+    },
+    {
+      currentValueTemplate: "main",
+      customType: "regex",
+      datasourceTemplate: "git-refs",
+      fileMatch: ["\\.md$"],
+      matchStrings: [
+        "https://raw.githubusercontent.com/(?<depName>[^\\/]+/[^\\/]+)/(?<currentDigest>[^\\/]+)/",
+      ],
+      versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
+    },
   ],
-  separateMinorPatch: true,
 }
