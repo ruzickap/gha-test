@@ -35,7 +35,7 @@ jobs:
           https://slack.com/api/chat.postMessage | tee -a output.json
           jq -r '.ts' < output.json > slack-message-timestamp.txt
       - name: Cache slack message timestamp
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3
         with:
           path: slack-message-timestamp.txt
           key: ${{ github.event.pull_request.html_url }}
@@ -61,7 +61,7 @@ jobs:
             fi
           fi
       - name: Read slack message timestamp from cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3
         with:
           path: slack-message-timestamp.txt
           key: ${{ github.event.pull_request.html_url }}
