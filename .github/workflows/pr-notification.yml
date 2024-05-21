@@ -13,6 +13,9 @@ on:
     types:
       - submitted
 
+env:
+  SLACK_CHANNEL: github-notifications
+
 permissions: read-all
 
 jobs:
@@ -28,7 +31,7 @@ jobs:
           # checkov:skip=CKV_GHA_3
           curl -X POST -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
           -H "Content-type: application/json; charset=utf-8" \
-          --data '{"channel":"CHANNEL","text":"${{env.SLACK_MESSAGE}}"}' \
+          --data '{"channel":"${{env.SLACK_CHANNEL}}","text":"${{env.SLACK_MESSAGE}}"}' \
           https://slack.com/api/chat.postMessage | tee -a output.json
           jq -r '.ts' < output.json > slack-message-timestamp.txt
       - name: Cache slack message timestamp
@@ -70,5 +73,5 @@ jobs:
           # checkov:skip=CKV_GHA_3
           curl -X POST -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
           -H "Content-type: application/json; charset=utf-8" \
-          --data "{\"channel\":\"CHANNEL\",\"timestamp\":\"${SLACK_TIMESTAMP}\",\"name\":\"${{ env.EMOJI }}\"}" \
+          --data "{\"channel\":\"${{env.SLACK_CHANNEL}}\",\"timestamp\":\"${SLACK_TIMESTAMP}\",\"name\":\"${{ env.EMOJI }}\"}" \
           https://slack.com/api/reactions.add
