@@ -71,7 +71,8 @@ jobs:
           echo "${{ env.EMOJI }} -> ${SLACK_TIMESTAMP}"
 
           # checkov:skip=CKV_GHA_3
+          set -x
           curl -X POST -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
           -H "Content-type: application/json; charset=utf-8" \
-          --data "{\"channel\":\"${{env.SLACK_CHANNEL}}\",\"timestamp\":\"${SLACK_TIMESTAMP}\",\"name\":\"${{ env.EMOJI }}\"}" \
+          --data "{\"channel\":\"${{ env.SLACK_CHANNEL }}\",\"timestamp\":\"${SLACK_TIMESTAMP}\",\"name\":\"${{ env.EMOJI }}\"}" \
           https://slack.com/api/reactions.add
