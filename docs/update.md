@@ -5,7 +5,7 @@ AmazonLinux-2023:
 
 ```bash
 # renovate: currentValue=master
-wget --continue -q -P "${TMP_DIR}" https://raw.githubusercontent.com/aws-samples/aws-codebuild-samples/ad3a6f2798ad1b55dc417a7424cc6497c2817477/ci_tools/vpc_cloudformation_template.yml
+wget --continue -q -P "${TMP_DIR}" https://raw.githubusercontent.com/aws-samples/aws-codebuild-samples/00284b828a360aa89ac635a44d84c5a748af03d3/ci_tools/vpc_cloudformation_template.yml
 # renovate:
 wget --continue -q -P "${TMP_DIR}" https://raw.githubusercontent.com/aws-samples/amazon-ec2-nice-dcv-samples/3cb54467cf4c58bace2f949a704871f9bc0e5af5/cfn/KaliLinux-NICE-DCV.yaml
 # renovate: currentValue=main
