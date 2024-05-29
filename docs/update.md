@@ -9,7 +9,7 @@ wget --continue -q -P "${TMP_DIR}" https://raw.githubusercontent.com/aws-samples
 # renovate:
 wget --continue -q -P "${TMP_DIR}" https://raw.githubusercontent.com/aws-samples/amazon-ec2-nice-dcv-samples/3cb54467cf4c58bace2f949a704871f9bc0e5af5/cfn/KaliLinux-NICE-DCV.yaml
 # renovate: currentValue=main
-wget --continue -q -P "${TMP_DIR}" https://raw.githubusercontent.com/aws-samples/ec2-lamp-server/c2b64d97229a223dd5f5f38fd3f9660a8011f050/UbuntuLinux-2204-LAMP-server.yaml
+wget --continue -q -P "${TMP_DIR}" https://raw.githubusercontent.com/aws-samples/ec2-lamp-server/c0ec2481d4995771422304b05b7b90bd701052f2/UbuntuLinux-2204-LAMP-server.yaml
 # renovate:
-wget --continue -q -P "${TMP_DIR}" https://raw.githubusercontent.com/aws-samples/ec2-lamp-server/cad9ad9a52f8346d80281186c8e301a69835ffbd/AmazonLinux-2023-LAMP-server.yaml
+wget --continue -q -P "${TMP_DIR}" https://raw.githubusercontent.com/aws-samples/ec2-lamp-server/c0ec2481d4995771422304b05b7b90bd701052f2/AmazonLinux-2023-LAMP-server.yaml
 ```
