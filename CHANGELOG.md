@@ -1,5 +1,42 @@
 # Changelog
 
+## [1.7.0](https://github.com/ruzickap/gha-test/compare/v1.6.0...v1.7.0) (2024-11-10)
+
+
+### Features
+
+* **code:** cleanup + update ([#163](https://github.com/ruzickap/gha-test/issues/163)) ([d2b775d](https://github.com/ruzickap/gha-test/commit/d2b775daa16b5fbfc8433a55449b872d33fef770))
+* **code:** remove package.json ([859545d](https://github.com/ruzickap/gha-test/commit/859545ddd913a3e06ab66bd7acac379b94802cf6))
+* **dockerfile:** add dockerfile and renovate config ([219c1f7](https://github.com/ruzickap/gha-test/commit/219c1f722389bd128f982180880c1ebe9eb0a674))
+* **gha:** Add GitHub repo files ([#121](https://github.com/ruzickap/gha-test/issues/121)) ([1c4570f](https://github.com/ruzickap/gha-test/commit/1c4570fdd70814ea8124eba2d5980e60dc6a8085))
+* **gha:** add links to test lychee ([3d8ae9b](https://github.com/ruzickap/gha-test/commit/3d8ae9bcf5acfb0f5f9c2edef3fe9274571cb100))
+* **gha:** add mega-linter pull_request ([8b58d4e](https://github.com/ruzickap/gha-test/commit/8b58d4e28f3e66e68b4a5d676cee66a2222534fc))
+* **gha:** add pr-notification ([#161](https://github.com/ruzickap/gha-test/issues/161)) ([431c1b8](https://github.com/ruzickap/gha-test/commit/431c1b8a90e17d151f6e5971efb56a0d1e32a15d))
+* **gha:** add renovate-pr ([#157](https://github.com/ruzickap/gha-test/issues/157)) ([dd67907](https://github.com/ruzickap/gha-test/commit/dd67907d409de27637b945eed21655c86b7dc4af))
+* **gha:** add test to validate bug - link checker ([9e7a42d](https://github.com/ruzickap/gha-test/commit/9e7a42d5f3193b76aafde211c1f812ea047da5fc))
+* **gh:** add default GitHub repo files ([#147](https://github.com/ruzickap/gha-test/issues/147)) ([0c7dcd8](https://github.com/ruzickap/gha-test/commit/0c7dcd82b9335005a5ee331879337d4fb4a8a2f1))
+* **gh:** add default GitHub repo files ([#149](https://github.com/ruzickap/gha-test/issues/149)) ([9a96caf](https://github.com/ruzickap/gha-test/commit/9a96caf826e2faf0ae81d8ed8e9498fc1e415b93))
+* **gh:** add default GitHub repo files ([#150](https://github.com/ruzickap/gha-test/issues/150)) ([a2a436e](https://github.com/ruzickap/gha-test/commit/a2a436e333fe15ecafc44e115938ea0ba8f3e583))
+* **gh:** add default GitHub repo files ([#151](https://github.com/ruzickap/gha-test/issues/151)) ([c893980](https://github.com/ruzickap/gha-test/commit/c893980154d06030ea7dad9a083c552cbd049425))
+* **gha:** improve checkov and separate the config ([#148](https://github.com/ruzickap/gha-test/issues/148)) ([a059a62](https://github.com/ruzickap/gha-test/commit/a059a62b5827778959e45a2dc9800ad80852e0fa))
+* **gha:** update GitHub Actions ([#158](https://github.com/ruzickap/gha-test/issues/158)) ([106e156](https://github.com/ruzickap/gha-test/commit/106e156bd493e9207010c802d80bb6ed58f62f91))
+* **gha:** update renovate-pr ([#164](https://github.com/ruzickap/gha-test/issues/164)) ([8a15f19](https://github.com/ruzickap/gha-test/commit/8a15f19dd19a1a5195e0e2c9585adee62346dd17))
+* **latex:** remove all latex test code ([97b9598](https://github.com/ruzickap/gha-test/commit/97b9598356cea75d57773a1ec606027543c48ee8))
+* **npm:** add npm files ([0db04c6](https://github.com/ruzickap/gha-test/commit/0db04c6597f2bc94af743749c4480bf3a2a903a4))
+* **renovate:** test file updates ([85925d4](https://github.com/ruzickap/gha-test/commit/85925d4ed41b5b7f05c76cf5ddbfe60bd080a8db))
+* **renovate:** test renovate updates in different directories ([225852b](https://github.com/ruzickap/gha-test/commit/225852bdfd33da4c3abf11d4f16e50898326e4c3))
+* **renovate:** test updates per file ([480db62](https://github.com/ruzickap/gha-test/commit/480db62a10c82ad1448187c89fe1d1556ec749c2))
+
+
+### Bug Fixes
+
+* **deps:** pin dependencies ([f5fbea2](https://github.com/ruzickap/gha-test/commit/f5fbea273d49292f6d26fd0ea1f5af3282dd9ba7))
+* **dockerfile:** remove dockerfile ([39d9354](https://github.com/ruzickap/gha-test/commit/39d93548f8cbe1a0db29e3a957fe455f9049856b))
+* **gha:** disable kics issue in Dockerfile ([1ec1c12](https://github.com/ruzickap/gha-test/commit/1ec1c127dec6f264ac80a4d31ebf0f0ba2cdb70d))
+* **renovate:** disable DependencyDashboard ([26d81aa](https://github.com/ruzickap/gha-test/commit/26d81aa7ddab7c36aaee9e2f882db723954eca28))
+* **renovate:** fix automerge ([3251ba6](https://github.com/ruzickap/gha-test/commit/3251ba61d25da3b2c2be9b5a77c1e8de5dafc2d1))
+* **renovate:** remove test files ([fbbb3aa](https://github.com/ruzickap/gha-test/commit/fbbb3aaad2f09446e01dafe07210625a96107b10))
+
 ## [1.6.0](https://github.com/ruzickap/gha-test/compare/v1.5.1...v1.6.0) (2024-01-29)
 
 
