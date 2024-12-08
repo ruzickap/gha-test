@@ -54,3 +54,21 @@ jobs:
           free -h
           grep -Ewo 'vmx|lm|aes' /proc/cpuinfo  | sort | uniq | sed -e 's/aes/Hardware encryption=Yes (&)/g' -e 's/lm/64 bit cpu=Yes (&)/g' -e 's/vmx/Intel hardware virtualization=Yes (&)/g'
           lshw
+
+  ubuntu-colors:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install kubecolor
+        run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          set -x
+          brew install kubecolor
+          export KUBECOLOR_FORCE_COLORS=256
+          /home/linuxbrew/.linuxbrew/bin/kubecolor version --client=true
+          kubecolor version --client=true
+          if true ; then
+            kubectl() { kubecolor "$@"; }
+            kubectl version --client=true
+          fi
+          echo "*** Last" ; sleep 1;
+          kubectl version --client=true
