@@ -46,6 +46,7 @@ permissions: read-all
 jobs:
   renovate-pr:
     runs-on: ubuntu-latest
+    # if: contains(github.event.pull_request.labels.*.name, 'renovate-pr')
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     permissions: write-all
