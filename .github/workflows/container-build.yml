@@ -8,27 +8,25 @@ on:
         type: boolean
         required: false
         default: false
-      container_image_skip_vulnerability_checks:
-        description: "Skip image (vulnerability) scanner"
-        type: boolean
+      container_image_skip_vulnerability_scanners:
+        description: "Skip image (vulnerability) scanner(s) - trivy|grype"
+        type: string
         required: false
-        default: false
       container_image_expires_after:
         description: "Expires after (days) [or 'Never']"
         type: string
         required: false
-        default: "30"
-      push_to_ghcr:
-        description: "If 'Push the image to Container Registry' is enabled - push image to ghcr.io too"
-        type: boolean
-        required: false
-        default: true
-  # push:
-  #   tags:
-  #     # For code tagging use 'v' prefix, but 'v' prefix should not be part of container tag
-  #     - "v[0-9]+.[0-9]+.[0-9]+*"
-#  schedule:
-#    - cron: "0 0 * * 1"
+        default: "1"
+        # default: "Never"
+  push:
+    tags:
+      # For code tagging use 'v' prefix, but 'v' prefix should not be part of container tag
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+    paths:
+      - Dockerfile
+      - .github/workflows/container-build.yml
+  schedule:
+    - cron: "0 0 * * 0"
 
 permissions:
   actions: read
@@ -36,90 +34,306 @@ permissions:
   id-token: write
   packages: write
 
+env:
+  # container_image: quay.io/petr_ruzicka/malware-cryptominer-container
+  container_image_repository_url: https://quay.io/repository/petr_ruzicka/malware-cryptominer-container?tab=tags
+  container_image_dockerfile_location: Dockerfile
+  container_image_platforms: linux/amd64,linux/arm64,linux/arm/v7
+  container_image_logo_url: https://raw.githubusercontent.com/MISP/intelligence-icons/513abc840b7ac92e4f8a4a7ecab2964007bf25f5/svg/threat_actor.svg
+  # container_image_tag_suffix: ${{ matrix.container_image_tag_suffix }}
+  # # The following variables can not be easily taken to `env` variables, because it is not supported :-(
+  # container_image_destination: ${{ matrix.container_image }}
+  container_image_vendor: MyCompany
+  container_image_authors: petr.ruzicka@gmail.com
+  container_image_category: security
+  container_image_authors_name: Petr Ruzicka
+  container_image_expires_after: ${{ inputs.container_image_expires_after || 'Never' }} # days
+  # # https://github.com/actions/runner/issues/1483 (there are no "inputs" when not running using 'workflow_dispatch')
+  # DEL: container_image_skip_vulnerability_scanners: ${{ inputs.container_image_skip_vulnerability_scanners }}
+  container_registry_push_image: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || inputs.container_registry_push }}
+  # push_to_ghcr: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || ( inputs.container_registry_push && inputs.push_to_ghcr ) }}
+  # container_registry_user: ${{ secrets.CONTAINER_REGISTRY_USER }}
+  # container_registry_password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+  container_registries: |
+    - registry: ghcr.io
+      image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
+    - registry: quay.io
+      image_name: quay.io/petr_ruzicka/malware-cryptominer-container
+      username: ${{ secrets.container_registry_user }}
+      password: ${{ secrets.container_registry_password }}
+
 jobs:
-  container-build-pipeline:
-    name: "💡 ${{ matrix.container_image_dockerfile_location }}"
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # Contains several vulnerabilities
-          - container_image: quay.io/petr_ruzicka/myc-hello-kubernetes-test
-            container_image_repository_url: https://quay.io/repository/petr_ruzicka/myc-hello-kubernetes-test?tab=tags
-            container_image_dockerfile_location: src/app/Dockerfile
-            # This is the "default Dockerfile", which will create tags without any suffix (like 'latest')
-            container_image_tag_suffix: ""
-            container_image_platforms: linux/amd64,linux/arm64,linux/arm/v7
-            container_image_logo_url: https://raw.githubusercontent.com/cncf/artwork/40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/icon/color/kubernetes-icon-color.svg
+  # temporary-container-build:
+  #   name: "💡 Build Temporary Container Image (${{ env.container_image_dockerfile_location }})"
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     container_image_temporary_metadata: ${{ steps.build-push-action-temporary-container-registry.outputs.metadata }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
 
-          - container_image: quay.io/petr_ruzicka/myc-hello-kubernetes-test
-            container_image_repository_url: https://quay.io/repository/petr_ruzicka/myc-hello-kubernetes-test?tab=tags
-            container_image_dockerfile_location: src/app/Dockerfile-node-18-alpine
-            container_image_tag_suffix: "-alpine"
-            container_image_platforms: linux/amd64,linux/arm64,linux/arm/v7
-            container_image_logo_url: https://raw.githubusercontent.com/cncf/artwork/40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/icon/color/kubernetes-icon-color.svg
+  #     - name: Check if the tag exists in registry
+  #       if: ${{ startsWith(github.ref, 'refs/tags/') }}
+  #       run: |
+  #         set -euxo pipefail
+  #         CONTAINER_IMAGE_TAG=$(echo "${{ github.ref_name }}${{ inputs.container_image_tag_suffix }}" | sed 's/^v//')
+  #         # Check if the tag exists in registry - if yes - skip build
+  #         if docker manifest inspect "${{ inputs.container_image_destination }}:${CONTAINER_IMAGE_TAG}" ; then
+  #           echo "*** Container tag \"${{ inputs.container_image_destination }}:${CONTAINER_IMAGE_TAG}\" already exists !!!"
+  #           exit 1
+  #         else
+  #           echo "*** Container tag \"${{ inputs.container_image_destination }}:${CONTAINER_IMAGE_TAG}\" doesn't exist..."
+  #         fi
 
-          # "only" Grype finds some critical vulnerabilities
-          - container_image: quay.io/petr_ruzicka/myc-hello-kubernetes-test
-            container_image_repository_url: https://quay.io/repository/petr_ruzicka/myc-hello-kubernetes-test?tab=tags
-            container_image_dockerfile_location: src/app/Dockerfile-node-18-debian-slim
-            container_image_tag_suffix: "-debian-slim"
-            container_image_platforms: linux/amd64,linux/arm64,linux/arm/v7
-            container_image_logo_url: https://raw.githubusercontent.com/cncf/artwork/40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/icon/color/kubernetes-icon-color.svg
+  #     - name: Set GitHub variable - container_image_docker_build_directory
+  #       id: container_image_docker_build_directory
+  #       run: |
+  #         set -euxo pipefail
+  #         echo "CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY=$(dirname "${{ inputs.container_image_dockerfile_location }}")" | tee -a "${GITHUB_OUTPUT}"
 
-          - container_image: quay.io/petr_ruzicka/myc-hello-kubernetes-test
-            container_image_repository_url: https://quay.io/repository/petr_ruzicka/myc-hello-kubernetes-test?tab=tags
-            container_image_dockerfile_location: src/app/Dockerfile-nodejs-16-ubi
-            container_image_tag_suffix: "-ubi"
-            container_image_platforms: linux/amd64,linux/arm64
-            container_image_logo_url: https://raw.githubusercontent.com/cncf/artwork/40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/icon/color/kubernetes-icon-color.svg
+  #     - name: Build temporary container image
+  #       uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6.9.0
+  #       id: build-push-action-temporary-container-registry
+  #       with:
+  #         file: ${{ inputs.container_image_dockerfile_location }}
+  #         context: ${{ steps.container_image_docker_build_directory.outputs.CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY }}
+  #         load: true
+  #         tags: temporary_container-${{ github.run_id }}:latest
 
-          - container_image: quay.io/petr_ruzicka/myc-hello-kubernetes-test
-            container_image_repository_url: https://quay.io/repository/petr_ruzicka/myc-hello-kubernetes-test?tab=tags
-            container_image_dockerfile_location: src/app/Dockerfile-nodejs18-distroless
-            container_image_tag_suffix: "-distroless"
-            container_image_platforms: linux/amd64
-            container_image_logo_url: https://raw.githubusercontent.com/cncf/artwork/40e2e8948509b40e4bad479446aaec18d6273bf2/projects/kubernetes/icon/color/kubernetes-icon-color.svg
+  #     #########################
+  #     # Trivy Scanner
+  #     #########################
 
-          - container_image: quay.io/petr_ruzicka/malware-cryptominer-container-test
-            container_image_repository_url: https://quay.io/repository/petr_ruzicka/malware-cryptominer-container-test?tab=tags
-            container_image_dockerfile_location: src/malware-cryptominer-container/Dockerfile
-            container_image_tag_suffix: ""
-            container_image_platforms: linux/amd64,linux/arm64,linux/arm/v7
-            container_image_logo_url: https://raw.githubusercontent.com/MISP/intelligence-icons/513abc840b7ac92e4f8a4a7ecab2964007bf25f5/svg/threat_actor.svg
+  #     - name: Trivy - scan container image
+  #       uses: aquasecurity/trivy-action@master
+  #       if: ${{ always() && steps.build-push-action-temporary-container-registry.outcome == 'success' && ! contains(env.container_image_skip_vulnerability_scanners, 'trivy') }}
+  #       with:
+  #         image-ref: temporary_container-${{ github.run_id }}:latest
+  #         exit-code: 1
+  #         ignore-unfixed: true
+  #         severity: CRITICAL
 
-    uses: ./.github/workflows/container-build-reusable-workflow.yml
-    permissions:
-      actions: read
-      contents: write
-      id-token: write
-      packages: write
-    with:
-      container_image_dockerfile_location: ${{ matrix.container_image_dockerfile_location }}
-      container_image_tag_suffix: ${{ matrix.container_image_tag_suffix }}
-      # The following variables can not be easily taken to `env` variables, because it is not supported :-(
-      container_image_destination: ${{ matrix.container_image }}
-      container_image_platforms: ${{ matrix.container_image_platforms }}
-      container_image_product_id: 12345
-      container_image_vendor: MyCompany
-      container_image_authors: petr.ruzicka@gmail.com
-      container_image_authors_name: Petr Ruzicka
-      container_image_logo_url: ${{ matrix.container_image_logo_url }}
-      container_image_repository_url: ${{ matrix.container_image_repository_url }}
-      container_image_expires_after: ${{ inputs.container_image_expires_after || '300' }} # days
-      # https://github.com/actions/runner/issues/1483 (there are no "inputs" when not running using 'workflow_dispatch')
-      container_image_skip_vulnerability_checks: ${{ inputs.container_image_skip_vulnerability_checks == true && true || false }}
-      container_registry_push: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || inputs.container_registry_push }}
-      push_to_ghcr: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || ( inputs.container_registry_push && inputs.push_to_ghcr ) }}
-    secrets:
-      container_registry_user: ${{ secrets.CONTAINER_REGISTRY_USER }}
-      container_registry_password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
-      # Prisma Cloud credentials (optional)
-      pcc_console_url: ${{ secrets.PCC_CONSOLE_URL }}
-      pcc_pass: ${{ secrets.PCC_PASS }}
-      pcc_user: ${{ secrets.PCC_USER }}
-      # Snyk credentials (optional)
-      snyk_token: ${{ secrets.SNYK_TOKEN }}
-      # Wiz credentials (optional)
-      wiz_client_id: ${{ secrets.WIZ_CLIENT_ID }}
-      wiz_client_secret: ${{ secrets.WIZ_CLIENT_SECRET }}
+  #     #########################
+  #     # Anchore - Grype
+  #     #########################
+
+  #     - name: Grype - scan container image
+  #       uses: anchore/scan-action@64a33b277ea7a1215a3c142735a1091341939ff5 # v4.1.2
+  #       # Continue whenever container was built (no matter if previous scanner failed)
+  #       if: ${{ always() && steps.build-push-action-temporary-container-registry.outcome == 'success' && ! contains(env.container_image_skip_vulnerability_scanners, 'grype')}}
+  #       with:
+  #         image: temporary_container-${{ github.run_id }}:latest
+  #         severity-cutoff: critical
+  #         output-format: table
+
+
+  container-build:
+    runs-on: ubuntu-latest
+    # if: ${{ env.container_registry_push_image == 'true' }}
+  #   needs: temporary-container-build
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+
+      # There is no way how to use docker/login-action for multiple registries in the same job - so we have to do it using "docker login"
+      - name: Login to docker + set variables
+        id: variables
+        env:
+          CONTAINER_REGISTRIES: ${{ env.container_registries }}
+          CONTAINER_IMAGE_EXPIRES_AFTER: ${{ env.container_image_expires_after }}
+          CONTAINER_IMAGE_DOCKERFILE_LOCATION: ${{ env.container_image_dockerfile_location }}
+        run: |
+          set -euxo pipefail
+          readarray CONTAINER_REGISTRIES_ARRAY < <(echo "${CONTAINER_REGISTRIES}" | yq e -o=j -I=0 '.[]')
+          for CONTAINER_REGISTRY in "${CONTAINER_REGISTRIES_ARRAY[@]}"; do
+            REGISTRY=$(echo "${CONTAINER_REGISTRY}" | jq -r '.registry')
+            USERNAME=$(echo "${CONTAINER_REGISTRY}" | jq -r '.username')
+            PASSWORD=$(echo "${CONTAINER_REGISTRY}" | jq -r '.password')
+            echo "${PASSWORD}" | docker login "${REGISTRY}" --username "${USERNAME}" --password-stdin
+          done
+
+          DOCKER_METADATA_IMAGES_NAMES=$(echo "${CONTAINER_REGISTRIES}" | yq e -o=j -I=0 -r '"name=" + .[].image_name')
+          echo "DOCKER_METADATA_IMAGES_NAMES<<EOF"$'\n'"${DOCKER_METADATA_IMAGES_NAMES}"$'\n'EOF | tee -a "$GITHUB_OUTPUT"
+
+          DOCKER_METADATA_ALTERNATIVE_LOCATIONS=$(echo "${CONTAINER_REGISTRIES}" | yq e '[.[].image_name] | join(",")')
+          echo "DOCKER_METADATA_ALTERNATIVE_LOCATIONS=\"${DOCKER_METADATA_ALTERNATIVE_LOCATIONS}\"" | tee -a "${GITHUB_OUTPUT}"
+
+          echo '${{ toJSON(github.event.repository.topics) }}' | jq -r '. | join(",") | "GITHUB_REPOSITORY_TOPICS=\(.)"' | tee -a "${GITHUB_OUTPUT}"
+
+          # Set variables for com.mycompany.image.expires.after and com.mycompany.image.expires
+          if [[ "${CONTAINER_IMAGE_EXPIRES_AFTER}" = "Never" ]]; then
+            echo "CONTAINER_IMAGE_EXPIRES_AFTER=Never" | tee -a "${GITHUB_OUTPUT}"
+          else
+            echo "CONTAINER_IMAGE_EXPIRES_AFTER=${CONTAINER_IMAGE_EXPIRES_AFTER}d" | tee -a "${GITHUB_OUTPUT}"
+          fi
+
+          echo "CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY=$(dirname "${CONTAINER_IMAGE_DOCKERFILE_LOCATION}")" | tee -a "${GITHUB_OUTPUT}"
+
+  #     - name: Set GitHub variables
+  #       id: variables
+  #       env:
+  #         CONTAINER_IMAGE_DESTINATION: ${{ inputs.container_image_destination }}
+  #         CONTAINER_IMAGE_EXPIRES_AFTER: ${{ inputs.container_image_expires_after }}
+  #       run: |
+  #         set -euxo pipefail
+  #         echo "${CONTAINER_IMAGE_DESTINATION}" | awk -F / '{print "CONTAINER_REGISTRY="$1}' | tee -a "${GITHUB_OUTPUT}"
+  #         echo "CONTAINER_IMAGE_NAME=$(basename "${CONTAINER_IMAGE_DESTINATION}")" | tee -a "${GITHUB_OUTPUT}"
+  #         echo "CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY=$(dirname "${{ inputs.container_image_dockerfile_location }}")" | tee -a "${GITHUB_OUTPUT}"
+  #         # Get details about baqse image form the temporarily built container
+  #         echo '${{ needs.temporary-container-build.outputs.container_image_temporary_metadata }}' | jq -r '."containerimage.buildinfo".sources[-1].ref | "CONTAINER_IMAGE_BASE_IMAGE=\(.)"' | tee -a "${GITHUB_OUTPUT}"
+  #         echo '${{ needs.temporary-container-build.outputs.container_image_temporary_metadata }}' | jq -r '."containerimage.buildinfo".sources[-1].pin | "CONTAINER_IMAGE_BASE_IMAGE_DIGEST=\(.)"' | tee -a "${GITHUB_OUTPUT}"
+
+
+  #     - name: Login to container registry - ${{ steps.variables.outputs.CONTAINER_REGISTRY }}
+  #       uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+  #       with:
+  #         registry: ${{ steps.variables.outputs.CONTAINER_REGISTRY }}
+  #         username: ${{ secrets.container_registry_user }}
+  #         password: ${{ secrets.container_registry_password }}
+
+  #     - name: Login to container registry - ghcr.io
+  #       if: ${{ inputs.push_to_ghcr }}
+  #       uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@988b5a0280414f521da01fcc63a27aeeb4b104db # v3.6.1
+        with:
+          driver-opts: network=host
+
+      - name: Docker metadata
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
+        id: docker_meta
+        with:
+          images: |
+            ${{ steps.variables.outputs.DOCKER_METADATA_IMAGES_NAMES }}
+          tags: |
+            # Whever the pipeline runs form "main" - use "latest" container tag
+            type=raw,value=latest,enable={{is_default_branch}}
+            # When the pipeline is not executed form 'main' branch use "br-<mybranch>" tag
+            type=ref,prefix=br-,event=branch,enable=${{ github.ref_name != github.event.repository.default_branch }}
+            type=semver,pattern={{version}},event=tag
+            type=semver,pattern={{major}}.{{minor}},event=tag
+            type=semver,pattern={{major}},event=tag,enable=${{ !startsWith(github.ref, 'refs/tags/v0.') }}
+          labels: |
+            ## https://artifacthub.io/docs/topics/repositories/container-images/
+            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/README.md
+            # org.opencontainers.image.created - it is there by default
+            # org.opencontainers.image.description - it is there by default (repository description)
+            org.opencontainers.image.documentation=${{ github.event.repository.html_url }}/blob/${{ github.sha }}/README.md
+            # org.opencontainers.image.source - it is there by default
+            # org.opencontainers.image.title - it is there by default
+            # org.opencontainers.image.url - it is there by default
+            org.opencontainers.image.vendor=${{ env.container_image_vendor }}
+            # org.opencontainers.image.version - it is there by default
+            io.artifacthub.package.alternative-locations=${{ steps.variables.outputs.CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS }}
+            io.artifacthub.package.category=${{ env.container_image_category }}
+            io.artifacthub.package.keywords=${{ steps.variables.outputs.GITHUB_REPOSITORY_TOPICS }}
+            io.artifacthub.package.license=${{ github.event.repository.license.spdx_id }}
+            io.artifacthub.package.logo-url=${{ env.container_image_logo_url || 'https://raw.githubusercontent.com/kubernetes/community/487f994c013ea61d92cf9a341af7620037abbce3/icons/svg/resources/unlabeled/pod.svg' }}
+            io.artifacthub.package.maintainers=[{"name":"${{ env.container_image_authors_name }}","email":"${{ env.container_image_authors }}"}]
+
+            ## https://specs.opencontainers.org/image-spec/annotations/?v=v1.0.1#pre-defined-annotation-keys
+            # org.opencontainers.image.created - it is there by default
+            org.opencontainers.image.authors=${{ env.container_image_authors }}
+            # org.opencontainers.image.url - it is there by default
+            # org.opencontainers.image.documentation - already set
+            # org.opencontainers.image.source - it is there by default
+            # org.opencontainers.image.version - it is there by default
+            # org.opencontainers.image.revision - it is there by default
+            # org.opencontainers.image.vendor - already set
+            # org.opencontainers.image.licenses - it is there by default
+            org.opencontainers.image.ref.name=${{ github.ref_name }}
+            # org.opencontainers.image.title - it is there by default
+            # org.opencontainers.image.description - it is there by default (repository description)
+            quay.expires-after=${{ steps.variables.outputs.CONTAINER_IMAGE_EXPIRES_AFTER }}
+
+      - name: Build and export to Docker
+        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6.9.0
+        with:
+          file: ${{ env.container_image_dockerfile_location }}
+          context: ${{ steps.variables.outputs.CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY }}
+          push: true
+          platforms: ${{ env.container_image_platforms }}
+          provenance: true
+          sbom: true
+          tags: localhost:5000/name/container-image:latest
+          labels: ${{ steps.docker_meta.outputs.labels }}
+
+      - name: Docker images
+        run: |
+          set -euxo pipefail
+          echo "${{ steps.docker_meta.outputs.json }} | jq"
+          echo "${{ steps.docker_meta.outputs.json.tags[0] }}"
+
+      - name: Trivy - scan container image
+        uses: aquasecurity/trivy-action@0.28.0
+        if: ${{ steps.build-push-action-container-registry.outcome == 'success' && ! contains(inputs.container_image_skip_vulnerability_scanners, 'trivy') }}
+        with:
+          image-ref: localhost:5000/name/container-image:latest
+          exit-code: 1
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+
+      - name: Grype - scan container image
+        uses: anchore/scan-action@64a33b277ea7a1215a3c142735a1091341939ff5 # v4.1.2
+        if: ${{ steps.build-push-action-container-registry.outcome == 'success' && ! contains(inputs.container_image_skip_vulnerability_scanners, 'grype')}}
+        with:
+          image: localhost:5000/name/container-image:latest
+          severity-cutoff: critical
+          output-format: table
+
+
+      # - name: Docker build and push
+      #   uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6.9.0
+      #   id: build-push-action-container-registry
+      #   with:
+      #     file: ${{ env.container_image_dockerfile_location }}
+      #     context: ${{ steps.variables.outputs.CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY }}
+      #     push: false
+      #     platforms: ${{ env.container_image_platforms }}
+      #     provenance: true
+      #     sbom: true
+      #     tags: ${{ steps.docker_meta.outputs.tags }}
+      #     labels: ${{ steps.docker_meta.outputs.labels }}
+
+  # https://github.com/nvtkaszpir/prusa-connect-camera-script/blob/77975e367ba538d8fd8039260ff4aeeef47470cd/Dockerfile.arm64#L3C1-L5C34
+  # crane mutate --annotation "..." "$image"
+  #            # org.opencontainers.image.base.digest=${{ steps.variables.outputs.CONTAINER_IMAGE_BASE_IMAGE_DIGEST }}
+  #            # org.opencontainers.image.base.name=${{ steps.variables.outputs.CONTAINER_IMAGE_BASE_IMAGE }}
+
+  # create-release:
+  #   runs-on: ubuntu-latest
+  #   if: ${{ startsWith(github.ref, 'refs/tags/') }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+  #     - name: Create Release
+  #       env:
+  #         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       run: |
+  #         set -euxo pipefail
+  #         gh release create ${{ github.ref_name }} --generate-notes
+
+      - name: Remove docker credentials
+        if: always()
+        env:
+          CONTAINER_REGISTRIES: ${{ env.container_registries }}
+        run: |
+          set -euxo pipefail
+          readarray CONTAINER_REGISTRIES_ARRAY < <(echo "${CONTAINER_REGISTRIES}" | yq e -o=j -I=0 '.[]')
+          for CONTAINER_REGISTRY in "${CONTAINER_REGISTRIES_ARRAY[@]}"; do
+            REGISTRY=$(echo "${CONTAINER_REGISTRY}" | jq -r '.registry')
+            docker logout "${REGISTRY}"
+          done
