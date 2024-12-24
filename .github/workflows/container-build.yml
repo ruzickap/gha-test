@@ -286,7 +286,7 @@ jobs:
           severity: CRITICAL,HIGH
 
       - name: Grype - scan container image
-        uses: anchore/scan-action@64a33b277ea7a1215a3c142735a1091341939ff5 # v4.1.2
+        uses: anchore/scan-action@abae793926ec39a78ab18002bc7fc45bbbd94342 # v6.0.0
         if: ${{ steps.build-push-action-container-registry.outcome == 'success' && ! contains(inputs.container_image_skip_vulnerability_scanners, 'grype')}}
         with:
           image: localhost:5000/name/container-image:latest
