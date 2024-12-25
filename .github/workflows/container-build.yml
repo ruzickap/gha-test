@@ -74,6 +74,10 @@ env:
       image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container-test
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
+    - registry: c8n.io
+      image_name: c8n.io/ruzickap-github/malware-cryptominer-container-test
+      username: ${{ secrets.C8N_CONTAINER_REGISTRY_USER }}
+      password: ${{ secrets.C8N_CONTAINER_REGISTRY_PASSWORD }}
 
 jobs:
   container-build:
