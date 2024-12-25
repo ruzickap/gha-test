@@ -1,5 +1,5 @@
 # https://www.docker.com/blog/faster-multi-platform-builds-dockerfile-cross-compilation-guide/
-FROM --platform=$BUILDPLATFORM python:3.13-alpine3.21 AS build
+FROM --platform=$BUILDPLATFORM python:3.13-alpine3.21@sha256:657dbdb20479a6523b46c06114c8fec7db448232f956a429d3cc0606d30c1b59 AS build
 
 ARG TARGETARCH
 ARG TARGETPLATFORM

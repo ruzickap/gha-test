@@ -85,7 +85,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       registry:
-        image: registry:2
+        image: registry:2@sha256:543dade69668e02e5768d7ea2b0aa4fae6aa7384c9a5a8dbecc2be5136079ddb
         ports:
           - 5000:5000
     steps:
@@ -199,7 +199,7 @@ jobs:
           labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Trivy - scan container image
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@915b19bbe73b92a6cf82a1bc12b087c9a19a5fe2 # 0.28.0
         if: ${{ ! contains(inputs.container_image_skip_vulnerability_scanners, 'trivy') }}
         env:
           TRIVY_DISABLE_VEX_NOTICE: true
