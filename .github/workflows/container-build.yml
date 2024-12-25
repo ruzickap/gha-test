@@ -74,6 +74,10 @@ env:
       image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container-test
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
+    - registry: c8n.io
+      image_name: c8n.io/ruzickap-github/malware-cryptominer-container-test
+      username: ${{ secrets.C8N_CONTAINER_REGISTRY_USER }}
+      password: ${{ secrets.C8N_CONTAINER_REGISTRY_PASSWORD }}
 
 jobs:
   container-build:
@@ -92,13 +96,17 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           CONTAINER_IMAGE_TAG=$(echo "${{ github.ref_name }}" | sed 's/^v//')
-          # Check if the tag exists in registry - if yes - skip build
-          if docker manifest inspect "${{ inputs.container_image_destination }}:${CONTAINER_IMAGE_TAG}" ; then
-            echo "*** Container tag \"${{ inputs.container_image_destination }}:${CONTAINER_IMAGE_TAG}\" already exists !!!"
-            exit 1
-          else
-            echo "*** Container tag \"${{ inputs.container_image_destination }}:${CONTAINER_IMAGE_TAG}\" doesn't exist..."
-          fi
+          readarray IMAGE_NAME_ARRAY < <(echo "${CONTAINER_REGISTRIES}" | yq e -o=j -I=0 '.[].image_name')
+
+          # Check if the tag exists in registry - if yes - exit
+          for IMAGE_NAME in "${IMAGE_NAME_ARRAY[@]}" ; do
+            if docker manifest inspect "${IMAGE_NAME}:${CONTAINER_IMAGE_TAG}" ; then
+              echo "*** Container tag \"${IMAGE_NAME}:${CONTAINER_IMAGE_TAG}\" already exists !!!"
+              exit 1
+            else
+              echo "*** Container tag \"${IMAGE_NAME}:${CONTAINER_IMAGE_TAG}\" doesn't exist..."
+            fi
+          done
 
       # There is no way how to use docker/login-action for multiple registries in the same job - so we have to do it using "docker login"
       - name: Login to docker + set variables

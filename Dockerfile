@@ -4,6 +4,7 @@ FROM --platform=$BUILDPLATFORM python:3.13-alpine3.21 AS build
 ARG TARGETARCH
 ARG TARGETPLATFORM
 ENV XMRIG_VERSION="6.22.2"
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
 # xmrig
 RUN set -eux && \
