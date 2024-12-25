@@ -107,7 +107,7 @@ RUN set -eux && \
 
 ################################################################################
 
-FROM nginxinc/nginx-unprivileged:1.27.3-alpine-slim@sha256:5be72ee723aa62d95bfc7dd789c68580c22284e3dec522c0d50e0d6fa3829219
+FROM nginxinc/nginx-unprivileged:1.27.3-alpine-slim@sha256:7d441778b7e475800998c7dffdacc53b31d6ad428a4748ca3956f17318f9ead2
 
 LABEL org.opencontainers.image.base.name="nginxinc/nginx-unprivileged:1.27.3-alpine-slim"
 LABEL org.opencontainers.image.base.digest="sha256:5be72ee723aa62d95bfc7dd789c68580c22284e3dec522c0d50e0d6fa3829219"
