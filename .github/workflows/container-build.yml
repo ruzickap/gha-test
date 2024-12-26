@@ -8,10 +8,11 @@ on:
         type: boolean
         required: false
         default: false
-      container_image_skip_vulnerability_scanners:
-        description: "Skip image scanners [trivy, grype]"
-        type: string
+      container_image_vulnerability_scan:
+        description: "Scan the image for vulnerabilities"
+        type: boolean
         required: false
+        default: true
       # https://docs.redhat.com/en/documentation/red_hat_quay/3.4/html/use_red_hat_quay/working_with_tags#tag-expiration
       container_image_expires_after:
         description: "Expires after [Never, 1h, 2d, 3w]"
@@ -25,29 +26,31 @@ on:
     paths:
       - Dockerfile
       - .github/workflows/container-build.yml
-  schedule:
-    - cron: "0 0 1 * *"
+  # schedule:
+  #   - cron: "0 0 1 * *"
 
 permissions:
   actions: read
   contents: write
   id-token: write
   packages: write
+  security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
 
 defaults:
   run:
     shell: bash -euxo pipefail {0}
 
 env:
-  container_image_repository_url: https://quay.io/repository/petr_ruzicka/malware-cryptominer-container?tab=tags
-  container_image_dockerfile_location: Dockerfile
-  container_image_platforms: linux/amd64,linux/arm64,linux/arm/v7
-  container_image_logo_url: https://raw.githubusercontent.com/MISP/intelligence-icons/513abc840b7ac92e4f8a4a7ecab2964007bf25f5/svg/threat_actor.svg
-  container_image_vendor: MyCompany
+  # keep-sorted start
+  TRIVY_DISABLE_VEX_NOTICE: true
   container_image_authors: petr.ruzicka@gmail.com
-  container_image_category: security
   container_image_authors_name: Petr Ruzicka
-  container_registry_push_image: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || inputs.container_registry_push }}
+  container_image_category: security
+  container_image_dockerfile_location: Dockerfile
+  container_image_logo_url: https://raw.githubusercontent.com/MISP/intelligence-icons/513abc840b7ac92e4f8a4a7ecab2964007bf25f5/svg/threat_actor.svg
+  container_image_platforms: linux/amd64,linux/arm64,linux/arm/v7
+  container_image_repository_url: https://quay.io/repository/petr_ruzicka/malware-cryptominer-container?tab=tags
+  container_image_vendor: MyCompany
   # push_to_ghcr: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || ( inputs.container_registry_push && inputs.push_to_ghcr ) }}
   container_registries: |
     # - registry: ghcr.io
@@ -58,14 +61,19 @@ env:
     #   image_name: quay.io/petr_ruzicka/malware-cryptominer-container
     #   username: ${{ secrets.container_registry_user }}
     #   password: ${{ secrets.container_registry_password }}
-    # - registry: ghcr.io
-    #   image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container
-    #   username: ${{ github.actor }}
-    #   password: ${{ secrets.GITHUB_TOKEN }}
-    - registry: quay.io
-      image_name: quay.io/petr_ruzicka/malware-cryptominer-container-test
-      username: ${{ secrets.container_registry_user }}
-      password: ${{ secrets.container_registry_password }}
+    # - registry: c8n.io
+    #   image_name: c8n.io/ruzickap-github/malware-cryptominer-container
+    #   username: ${{ secrets.C8N_CONTAINER_REGISTRY_USER }}
+    #   password: ${{ secrets.C8N_CONTAINER_REGISTRY_PASSWORD }}
+    # - registry: docker.io
+    #   image_name: docker.io/peru/malware-cryptominer-container
+    #   username: ${{ secrets.dockerhub_container_registry_user }}
+    #   password: ${{ secrets.dockerhub_container_registry_password }}
+    # keep-sorted start
+    - registry: c8n.io
+      image_name: c8n.io/ruzickap-github/malware-cryptominer-container-test
+      username: ${{ secrets.C8N_CONTAINER_REGISTRY_USER }}
+      password: ${{ secrets.C8N_CONTAINER_REGISTRY_PASSWORD }}
     - registry: docker.io
       image_name: docker.io/peru/malware-cryptominer-container-test
       username: ${{ secrets.dockerhub_container_registry_user }}
@@ -74,10 +82,13 @@ env:
       image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container-test
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
-    - registry: c8n.io
-      image_name: c8n.io/ruzickap-github/malware-cryptominer-container-test
-      username: ${{ secrets.C8N_CONTAINER_REGISTRY_USER }}
-      password: ${{ secrets.C8N_CONTAINER_REGISTRY_PASSWORD }}
+    - registry: quay.io
+      image_name: quay.io/petr_ruzicka/malware-cryptominer-container-test
+      username: ${{ secrets.quay_container_registry_user }}
+      password: ${{ secrets.quay_container_registry_password }}
+    # keep-sorted end
+  container_registry_push_image: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || inputs.container_registry_push }}
+  # keep-sorted end
 
 jobs:
   container-build:
@@ -114,6 +125,7 @@ jobs:
         env:
           CONTAINER_REGISTRIES: ${{ env.container_registries }}
           CONTAINER_IMAGE_DOCKERFILE_LOCATION: ${{ env.container_image_dockerfile_location }}
+          CONTAINER_IMAGE_VULNERABILITY_SCAN: ${{ inputs.container_image_vulnerability_scan }}
         run: |
           readarray CONTAINER_REGISTRIES_ARRAY < <(echo "${CONTAINER_REGISTRIES}" | yq e -o=j -I=0 '.[]')
           for CONTAINER_REGISTRY in "${CONTAINER_REGISTRIES_ARRAY[@]}"; do
@@ -122,6 +134,12 @@ jobs:
             PASSWORD=$(echo "${CONTAINER_REGISTRY}" | jq -r '.password')
             echo "${PASSWORD}" | docker login "${REGISTRY}" --username "${USERNAME}" --password-stdin
           done
+
+          if [[ "${CONTAINER_IMAGE_VULNERABILITY_SCAN}" == "true" ]]; then
+            echo "CONTAINER_IMAGE_VULNERABILITY_SCAN=1" | tee -a "${GITHUB_OUTPUT}"
+          else
+            echo "CONTAINER_IMAGE_VULNERABILITY_SCAN=0" | tee -a "${GITHUB_OUTPUT}"
+          fi
 
           DOCKER_METADATA_IMAGES_NAMES=$(echo "${CONTAINER_REGISTRIES}" | yq e -o=j -I=0 -r '"name=" + .[].image_name')
           echo "DOCKER_METADATA_IMAGES_NAMES<<EOF"$'\n'"${DOCKER_METADATA_IMAGES_NAMES}"$'\n'EOF | tee -a "$GITHUB_OUTPUT"
@@ -188,6 +206,9 @@ jobs:
 
       - name: Build container image and push it to local container registry
         uses: docker/build-push-action@48aba3b46d1b1fec4febb7c5d0c644b249a11355 # v6.10.0
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
+          DOCKER_BUILD_SUMMARY: false
         with:
           file: ${{ env.container_image_dockerfile_location }}
           context: ${{ steps.variables.outputs.CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY }}
@@ -198,28 +219,101 @@ jobs:
           tags: localhost:5000/name/container-image:latest
           labels: ${{ steps.docker_meta.outputs.labels }}
 
-      - name: Trivy - scan container image
-        uses: aquasecurity/trivy-action@915b19bbe73b92a6cf82a1bc12b087c9a19a5fe2 # 0.28.0
-        if: ${{ ! contains(inputs.container_image_skip_vulnerability_scanners, 'trivy') }}
-        env:
-          TRIVY_DISABLE_VEX_NOTICE: true
-        with:
-          image-ref: localhost:5000/name/container-image:latest
-          exit-code: 1
-          ignore-unfixed: true
-          severity: CRITICAL,HIGH
+      ##########################################################################
+      # Trivy
+      ##########################################################################
 
-      - name: Grype - scan container image
+      # # Two separate Trivy actions are needed because of https://github.com/aquasecurity/trivy/issues/3243
+      # - name: Trivy - scan container image
+      #   uses: aquasecurity/trivy-action@915b19bbe73b92a6cf82a1bc12b087c9a19a5fe2 # 0.28.0
+      #   env:
+      #     # https://github.com/aquasecurity/trivy-action/issues/279
+      #     TRIVY_PLATFORM: linux/amd64
+      #   with:
+      #     hide-progress: true
+      #     ignore-unfixed: true
+      #     image-ref: localhost:5000/name/container-image:latest
+      #     format: json
+      #     output: trivy-results.json
+      #     severity: CRITICAL,HIGH
+      #     scanners: vuln,secret,misconfig
+
+      # - name: Upload build artifact
+      #   uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+      #   with:
+      #     name: trivy-results.json
+      #     path: trivy-results.json
+      #     if-no-files-found: error
+      #     retention-days: 1
+
+      # - name: Trivy - scan container image
+      #   uses: aquasecurity/trivy-action@915b19bbe73b92a6cf82a1bc12b087c9a19a5fe2 # 0.28.0
+      #   env:
+      #     TRIVY_PLATFORM: linux/amd64
+      #   with:
+      #     exit-code: ${{ steps.variables.outputs.CONTAINER_IMAGE_VULNERABILITY_SCAN }}
+      #     hide-progress: true
+      #     ignore-unfixed: true
+      #     image-ref: localhost:5000/name/container-image:latest
+      #     format: table
+      #     severity: CRITICAL,HIGH
+      #     scanners: vuln,secret
+      #     skip-setup-trivy: true
+
+      # - name: GitHub Summary
+      #   if: ${{ !cancelled() }}
+      #   run: |
+      #     trivy convert --format sarif --output trivy-results.sarif trivy-results.json
+      #     trivy convert --format table --output trivy-results.table trivy-results.json
+
+      #     cat << EOF | tee -a $GITHUB_STEP_SUMMARY
+      #       ### Container Image Scan
+      #       <details><summary>Click to expand</summary>
+      #       \`\`\`markdown
+      #       $(cat trivy-results.table)
+      #       \`\`\`
+      #       </details>
+      #     EOF
+
+      # - name: Upload Trivy scan results to GitHub Security tab
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   if: ${{ !cancelled() }}
+      #   with:
+      #     sarif_file: trivy-results.sarif
+      #     category: trivy
+
+      # https://github.com/anchore/grype/issues/648
+      - name: Grype [sarif] - scan container image
         uses: anchore/scan-action@abae793926ec39a78ab18002bc7fc45bbbd94342 # v6.0.0
-        if: ${{ ! contains(inputs.container_image_skip_vulnerability_scanners, 'grype')}}
+        id: grype-scan
         with:
+          fail-build: false
           image: localhost:5000/name/container-image:latest
-          severity-cutoff: critical
+          only-fixed: true
+          output-format: sarif
+          severity-cutoff: high
+
+      - name: Grype [table] - scan container image
+        uses: anchore/scan-action@abae793926ec39a78ab18002bc7fc45bbbd94342 # v6.0.0
+        with:
+          fail-build: ${{ inputs.container_image_vulnerability_scan }}
+          image: localhost:5000/name/container-image:latest
+          only-fixed: true
           output-format: table
+          severity-cutoff: high
+
+      - name: Publish SARIF to github code scanning
+        if: ${{ always() && steps.grype-scan.outputs.sarif != '' }}
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ steps.grype-scan.outputs.sarif }}
+          category: grype-scan
 
       - name: Push image to container registries
         uses: docker/build-push-action@48aba3b46d1b1fec4febb7c5d0c644b249a11355 # v6.10.0
         if: ${{ env.container_registry_push_image == 'true' }}
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
         with:
           file: ${{ env.container_image_dockerfile_location }}
           context: ${{ steps.variables.outputs.CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY }}
