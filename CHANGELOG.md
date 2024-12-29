@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/ruzickap/gha-test/compare/v1.7.0...v1.7.1) (2024-12-29)
+
+
+### Bug Fixes
+
+* add "secrets: inherit" to release-please ([#211](https://github.com/ruzickap/gha-test/issues/211)) ([44b3d3c](https://github.com/ruzickap/gha-test/commit/44b3d3c40bf12754b35fa5db9e1cd6f7640644de))
+
 ## [1.7.0](https://github.com/ruzickap/gha-test/compare/v1.6.0...v1.7.0) (2024-12-29)
 
 
