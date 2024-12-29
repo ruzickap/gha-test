@@ -116,10 +116,10 @@ RUN set -eux && \
 
 ################################################################################
 
-FROM nginxinc/nginx-unprivileged:1.27.2-alpine-slim
+FROM nginxinc/nginx-unprivileged:1.27.3-alpine-slim@sha256:7d441778b7e475800998c7dffdacc53b31d6ad428a4748ca3956f17318f9ead2
 
 # renovate: datasource=docker depName=nginxinc/nginx-unprivileged versioning=docker
-LABEL org.opencontainers.image.base.name="nginxinc/nginx-unprivileged:1.27.2-alpine-slim"
+LABEL org.opencontainers.image.base.name="nginxinc/nginx-unprivileged:1.27.3-alpine-slim"
 
 COPY --from=build /mnt/ /usr/share/nginx/html/
 
