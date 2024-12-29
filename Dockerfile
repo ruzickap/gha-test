@@ -90,22 +90,19 @@ RUN set -eux && \
     # Java archive data (JAR)
     wget -q "https://github.com/HonbraDev/fractureiser-samples/raw/221bcc4bf45d5896f8908b21d5a8f3e7fcbc2875/stage-0-infected-DisplayEntityEditor-1.0.4.jar"                                                                -O /mnt/malware/Trojan.Java.Fractureiser.MTB.jar
 
+# hadolint ignore=DL3003
 RUN set -eux && \
     apk add --no-cache clamav file && \
     freshclam --quiet && \
     wget -qO /tmp/genindex.py https://raw.githubusercontent.com/glowinthedark/index-html-generator/915fc3bfeb735bbeba5b730280a491e2b0c08125/genindex.py && \
     chmod a+x /tmp/genindex.py && \
-    file /mnt/eicar/* | tee /mnt/eicar/files.txt && \
-    file /mnt/xmrig/* | tee /mnt/xmrig/files.txt && \
-    file /mnt/malware/* | tee /mnt/malware/files.txt && \
-    ( clamscan --infected --no-summary /mnt/eicar/ | tee /mnt/eicar/clamscan.txt || true ) && \
-    ( clamscan --infected --no-summary /mnt/xmrig/ | tee /mnt/xmrig/clamscan.txt || true ) && \
-    ( clamscan --infected --no-summary /mnt/malware/ | tee /mnt/malware/clamscan.txt || true ) && \
-    /tmp/genindex.py --output-file /mnt/malware/index.html /mnt/malware/ && \
-    /tmp/genindex.py --output-file /mnt/xmrig/index.html /mnt/xmrig/ && \
-    /tmp/genindex.py --output-file /mnt/eicar/index.html /mnt/eicar/
+    for DIR in /mnt/eicar /mnt/xmrig /mnt/malware; do \
+      cd "${DIR}" && \
+      file ./* | tee files.txt && \
+      ( clamscan --infected --no-summary . | tee clamscan.txt || true ) && \
+      /tmp/genindex.py --output-file index.html . ; \
+    done
 
-# COPY img /mnt/img
 COPY README.md /mnt/
 
 RUN set -eux && \
