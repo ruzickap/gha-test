@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.3](https://github.com/ruzickap/gha-test/compare/v1.7.2...v1.7.3) (2024-12-29)
+
+
+### Bug Fixes
+
+* add flavor to docker/metadata-action ([#217](https://github.com/ruzickap/gha-test/issues/217)) ([8ba4244](https://github.com/ruzickap/gha-test/commit/8ba42446ad34f2805fbd850af9e943b2cb3ffaf3))
+* improve indexes ([#215](https://github.com/ruzickap/gha-test/issues/215)) ([bf99979](https://github.com/ruzickap/gha-test/commit/bf99979a7e7afd5d5978a2a938f6ae98c8e793f4))
+
 ## [1.7.2](https://github.com/ruzickap/gha-test/compare/v1.7.1...v1.7.2) (2024-12-29)
 
 
