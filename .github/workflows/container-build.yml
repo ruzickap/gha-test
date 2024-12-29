@@ -13,15 +13,20 @@ on:
         type: boolean
         required: false
         default: true
+  workflow_call:
+    inputs:
+      container_registry_push:
+        type: boolean
+        required: true
+      release_tag:
+        type: string
+        required: true
   push:
-    tags:
-      # For code tagging use 'v' prefix, but 'v' prefix should not be part of container tag
-      - "v[0-9]+.[0-9]+.[0-9]+*"
     paths:
       - Dockerfile
       - .github/workflows/container-build.yml
-  # schedule:
-  #   - cron: "0 0 1 * *"
+  schedule:
+    - cron: "0 0 1 * *"
 
 permissions:
   actions: read
@@ -36,7 +41,6 @@ defaults:
 
 env:
   # keep-sorted start
-  TRIVY_DISABLE_VEX_NOTICE: true
   container_image_authors: petr.ruzicka@gmail.com
   container_image_authors_name: Petr Ruzicka
   container_image_category: security
@@ -45,7 +49,6 @@ env:
   container_image_platforms: linux/amd64,linux/arm64,linux/arm/v7
   container_image_repository_url: https://quay.io/repository/petr_ruzicka/malware-cryptominer-container?tab=tags
   container_image_vendor: MyCompany
-  # push_to_ghcr: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || ( inputs.container_registry_push && inputs.push_to_ghcr ) }}
   container_registries: |
     # - registry: ghcr.io
     #   image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container
@@ -86,7 +89,7 @@ env:
 
 jobs:
   container-build:
-    name: "💡 Build Container Image"
+    name: "Build Container Image"
     runs-on: ubuntu-latest
     services:
       registry:
@@ -100,22 +103,6 @@ jobs:
       - name: Install cosign
         uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # v3.7.0
 
-      - name: Check if the tag exists in registry
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        run: |
-          CONTAINER_IMAGE_TAG=$(echo "${{ github.ref_name }}" | sed 's/^v//')
-          readarray IMAGE_NAME_ARRAY < <(echo "${CONTAINER_REGISTRIES}" | yq e -o=j -I=0 '.[].image_name')
-
-          # Check if the tag exists in registry - if yes - exit
-          for IMAGE_NAME in "${IMAGE_NAME_ARRAY[@]}" ; do
-            if docker manifest inspect "${IMAGE_NAME}:${CONTAINER_IMAGE_TAG}" ; then
-              echo "*** Container tag \"${IMAGE_NAME}:${CONTAINER_IMAGE_TAG}\" already exists !!!"
-              exit 1
-            else
-              echo "*** Container tag \"${IMAGE_NAME}:${CONTAINER_IMAGE_TAG}\" doesn't exist..."
-            fi
-          done
-
       # There is no way how to use docker/login-action for multiple registries in the same job - so we have to do it using "docker login"
       - name: Login to docker + set variables
         id: variables
@@ -124,6 +111,7 @@ jobs:
           CONTAINER_IMAGE_DOCKERFILE_LOCATION: ${{ env.container_image_dockerfile_location }}
           CONTAINER_IMAGE_VULNERABILITY_SCAN: ${{ inputs.container_image_vulnerability_scan }}
         run: |
+          # Login to all registries
           readarray CONTAINER_REGISTRIES_ARRAY < <(echo "${CONTAINER_REGISTRIES}" | yq e -o=j -I=0 '.[]')
           for CONTAINER_REGISTRY in "${CONTAINER_REGISTRIES_ARRAY[@]}"; do
             REGISTRY=$(echo "${CONTAINER_REGISTRY}" | jq -r '.registry')
@@ -138,19 +126,24 @@ jobs:
             echo "CONTAINER_IMAGE_VULNERABILITY_SCAN=0" | tee -a "${GITHUB_OUTPUT}"
           fi
 
+          # Create list of image names for docker/metadata-action ("images" parameter)
           DOCKER_METADATA_IMAGES_NAMES=$(echo "${CONTAINER_REGISTRIES}" | yq e -o=j -I=0 -r '"name=" + .[].image_name')
           echo "DOCKER_METADATA_IMAGES_NAMES<<EOF"$'\n'"${DOCKER_METADATA_IMAGES_NAMES}"$'\n'EOF | tee -a "$GITHUB_OUTPUT"
 
+          # Create list of image locations for docker/metadata-action ("labels" [io.artifacthub.package.alternative-locations] parameter)
           CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS=$(echo "${CONTAINER_REGISTRIES}" | yq e '[.[].image_name] | join(",")')
           echo "CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS=${CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS}" | tee -a "${GITHUB_OUTPUT}"
 
+          # Create list of topics for io.artifacthub.package.keywords
           echo '${{ toJSON(github.event.repository.topics) }}' | jq -r '. | join(",") | "GITHUB_REPOSITORY_TOPICS=\(.)"' | tee -a "${GITHUB_OUTPUT}"
 
+          # Get the directory where the Dockerfile is located
           echo "CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY=$(dirname "${CONTAINER_IMAGE_DOCKERFILE_LOCATION}")" | tee -a "${GITHUB_OUTPUT}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@6524bf65af31da8d45b59e8c27de4bd072b392f5 # v3.8.0
         with:
+          # Needed to access the local registry
           driver-opts: network=host
 
       - name: Docker metadata
@@ -164,10 +157,10 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
             # When the pipeline is not executed form 'main' branch use "br-<mybranch>" tag
             type=ref,prefix=br-,event=branch,enable=${{ github.ref_name != github.event.repository.default_branch }}
-            type=semver,pattern={{version}},event=tag
-            type=semver,pattern={{major}}.{{minor}},event=tag
-            # Do not create "0" container image tag (only "1", "2", "3" and so on)
-            type=semver,pattern={{major}},event=tag,enable=${{ !startsWith(github.ref, 'refs/tags/v0.') }}
+            # Create "1.1.1", "1.1", "1" tags when called from release-please workflow (inputs.release_tag is "1.1.1")
+            type=semver,pattern={{version}},value=${{ inputs.release_tag }},enable=${{ inputs.release_tag != '' }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ inputs.release_tag }},enable=${{ inputs.release_tag != '' }}
+            type=semver,pattern={{major}},value=${{ inputs.release_tag }},enable=${{ !startsWith(inputs.release_tag, '0.') }}
           labels: |
             # Replace deprecated NGINX maintainer: https://docs.docker.com/reference/dockerfile/#maintainer-deprecated (crane config nginxinc/nginx-unprivileged | jq '.config.Labels')
             maintainer=${{ env.container_image_authors }}
@@ -228,6 +221,7 @@ jobs:
       #   env:
       #     # https://github.com/aquasecurity/trivy-action/issues/279
       #     TRIVY_PLATFORM: linux/amd64
+      #     TRIVY_DISABLE_VEX_NOTICE: true
       #   with:
       #     hide-progress: true
       #     ignore-unfixed: true
@@ -249,6 +243,7 @@ jobs:
       #   uses: aquasecurity/trivy-action@915b19bbe73b92a6cf82a1bc12b087c9a19a5fe2 # 0.28.0
       #   env:
       #     TRIVY_PLATFORM: linux/amd64
+      #     TRIVY_DISABLE_VEX_NOTICE: true
       #   with:
       #     exit-code: ${{ steps.variables.outputs.CONTAINER_IMAGE_VULNERABILITY_SCAN }}
       #     hide-progress: true
@@ -328,18 +323,18 @@ jobs:
           DOCKER_META_TAGS: ${{ steps.docker_meta.outputs.tags }}
           DOCKER_BUILD_PUSH_DIGEST: ${{ steps.docker-build-push.outputs.digest }}
         run: |
+          declare -a IMAGES
           for TAG in ${DOCKER_META_TAGS}; do
-            IMAGES+="${TAG}@${DOCKER_BUILD_PUSH_DIGEST} "
+            IMAGES+=("${TAG}@${DOCKER_BUILD_PUSH_DIGEST}")
           done
-          echo cosign sign --yes "${IMAGES}"
+          echo cosign sign --yes "${IMAGES[@]}"
 
       - name: Remove docker credentials
         if: always()
         env:
           CONTAINER_REGISTRIES: ${{ env.container_registries }}
         run: |
-          readarray CONTAINER_REGISTRIES_ARRAY < <(echo "${CONTAINER_REGISTRIES}" | yq e -o=j -I=0 '.[]')
+          readarray CONTAINER_REGISTRIES_ARRAY < <(echo "${CONTAINER_REGISTRIES}" | yq e -o=j -I=0 '.[].registry')
           for CONTAINER_REGISTRY in "${CONTAINER_REGISTRIES_ARRAY[@]}"; do
-            REGISTRY=$(echo "${CONTAINER_REGISTRY}" | jq -r '.registry')
-            docker logout "${REGISTRY}"
+            docker logout "${CONTAINER_REGISTRY}"
           done
