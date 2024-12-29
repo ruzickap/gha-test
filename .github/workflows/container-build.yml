@@ -13,12 +13,6 @@ on:
         type: boolean
         required: false
         default: true
-      # https://docs.redhat.com/en/documentation/red_hat_quay/3.4/html/use_red_hat_quay/working_with_tags#tag-expiration
-      container_image_expires_after:
-        description: "Expires after [Never, 1h, 2d, 3w]"
-        type: string
-        required: false
-        default: "1d"
   push:
     tags:
       # For code tagging use 'v' prefix, but 'v' prefix should not be part of container tag
@@ -148,7 +142,7 @@ jobs:
           echo "DOCKER_METADATA_IMAGES_NAMES<<EOF"$'\n'"${DOCKER_METADATA_IMAGES_NAMES}"$'\n'EOF | tee -a "$GITHUB_OUTPUT"
 
           CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS=$(echo "${CONTAINER_REGISTRIES}" | yq e '[.[].image_name] | join(",")')
-          echo "CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS=\"${CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS}\"" | tee -a "${GITHUB_OUTPUT}"
+          echo "CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS=${CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS}" | tee -a "${GITHUB_OUTPUT}"
 
           echo '${{ toJSON(github.event.repository.topics) }}' | jq -r '. | join(",") | "GITHUB_REPOSITORY_TOPICS=\(.)"' | tee -a "${GITHUB_OUTPUT}"
 
@@ -208,7 +202,6 @@ jobs:
             org.opencontainers.image.ref.name=${{ github.ref_name }}
             # org.opencontainers.image.title - it is there by default
             # org.opencontainers.image.description - it is there by default (repository description)
-            quay.expires-after=${{ inputs.container_image_expires_after }}
 
       - name: Build container image and push it to local container registry
         uses: docker/build-push-action@48aba3b46d1b1fec4febb7c5d0c644b249a11355 # v6.10.0
