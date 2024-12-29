@@ -22,6 +22,8 @@ on:
         type: string
         required: true
   push:
+    branches-ignore:
+      - renovate/*
     paths:
       - Dockerfile
       - .github/workflows/container-build.yml
@@ -84,7 +86,8 @@ env:
       username: ${{ secrets.quay_container_registry_user }}
       password: ${{ secrets.quay_container_registry_password }}
     # keep-sorted end
-  container_registry_push_image: ${{ github.event_name == 'schedule' || inputs.container_registry_push }}
+  # Push the container image to the registry when triggered by a scheduled execution or a push to the default branch
+  container_registry_push_image: ${{ github.event_name == 'schedule' || inputs.container_registry_push || (github.ref_name == github.event.repository.default_branch && github.event_name == 'push') }}
   # keep-sorted end
 
 jobs:
