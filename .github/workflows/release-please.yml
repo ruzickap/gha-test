@@ -34,9 +34,11 @@ jobs:
     needs: [release-please]
     if: ${{ needs.release-please.outputs.release_created }}
     permissions:
+      actions: read
       contents: write
-      pull-requests: write
       id-token: write
+      packages: write
+      security-events: write
     uses: ./.github/workflows/container-build.yml
     with:
       container_registry_push: true
