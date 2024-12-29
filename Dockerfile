@@ -118,7 +118,7 @@ RUN set -eux && \
 
 FROM nginxinc/nginx-unprivileged:1.27.2-alpine-slim
 
-# renovate: datasource=docker depName=nginxinc/nginx-unprivileged
+# renovate: datasource=docker depName=nginxinc/nginx-unprivileged versioning=docker
 LABEL org.opencontainers.image.base.name="nginxinc/nginx-unprivileged:1.27.2-alpine-slim"
 
 COPY --from=build /mnt/ /usr/share/nginx/html/
