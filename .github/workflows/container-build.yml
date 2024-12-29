@@ -103,6 +103,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3.2.0
+
       - name: Check if the tag exists in registry
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
@@ -144,8 +147,8 @@ jobs:
           DOCKER_METADATA_IMAGES_NAMES=$(echo "${CONTAINER_REGISTRIES}" | yq e -o=j -I=0 -r '"name=" + .[].image_name')
           echo "DOCKER_METADATA_IMAGES_NAMES<<EOF"$'\n'"${DOCKER_METADATA_IMAGES_NAMES}"$'\n'EOF | tee -a "$GITHUB_OUTPUT"
 
-          DOCKER_METADATA_ALTERNATIVE_LOCATIONS=$(echo "${CONTAINER_REGISTRIES}" | yq e '[.[].image_name] | join(",")')
-          echo "DOCKER_METADATA_ALTERNATIVE_LOCATIONS=\"${DOCKER_METADATA_ALTERNATIVE_LOCATIONS}\"" | tee -a "${GITHUB_OUTPUT}"
+          CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS=$(echo "${CONTAINER_REGISTRIES}" | yq e '[.[].image_name] | join(",")')
+          echo "CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS=\"${CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS}\"" | tee -a "${GITHUB_OUTPUT}"
 
           echo '${{ toJSON(github.event.repository.topics) }}' | jq -r '. | join(",") | "GITHUB_REPOSITORY_TOPICS=\(.)"' | tee -a "${GITHUB_OUTPUT}"
 
@@ -172,6 +175,9 @@ jobs:
             # Do not create "0" container image tag (only "1", "2", "3" and so on)
             type=semver,pattern={{major}},event=tag,enable=${{ !startsWith(github.ref, 'refs/tags/v0.') }}
           labels: |
+            # Replace deprecated NGINX maintainer: https://docs.docker.com/reference/dockerfile/#maintainer-deprecated (crane config nginxinc/nginx-unprivileged | jq '.config.Labels')
+            maintainer=${{ env.container_image_authors }}
+
             ## https://artifacthub.io/docs/topics/repositories/container-images/
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/README.md
             # org.opencontainers.image.created - it is there by default
@@ -303,14 +309,14 @@ jobs:
           severity-cutoff: high
 
       - name: Publish SARIF to github code scanning
-        if: ${{ always() && steps.grype-scan.outputs.sarif != '' }}
+        if: ${{ always() && steps.grype-scan.outputs.sarif != '' && github.ref_name == github.event.repository.default_branch }}
         uses: github/codeql-action/upload-sarif@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 # v3.28.0
         with:
           sarif_file: ${{ steps.grype-scan.outputs.sarif }}
-          category: grype-scan
 
       - name: Push image to container registries
         uses: docker/build-push-action@48aba3b46d1b1fec4febb7c5d0c644b249a11355 # v6.10.0
+        id: docker-build-push
         if: ${{ env.container_registry_push_image == 'true' }}
         env:
           DOCKER_BUILD_RECORD_UPLOAD: false
@@ -323,6 +329,16 @@ jobs:
           sbom: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
+
+      - name: Sign the images with GitHub OIDC Token (Non-interactive)
+        env:
+          DOCKER_META_TAGS: ${{ steps.docker_meta.outputs.tags }}
+          DOCKER_BUILD_PUSH_DIGEST: ${{ steps.docker-build-push.outputs.digest }}
+        run: |
+          for TAG in ${DOCKER_META_TAGS}; do
+            IMAGES+="${TAG}@${DOCKER_BUILD_PUSH_DIGEST} "
+          done
+          echo cosign sign --yes "${IMAGES}"
 
       - name: Remove docker credentials
         if: always()
