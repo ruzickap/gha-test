@@ -84,7 +84,7 @@ env:
       username: ${{ secrets.quay_container_registry_user }}
       password: ${{ secrets.quay_container_registry_password }}
     # keep-sorted end
-  container_registry_push_image: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'schedule' || inputs.container_registry_push }}
+  container_registry_push_image: ${{ github.event_name == 'schedule' || inputs.container_registry_push }}
   # keep-sorted end
 
 jobs:
@@ -97,6 +97,12 @@ jobs:
         ports:
           - 5000:5000
     steps:
+      - name: ENV
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "${GITHUB_CONTEXT}" | jq
+
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
