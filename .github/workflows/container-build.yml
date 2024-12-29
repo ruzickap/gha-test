@@ -196,6 +196,12 @@ jobs:
             # org.opencontainers.image.title - it is there by default
             # org.opencontainers.image.description - it is there by default (repository description)
 
+            # https://github.com/badouralix/dockerfiles/blob/c91181b356f92574f26d0499ee3d2be2cacd0952/LABELS.md
+            com.github.actions.event_name=${{ github.event_name }}
+            com.github.actions.job=${{ github.job }}
+            com.github.actions.run_id=${{ github.run_id }}
+            com.github.actions.run_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
       - name: Build container image and push it to local container registry
         uses: docker/build-push-action@48aba3b46d1b1fec4febb7c5d0c644b249a11355 # v6.10.0
         env:
