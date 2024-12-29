@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.2](https://github.com/ruzickap/gha-test/compare/v1.7.1...v1.7.2) (2024-12-29)
+
+
+### Bug Fixes
+
+* remove latest (2 times) ([#213](https://github.com/ruzickap/gha-test/issues/213)) ([da7763f](https://github.com/ruzickap/gha-test/commit/da7763f347dd83675572cbe321be9a6136020214))
+
 ## [1.7.1](https://github.com/ruzickap/gha-test/compare/v1.7.0...v1.7.1) (2024-12-29)
 
 
