@@ -40,13 +40,10 @@ jobs:
         run: |
           set -x
           uname -a
-          sysctl kern.hv_support
-          sysctl -a | grep machdep.cpu.features
-          sysctl -a | grep -o VMX
           df -h /
-          brew uninstall --formula ant aws-sam-cli aspell azure-cli cmake composer gcc gradle harfbuzz icu4c kotlin libpq maven mongosh mongodb-community@5.0 mongodb-database-tools node@18 node openjdk openblas php postgresql r sbt selenium-server
+          # brew uninstall --formula ant aws-sam-cli azure-cli cmake gcc gradle harfbuzz icu4c kotlin libpq maven mongosh mongodb-community@5.0 mongodb-database-tools node@18 node openjdk openblas php postgresql r sbt selenium-server
           df -h /
-          brew uninstall --cask firefox google-chrome julia
+          # brew uninstall --cask firefox google-chrome julia
           df -h /
           rm -rf /Users/runner/hostedtoolcache/
           df -h /
