@@ -1,5 +1,5 @@
 # https://www.docker.com/blog/faster-multi-platform-builds-dockerfile-cross-compilation-guide/
-FROM --platform=$BUILDPLATFORM python:3.13-alpine3.21@sha256:657dbdb20479a6523b46c06114c8fec7db448232f956a429d3cc0606d30c1b59 AS build
+FROM --platform=${BUILDPLATFORM} python:3.13-alpine3.21@sha256:657dbdb20479a6523b46c06114c8fec7db448232f956a429d3cc0606d30c1b59 AS build
 
 ARG TARGETARCH
 ARG TARGETPLATFORM
@@ -33,11 +33,10 @@ RUN set -eux && \
 #     ../build/xmrig --version && \
 #     mv ../build/xmrig /mnt/xmrig/my-xmrig
 
-# eicar
+# EICAR virus test files
 RUN set -eux && \
-    # EICAR virus test files
-    mkdir -p /mnt/eicar && \
-    wget -q -P /mnt/eicar https://secure.eicar.org/eicar.com https://secure.eicar.org/eicar.com.txt https://secure.eicar.org/eicarcom2.zip
+    mkdir -p /mnt/eicar
+    # wget -q -P /mnt/eicar https://secure.eicar.org/eicar.com https://secure.eicar.org/eicar.com.txt https://secure.eicar.org/eicarcom2.zip
 
 # windows/macos malware + ransomware for different architectures
 RUN set -eux && \
@@ -96,10 +95,10 @@ RUN set -eux && \
     freshclam --quiet && \
     wget -qO /tmp/genindex.py https://raw.githubusercontent.com/glowinthedark/index-html-generator/915fc3bfeb735bbeba5b730280a491e2b0c08125/genindex.py && \
     chmod a+x /tmp/genindex.py && \
-    for DIR in /mnt/eicar /mnt/xmrig /mnt/malware; do \
+    for DIR in /mnt/eicar/ /mnt/xmrig/ /mnt/malware/; do \
       cd "${DIR}" && \
       file ./* | tee files.txt && \
-      ( clamscan --infected --no-summary . | tee clamscan.txt || true ) && \
+      ( clamscan --infected --no-summary . | sed "s@${DIR}@@" | tee clamscan.txt || true ) && \
       /tmp/genindex.py --output-file index.html . ; \
     done
 

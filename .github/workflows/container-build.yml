@@ -4,15 +4,20 @@ on:
   workflow_dispatch:
     inputs:
       container_registry_push:
-        description: "Push the image to Container Registry"
+        description: "Push the container image to the registry"
         type: boolean
         required: false
         default: false
       container_image_vulnerability_scan:
-        description: "Scan the image for vulnerabilities"
+        description: "Scan the container image for vulnerabilities"
         type: boolean
         required: false
         default: true
+      container_image_sign:
+        description: "SBOM + Sign the container image"
+        type: boolean
+        required: false
+        default: false
   workflow_call:
     inputs:
       container_registry_push:
@@ -27,14 +32,13 @@ on:
     paths:
       - Dockerfile
       - .github/workflows/container-build.yml
-  schedule:
-    - cron: "0 0 1 * *"
+  # schedule:
+  #   - cron: "0 0 1 * *"
 
 permissions:
-  actions: read
+  id-token: write # for creating OIDC tokens for signing
   contents: write
-  id-token: write
-  packages: write
+  packages: write # for uploading attestations
   security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
 
 defaults:
@@ -111,6 +115,9 @@ jobs:
 
       - name: Install cosign
         uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # v3.7.0
+
+      - name: Install Syft
+        uses: anchore/sbom-action/download-syft@v0.17.9
 
       # There is no way how to use docker/login-action for multiple registries in the same job - so we have to do it using "docker login"
       - name: Login to docker + set variables
@@ -223,8 +230,6 @@ jobs:
           context: ${{ steps.variables.outputs.CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY }}
           push: true
           platforms: ${{ env.container_image_platforms }}
-          provenance: true
-          sbom: true
           tags: localhost:5000/name/container-image:latest
           labels: ${{ steps.docker_meta.outputs.labels }}
 
@@ -330,21 +335,35 @@ jobs:
           context: ${{ steps.variables.outputs.CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY }}
           push: true
           platforms: ${{ env.container_image_platforms }}
-          provenance: true
-          sbom: true
+          # I can not easily sign the provenance/sbom using cosign - https://github.com/sigstore/cosign/issues/2688
+          provenance: false
+          sbom: false
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Sign the images with GitHub OIDC Token (Non-interactive)
+        if: ${{ steps.docker-build-push.outputs.digest != '' && (inputs.container_image_sign || inputs.release_tag != '') }}
         env:
           DOCKER_META_TAGS: ${{ steps.docker_meta.outputs.tags }}
           DOCKER_BUILD_PUSH_DIGEST: ${{ steps.docker-build-push.outputs.digest }}
+          CONTAINER_IMAGE_PLATFORMS: ${{ env.container_image_platforms }}
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_CONTEXT: ${{ toJSON(github) }} # Needed for slsa-generator-container (https://github.com/slsa-framework/slsa-github-generator/blob/11df4971ac9acc4bb719c22098dc92eafbe6d593/.github/workflows/generator_container_slsa3.yml#L268C11-L268C50)
         run: |
-          declare -a IMAGES
+          # gh release download --repo slsa-framework/slsa-github-generator --pattern slsa-generator-container-linux-amd64
+          # chmod a+x slsa-generator-container-linux-amd64
+
+          # ./slsa-generator-container-linux-amd64 generate --predicate=predicate.json
+
+          # declare -a IMAGES
           for TAG in ${DOCKER_META_TAGS}; do
             IMAGES+=("${TAG}@${DOCKER_BUILD_PUSH_DIGEST}")
+            # for PLATFORM in ${CONTAINER_IMAGE_PLATFORMS//,/ }; do
+            #   syft attest --output cyclonedx-json --platform="${PLATFORM}" "${TAG}@${DOCKER_BUILD_PUSH_DIGEST}"
+            # done
           done
-          echo cosign sign --yes "${IMAGES[@]}"
+          cosign sign --yes "${IMAGES[@]}"
+          # cosign attest --predicate=predicate.json --type slsaprovenance --yes "${IMAGES[@]}"
 
       - name: Remove docker credentials
         if: always()
