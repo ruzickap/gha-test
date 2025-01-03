@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.8.0](https://github.com/ruzickap/gha-test/compare/v1.7.3...v1.8.0) (2025-01-03)
+
+
+### Features
+
+* add cosign ([#218](https://github.com/ruzickap/gha-test/issues/218)) ([f5c67d6](https://github.com/ruzickap/gha-test/commit/f5c67d647cd44da42ccaa5c405b1e3982114fe54))
+
+
+### Bug Fixes
+
+* use gha for provenance ([#220](https://github.com/ruzickap/gha-test/issues/220)) ([f0caf8a](https://github.com/ruzickap/gha-test/commit/f0caf8a824a8f8af61d68a1e23ddfa348dedc255))
+
 ## [1.7.3](https://github.com/ruzickap/gha-test/compare/v1.7.2...v1.7.3) (2024-12-29)
 
 
