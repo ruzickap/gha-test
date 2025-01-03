@@ -32,6 +32,7 @@ exclude = [
   '%7B.*%7D',
   # Ignore all URLs which starts with 'file://'
   'file://',
+  'https://token.actions.githubusercontent.com/',
 ]
 
 # Exclude these filesystem paths from getting checked
