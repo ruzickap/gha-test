@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/ruzickap/gha-test/compare/v1.8.0...v1.8.1) (2025-01-04)
+
+
+### Bug Fixes
+
+* change schedule time ([#221](https://github.com/ruzickap/gha-test/issues/221)) ([9314bf2](https://github.com/ruzickap/gha-test/commit/9314bf2b6bffc3f9006ef08004fb789128d96a87))
+
 ## [1.8.0](https://github.com/ruzickap/gha-test/compare/v1.7.3...v1.8.0) (2025-01-03)
 
 
