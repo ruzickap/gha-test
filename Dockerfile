@@ -15,28 +15,28 @@ RUN set -eux && \
 
 # Compile own version of xmrig cryptominer
 # hadolint ignore=DL3003
-# RUN set -eux && \
-#     apk add --no-cache automake autoconf cmake g++ gcc git libstdc++ libtool linux-headers make && \
-#     git clone --branch "v${XMRIG_VERSION}" https://github.com/xmrig/xmrig && \
-#     sed -i \
-#       -e "s/\(APP_ID [^\"]*\).*/\1\"myxmrig\"/" \
-#       -e "s/\(APP_NAME [^\"]*\).*/\1\"My XMRig\"/" \
-#       -e "s/\(APP_DESC [^\"]*\).*/\1\"My XMRig miner\"/" \
-#       -e "s/\(APP_VERSION.*\)\"/\1-my-${TARGETARCH}\"/" \
-#       xmrig/src/version.h && \
-#     mkdir xmrig/build && \
-#     cd xmrig/scripts && \
-#     ./build_deps.sh && \
-#     cd ../build && \
-#     cmake .. -DXMRIG_DEPS=scripts/deps -DBUILD_STATIC=ON && \
-#     make -j"$(nproc)" && \
-#     ../build/xmrig --version && \
-#     mv ../build/xmrig /mnt/xmrig/my-xmrig
+RUN set -eux && \
+    apk add --no-cache automake autoconf cmake g++ gcc git libstdc++ libtool linux-headers make && \
+    git clone --branch "v${XMRIG_VERSION}" https://github.com/xmrig/xmrig && \
+    sed -i \
+      -e "s/\(APP_ID [^\"]*\).*/\1\"myxmrig\"/" \
+      -e "s/\(APP_NAME [^\"]*\).*/\1\"My XMRig\"/" \
+      -e "s/\(APP_DESC [^\"]*\).*/\1\"My XMRig miner\"/" \
+      -e "s/\(APP_VERSION.*\)\"/\1-my-${TARGETARCH}\"/" \
+      xmrig/src/version.h && \
+    mkdir xmrig/build && \
+    cd xmrig/scripts && \
+    ./build_deps.sh && \
+    cd ../build && \
+    cmake .. -DXMRIG_DEPS=scripts/deps -DBUILD_STATIC=ON && \
+    make -j"$(nproc)" && \
+    ../build/xmrig --version && \
+    mv ../build/xmrig /mnt/xmrig/my-xmrig
 
 # EICAR virus test files
 RUN set -eux && \
-    mkdir -p /mnt/eicar
-    # wget -q -P /mnt/eicar https://secure.eicar.org/eicar.com https://secure.eicar.org/eicar.com.txt https://secure.eicar.org/eicarcom2.zip
+    mkdir -p /mnt/eicar && \
+    wget -q -P /mnt/eicar https://secure.eicar.org/eicar.com https://secure.eicar.org/eicar.com.txt https://secure.eicar.org/eicarcom2.zip
 
 # windows/macos malware + ransomware for different architectures
 RUN set -eux && \
