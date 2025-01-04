@@ -33,7 +33,7 @@ on:
       - Dockerfile
       - .github/workflows/container-build.yml
   schedule:
-    - cron: "0 0 1 * *"
+    - cron: "0 7 4 * *"
 
 permissions:
   actions: read
