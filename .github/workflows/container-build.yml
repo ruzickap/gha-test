@@ -26,14 +26,14 @@ on:
       release_tag:
         type: string
         required: true
-  push:
-    branches-ignore:
-      - renovate/*
-    paths:
-      - Dockerfile
-      - .github/workflows/container-build.yml
-  schedule:
-    - cron: "0 7 4 * *"
+  # push:
+  #   branches-ignore:
+  #     - renovate/*
+  #   paths:
+  #     - Dockerfile
+  #     - .github/workflows/container-build.yml
+  # schedule:
+  #   - cron: "0 7 4 * *"
 
 permissions:
   actions: read
