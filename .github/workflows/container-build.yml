@@ -133,11 +133,11 @@ jobs:
             echo "${PASSWORD}" | docker login "${REGISTRY}" --username "${USERNAME}" --password-stdin
           done
 
-          if [[ "${CONTAINER_IMAGE_VULNERABILITY_SCAN}" == "true" ]]; then
-            echo "CONTAINER_IMAGE_VULNERABILITY_SCAN=1" | tee -a "${GITHUB_OUTPUT}"
-          else
-            echo "CONTAINER_IMAGE_VULNERABILITY_SCAN=0" | tee -a "${GITHUB_OUTPUT}"
-          fi
+          # if [[ "${CONTAINER_IMAGE_VULNERABILITY_SCAN}" == "true" ]]; then
+          #   echo "CONTAINER_IMAGE_VULNERABILITY_SCAN=1" | tee -a "${GITHUB_OUTPUT}"
+          # else
+          #   echo "CONTAINER_IMAGE_VULNERABILITY_SCAN=0" | tee -a "${GITHUB_OUTPUT}"
+          # fi
 
           # Create list of image names for docker/metadata-action ("images" parameter)
           DOCKER_METADATA_IMAGES_NAMES=$(echo "${CONTAINER_REGISTRIES}" | yq e -o=j -I=0 -r '"name=" + .[].image_name')
