@@ -114,7 +114,7 @@ jobs:
         uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # v3.7.0
 
       - name: Install Syft
-        uses: anchore/sbom-action/download-syft@v0.17.9
+        uses: anchore/sbom-action/download-syft@df80a981bc6edbc4e220a492d3cbe9f5547a6e75 # v0.17.9
 
       # There is no way how to use docker/login-action for multiple registries in the same job - so we have to do it using "docker login"
       - name: Login to docker + set variables
@@ -410,7 +410,7 @@ jobs:
             username: petr_ruzicka+github_actions_access
             password: quay_container_registry_password
           # keep-sorted end
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.0.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@5a775b367a56d5bd118a224a811bba288150a563 # v2.0.0
     with:
       image: ${{ matrix.image_name }}
       digest: ${{ needs.container-build.outputs.container_image_digest }}
