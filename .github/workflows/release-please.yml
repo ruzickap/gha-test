@@ -39,7 +39,7 @@ jobs:
       id-token: write
       packages: write
       security-events: write
-    uses: ./.github/workflows/container-build.yml
+    uses: ./.github/workflows/container-build-2.yml
     with:
       container_registry_push: true
       release_tag: ${{ needs.release-please.outputs.release_tag }}
