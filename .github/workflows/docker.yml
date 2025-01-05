@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKERHUB_REPO: quay.io/petr_ruzicka/malware-cryptominer-container
+  DOCKERHUB_REPO: quay.io/petr_ruzicka/malware-cryptominer-container-test
 
 permissions:
   contents: read
