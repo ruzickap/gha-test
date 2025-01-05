@@ -237,7 +237,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           provenance: false
           outputs: type=image,"name=${{ env.DOCKER_METADATA_IMAGES_NAMES }}",push-by-digest=true,name-canonical=true,push=true
-          annotations: ${{ steps.docker_meta.outputs.annotations }}
+          annotations: ${{ steps.docker_meta.outputs.labels }}
           labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Export digest
