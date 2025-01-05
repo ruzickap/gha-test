@@ -340,10 +340,11 @@ jobs:
           CONTAINER_REGISTRIES: ${{ env.container_registries }}
         working-directory: /tmp/digests
         run: |
-          echo "${DOCKER_METADATA_OUTPUT_JSON}"
-          # shellcheck disable=SC2046
           for CONTAINER_REGISTRY_IMAGE_NAME in $(yq '.[].image_name' <<< "${CONTAINER_REGISTRIES}"); do
-            docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") $(printf "${CONTAINER_REGISTRY_IMAGE_NAME}@sha256:%s " *)
+            # shellcheck disable=SC2046  # Quote this to prevent word splitting
+            docker buildx imagetools create \
+              $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "${DOCKER_METADATA_OUTPUT_JSON}") \
+              $(printf "${CONTAINER_REGISTRY_IMAGE_NAME}@sha256:%s " *)
           done
 
       # - name: Sign the images with GitHub OIDC Token (Non-interactive)
