@@ -1,6 +1,6 @@
 #checkov:skip=CKV_DOCKER_2
 #checkov:skip=CKV_DOCKER_3
-FROM --platform=${BUILDPLATFORM} debian:bookworm-slim@sha256:d365f4920711a9074c4bcd178e8f457ee59250426441ab2a5f8106ed8fe948eb
+FROM debian:bookworm-slim@sha256:d365f4920711a9074c4bcd178e8f457ee59250426441ab2a5f8106ed8fe948eb
 
 ARG TARGETPLATFORM
 
@@ -13,7 +13,7 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 RUN apt-get update && \
     uname -a && \
     dpkg -l | grep apt && \
-    if [ "${TARGETPLATFORM}" = "linux/arm64" ]; then apt-get install -y --no-install-recommends arm-trusted-firmware=2.8.0+dfsg-1 || true ; fi && \
+    if [ "${TARGETPLATFORM}" = "linux/arm64" ]; then apt-get install -y --no-install-recommends arm-trusted-firmware=2.8.0+dfsg-1 ; fi && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Verify installation of the packages
