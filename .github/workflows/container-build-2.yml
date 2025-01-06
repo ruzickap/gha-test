@@ -112,7 +112,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Login to docker
+      - name: Set variables
+        env:
+          CONTAINER_REGISTRIES: ${{ env.container_registries }}
+          CONTAINER_IMAGE_DOCKERFILE_LOCATION: ${{ env.container_image_dockerfile_location }}
+        run: |
+          # Create list of image names for docker/metadata-action ("images" parameter)
+          # Create list of image locations for docker/metadata-action ("labels" [io.artifacthub.package.alternative-locations] parameter)
+          DOCKER_IMAGE_NAMES="$(yq '[.[].image_name] | join(",")' <<< "${CONTAINER_REGISTRIES}")"
+          echo "DOCKER_IMAGE_NAMES=${DOCKER_IMAGE_NAMES}" | tee -a "${GITHUB_ENV}"
+
+          # Create list of topics for io.artifacthub.package.keywords
+          echo '${{ toJSON(github.event.repository.topics) }}' | jq -r '. | join(",") | "GITHUB_REPOSITORY_TOPICS=\(.)"' | tee -a "${GITHUB_ENV}"
+
+          # Get the directory where the Dockerfile is located
+          echo "CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY=$(dirname "${CONTAINER_IMAGE_DOCKERFILE_LOCATION}")" | tee -a "${GITHUB_ENV}"
+
+      - name: Login to container registries
         if: ${{ env.container_registry_push_image == 'true' }}
         env:
           CONTAINER_REGISTRIES: ${{ env.container_registries }}
@@ -125,25 +141,6 @@ jobs:
             PASSWORD="$(jq -r '.password' <<< "${CONTAINER_REGISTRY}")"
             docker login "${REGISTRY}" --username "${USERNAME}" --password-stdin <<< "${PASSWORD}"
           done
-
-      - name: Set variables
-        env:
-          CONTAINER_REGISTRIES: ${{ env.container_registries }}
-          CONTAINER_IMAGE_DOCKERFILE_LOCATION: ${{ env.container_image_dockerfile_location }}
-        run: |
-          # Create list of image names for docker/metadata-action ("images" parameter)
-          DOCKER_METADATA_IMAGES_NAMES="$(yq e -o=j -I=0 -r '[.[].image_name] | join(",")' <<< "${CONTAINER_REGISTRIES}")"
-          echo "DOCKER_METADATA_IMAGES_NAMES=${DOCKER_METADATA_IMAGES_NAMES}" | tee -a "${GITHUB_ENV}"
-
-          # Create list of image locations for docker/metadata-action ("labels" [io.artifacthub.package.alternative-locations] parameter)
-          CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS=$(yq e '[.[].image_name] | join(",")' <<< "${CONTAINER_REGISTRIES}")
-          echo "CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS=${CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS}" | tee -a "${GITHUB_OUTPUT}"
-
-          # Create list of topics for io.artifacthub.package.keywords
-          echo '${{ toJSON(github.event.repository.topics) }}' | jq -r '. | join(",") | "GITHUB_REPOSITORY_TOPICS=\(.)"' | tee -a "${GITHUB_ENV}"
-
-          # Get the directory where the Dockerfile is located
-          echo "CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY=$(dirname "${CONTAINER_IMAGE_DOCKERFILE_LOCATION}")" | tee -a "${GITHUB_ENV}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@6524bf65af31da8d45b59e8c27de4bd072b392f5 # v3.8.0
@@ -200,7 +197,7 @@ jobs:
             # org.opencontainers.image.url - it is there by default
             org.opencontainers.image.vendor=${{ env.container_image_vendor }}
             # org.opencontainers.image.version - it is there by default
-            io.artifacthub.package.alternative-locations=${{ env.CONTAINER_IMAGE_ALTERNATIVE_LOCATIONS }}
+            io.artifacthub.package.alternative-locations=${{ env.DOCKER_IMAGE_NAMES }}
             io.artifacthub.package.category=${{ env.container_image_category }}
             io.artifacthub.package.keywords=${{ env.GITHUB_REPOSITORY_TOPICS }}
             io.artifacthub.package.license=${{ github.event.repository.license.spdx_id }}
@@ -238,28 +235,28 @@ jobs:
           context: ${{ env.CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY }}
           platforms: ${{ matrix.platform }}
           provenance: false
-          outputs: type=image,"name=${{ env.DOCKER_METADATA_IMAGES_NAMES }}",push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,"name=${{ env.DOCKER_IMAGE_NAMES }}",push-by-digest=true,name-canonical=true,push=true
           annotations: ${{ steps.docker_meta.outputs.labels }}
           labels: ${{ steps.docker_meta.outputs.labels }}
 
-      - name: Install cosign
-        uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # v3.7.0
-        if: ${{ env.container_registry_push_image == 'true' && inputs.container_image_sign }}
+      # - name: Install cosign
+      #   uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # v3.7.0
+      #   if: ${{ env.container_registry_push_image == 'true' && inputs.container_image_sign }}
 
-      - name: Install Syft
-        uses: anchore/sbom-action/download-syft@df80a981bc6edbc4e220a492d3cbe9f5547a6e75 # v0.17.9
-        if: ${{ env.container_registry_push_image == 'true' && inputs.container_image_sign }}
+      # - name: Install Syft
+      #   uses: anchore/sbom-action/download-syft@df80a981bc6edbc4e220a492d3cbe9f5547a6e75 # v0.17.9
+      #   if: ${{ env.container_registry_push_image == 'true' && inputs.container_image_sign }}
 
-      - name: Sign
-        if: ${{ env.container_registry_push_image == 'true' && inputs.container_image_sign }}
-        env:
-          CONTAINER_REGISTRIES: ${{ env.container_registries }}
-          DIGEST: ${{ steps.docker-build-push.outputs.digest }}
-        run: |
-          for CONTAINER_REGISTRY_IMAGE_NAME in $(yq '.[].image_name' <<< "${CONTAINER_REGISTRIES}"); do
-            cosign sign --yes "${CONTAINER_REGISTRY_IMAGE_NAME}@${DIGEST}"
-            syft attest --output cyclonedx-json "${CONTAINER_REGISTRY_IMAGE_NAME}@${DIGEST}"
-          done
+      # - name: Sign + create SBOM
+      #   if: ${{ env.container_registry_push_image == 'true' && inputs.container_image_sign }}
+      #   env:
+      #     CONTAINER_REGISTRIES: ${{ env.container_registries }}
+      #     DIGEST: ${{ steps.docker-build-push.outputs.digest }}
+      #   run: |
+      #     for CONTAINER_REGISTRY_IMAGE_NAME in $(yq '.[].image_name' <<< "${CONTAINER_REGISTRIES}"); do
+      #       cosign sign --yes "${CONTAINER_REGISTRY_IMAGE_NAME}@${DIGEST}"
+      #       syft attest --output cyclonedx-json "${CONTAINER_REGISTRY_IMAGE_NAME}@${DIGEST}"
+      #     done
 
       - name: Export digest
         if: ${{ env.container_registry_push_image == 'true' }}
@@ -291,8 +288,7 @@ jobs:
         env:
           CONTAINER_REGISTRIES: ${{ env.container_registries }}
         run: |
-          readarray CONTAINER_REGISTRIES_ARRAY < <(yq e -o=j -I=0 '.[].registry' <<< "${CONTAINER_REGISTRIES}")
-          for CONTAINER_REGISTRY in "${CONTAINER_REGISTRIES_ARRAY[@]}"; do
+          yq '.[].registry' <<< "${CONTAINER_REGISTRIES}" | while read -r CONTAINER_REGISTRY; do
             docker logout "${CONTAINER_REGISTRY}"
           done
 
@@ -314,7 +310,7 @@ jobs:
           pattern: digests-*
           merge-multiple: true
 
-      - name: Login to docker
+      - name: Login to container registries
         env:
           CONTAINER_REGISTRIES: ${{ env.container_registries }}
         run: |
@@ -332,15 +328,15 @@ jobs:
           CONTAINER_REGISTRIES: ${{ env.container_registries }}
         run: |
           # Create list of image names for docker/metadata-action ("images" parameter)
-          DOCKER_METADATA_IMAGES_NAMES=$(yq e -o=j -I=0 -r '"name=" + .[].image_name' <<< "${CONTAINER_REGISTRIES}" )
-          echo "DOCKER_METADATA_IMAGES_NAMES<<EOF"$'\n'"${DOCKER_METADATA_IMAGES_NAMES}"$'\n'EOF | tee -a "${GITHUB_ENV}"
+          DOCKER_METADATA_IMAGE_NAMES=$(yq ".[].image_name" <<< "${CONTAINER_REGISTRIES}" )
+          echo "DOCKER_METADATA_IMAGE_NAMES<<EOF"$'\n'"${DOCKER_METADATA_IMAGE_NAMES}"$'\n'EOF | tee -a "${GITHUB_ENV}"
 
       - name: Docker metadata
         uses: docker/metadata-action@369eb591f429131d6889c46b94e711f089e6ca96 # v5.6.1
         id: docker_meta
         with:
           images: |
-            ${{ env.DOCKER_METADATA_IMAGES_NAMES }}
+            ${{ env.DOCKER_METADATA_IMAGE_NAMES }}
           tags: |
             # Whever the pipeline runs form "main" - use "latest" container tag
             type=raw,value=latest,enable={{is_default_branch}}
@@ -353,23 +349,32 @@ jobs:
           flavor: |
             latest=false
 
+      - name: Install cosign
+        uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # v3.7.0
+        if: ${{ inputs.container_image_sign }}
+
       - name: Create manifest list and push
         env:
           CONTAINER_REGISTRIES: ${{ env.container_registries }}
           SIGN: ${{ inputs.container_image_sign }}
         working-directory: /tmp/digests
         run: |
-          for CONTAINER_REGISTRY_IMAGE_NAME in $(yq '.[].image_name' <<< "${CONTAINER_REGISTRIES}"); do
+          # Taken from: https://docs.docker.com/build/ci/github-actions/multi-platform/#distribute-build-across-multiple-runners
+          for DOCKER_METADATA_IMAGE_NAME in "${DOCKER_METADATA_IMAGE_NAMES}"; do
             # shellcheck disable=SC2046  # Quote this to prevent word splitting
             docker buildx imagetools create \
               $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "${DOCKER_METADATA_OUTPUT_JSON}") \
-              $(printf "${CONTAINER_REGISTRY_IMAGE_NAME}@sha256:%s " *)
-            # Workaround for: https://github.com/docker/buildx/issues/2407
-            DIGEST="$(docker buildx imagetools inspect "${CONTAINER_REGISTRY_IMAGE_NAME}" --format "{{json .Manifest.Digest}}" | jq -r)"
-            if [[ "${SIGN}" = "true" ]]; then
-              cosign sign --yes "${CONTAINER_REGISTRY_IMAGE_NAME}@${DIGEST}"
-            fi
+              $(printf "${DOCKER_METADATA_IMAGE_NAME}@sha256:%s " *)
           done
+
+          # Sign all tags prepared by docker/metadata-action
+          if [[ "${SIGN}" = "true" ]]; then
+            jq -r ".tags[]" <<< "${DOCKER_METADATA_OUTPUT_JSON}" | while read -r DOCKER_METADATA_TAG; do
+              # Workaround for: https://github.com/docker/buildx/issues/2407
+              DIGEST="$(docker buildx imagetools inspect "${DOCKER_METADATA_TAG}" --format "{{json .Manifest.Digest}}" | jq -r)"
+              echo cosign sign --yes "${DOCKER_METADATA_TAG}@${DIGEST}"
+            done
+          fi
 
       # - name: Sign the images with GitHub OIDC Token (Non-interactive)
       #   if: ${{ inputs.container_image_sign || inputs.release_tag != '' }}
@@ -394,160 +399,158 @@ jobs:
         env:
           CONTAINER_REGISTRIES: ${{ env.container_registries }}
         run: |
-          readarray CONTAINER_REGISTRIES_ARRAY < <(yq e -o=j -I=0 '.[].registry' <<< "${CONTAINER_REGISTRIES}")
-          for CONTAINER_REGISTRY in "${CONTAINER_REGISTRIES_ARRAY[@]}"; do
+          yq '.[].registry' <<< "${CONTAINER_REGISTRIES}" | while read -r CONTAINER_REGISTRY; do
             docker logout "${CONTAINER_REGISTRY}"
           done
 
-  provenance:
-    name: ${{ matrix.registry }} - provenance
-    needs: [container-build-push]
-    if: ${{ inputs.container_image_sign || inputs.release_tag != '' }}
-    strategy:
-      # https://github.com/orgs/community/discussions/26302
-      # GH Reusable Workflow can not be run as step: https://stackoverflow.com/questions/75733616/github-actions-how-to-call-a-reusable-workflow-as-a-step
-      matrix:
-        include:
-          # - registry: ghcr.io
-          #   image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container
-          #   username: ${{ github.actor }}
-          #   password: ${{ secrets.GITHUB_TOKEN }}
-          # - registry: quay.io
-          #   image_name: quay.io/petr_ruzicka/malware-cryptominer-container
-          #   username: ${{ secrets.container_registry_user }}
-          #   password: ${{ secrets.container_registry_password }}
-          # - registry: c8n.io
-          #   image_name: c8n.io/ruzickap-github/malware-cryptominer-container
-          #   username: ${{ secrets.C8N_CONTAINER_REGISTRY_USER }}
-          #   password: ${{ secrets.C8N_CONTAINER_REGISTRY_PASSWORD }}
-          # - registry: docker.io
-          #   image_name: docker.io/peru/malware-cryptominer-container
-          #   username: ${{ secrets.dockerhub_container_registry_user }}
-          #   password: ${{ secrets.dockerhub_container_registry_password }}
-          # keep-sorted start
-          - registry: c8n.io
-            image_name: c8n.io/ruzickap-github/malware-cryptominer-container-test
-            username: robot_ruzickap-github+github_actions_access
-            password: c8n_container_registry_password
-          # - registry: docker.io
-          #   image_name: docker.io/peru/malware-cryptominer-container-test
-          #   username: peru
-          #   password: dockerhub_container_registry_password
-          # - registry: ghcr.io
-          #   image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container-test
-          #   username: ${{ github.actor }}
-          #   password: GITHUB_TOKEN
-          - registry: quay.io
-            image_name: quay.io/petr_ruzicka/malware-cryptominer-container-test
-            username: petr_ruzicka+github_actions_access
-            password: quay_container_registry_password
-          # keep-sorted end
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.0.0
-    with:
-      image: ${{ matrix.image_name }}
-      digest: ${{ needs.container-build-push.outputs.container_image_digest }}
-      registry-username: ${{ matrix.username }}
-    secrets:
-      registry-password: ${{ secrets[matrix.password] }}
+  # provenance:
+  #   name: ${{ matrix.registry }} - provenance
+  #   needs: [container-build-push]
+  #   if: ${{ inputs.container_image_sign || inputs.release_tag != '' }}
+  #   strategy:
+  #     # https://github.com/orgs/community/discussions/26302
+  #     # GH Reusable Workflow can not be run as step: https://stackoverflow.com/questions/75733616/github-actions-how-to-call-a-reusable-workflow-as-a-step
+  #     matrix:
+  #       include:
+  #         # - registry: ghcr.io
+  #         #   image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container
+  #         #   username: ${{ github.actor }}
+  #         #   password: ${{ secrets.GITHUB_TOKEN }}
+  #         # - registry: quay.io
+  #         #   image_name: quay.io/petr_ruzicka/malware-cryptominer-container
+  #         #   username: ${{ secrets.container_registry_user }}
+  #         #   password: ${{ secrets.container_registry_password }}
+  #         # - registry: c8n.io
+  #         #   image_name: c8n.io/ruzickap-github/malware-cryptominer-container
+  #         #   username: ${{ secrets.C8N_CONTAINER_REGISTRY_USER }}
+  #         #   password: ${{ secrets.C8N_CONTAINER_REGISTRY_PASSWORD }}
+  #         # - registry: docker.io
+  #         #   image_name: docker.io/peru/malware-cryptominer-container
+  #         #   username: ${{ secrets.dockerhub_container_registry_user }}
+  #         #   password: ${{ secrets.dockerhub_container_registry_password }}
+  #         # keep-sorted start
+  #         - registry: c8n.io
+  #           image_name: c8n.io/ruzickap-github/malware-cryptominer-container-test
+  #           username: robot_ruzickap-github+github_actions_access
+  #           password: c8n_container_registry_password
+  #         # - registry: docker.io
+  #         #   image_name: docker.io/peru/malware-cryptominer-container-test
+  #         #   username: peru
+  #         #   password: dockerhub_container_registry_password
+  #         # - registry: ghcr.io
+  #         #   image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container-test
+  #         #   username: ${{ github.actor }}
+  #         #   password: GITHUB_TOKEN
+  #         # - registry: quay.io
+  #         #   image_name: quay.io/petr_ruzicka/malware-cryptominer-container-test
+  #         #   username: petr_ruzicka+github_actions_access
+  #         #   password: quay_container_registry_password
+  #         # keep-sorted end
+  #   uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.0.0
+  #   with:
+  #     image: ${{ matrix.image_name }}
+  #     digest: ${{ needs.container-build-push.outputs.container_image_digest }}
+  #     registry-username: ${{ matrix.username }}
+  #   secrets:
+  #     registry-password: ${{ secrets[matrix.password] }}
 
-  verify-signatures-provenance-sbom:
-    name: verify signatures and provenance
-    # needs: [container-build, provenance]
-    needs: [container-build-push-merge]
-    runs-on: ubuntu-latest
-    if: ${{ inputs.container_image_sign || inputs.release_tag != '' }}
-    steps:
-      - name: Verify signatures, provenance and SBOM
-        env:
-          CONTAINER_IMAGE_PLATFORMS: ${{ env.container_image_platforms }}
-          CONTAINER_REGISTRIES: ${{ env.container_registries }}
-          CONTAINER_IMAGE_TAG: ${{ needs.container-build-push-merge.outputs.container_image_tag }}
-          COSIGN_CERTIFICATE_IDENTITY_REGEXP: ${{ github.event.repository.html_url }}/.github/workflows
-          COSIGN_CERTIFICATE_OIDC_ISSUER: https://token.actions.githubusercontent.com
-          TRIVY_DISABLE_VEX_NOTICE: true
-        run: |
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          brew install cosign regclient slsa-verifier trivy
+  # verify-signatures-provenance-sbom:
+  #   name: verify signatures and provenance
+  #   needs: [container-build-push-merge, provenance]
+  #   runs-on: ubuntu-latest
+  #   if: ${{ inputs.container_image_sign || inputs.release_tag != '' }}
+  #   steps:
+  #     - name: Verify signatures, provenance and SBOM
+  #       env:
+  #         CONTAINER_IMAGE_PLATFORMS: ${{ env.container_image_platforms }}
+  #         CONTAINER_REGISTRIES: ${{ env.container_registries }}
+  #         CONTAINER_IMAGE_TAG: ${{ needs.container-build-push-merge.outputs.container_image_tag }}
+  #         COSIGN_CERTIFICATE_IDENTITY_REGEXP: ${{ github.event.repository.html_url }}/.github/workflows
+  #         COSIGN_CERTIFICATE_OIDC_ISSUER: https://token.actions.githubusercontent.com
+  #         TRIVY_DISABLE_VEX_NOTICE: true
+  #       run: |
+  #         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  #         brew install cosign regclient slsa-verifier trivy
 
-          for CONTAINER_REGISTRY_IMAGE_NAME in $(yq '.[].image_name' <<< "${CONTAINER_REGISTRIES}"); do
-            CONTAINER_IMAGE_DIGEST=$(regctl image digest "${CONTAINER_IMAGE_TAG}")
-            CONTAINER_REGISTRY_IMAGE="${CONTAINER_REGISTRY_IMAGE_NAME}@${CONTAINER_IMAGE_DIGEST}"
-            echo "*** ${CONTAINER_REGISTRY_IMAGE_NAME}"
+  #         for CONTAINER_REGISTRY_IMAGE_NAME in $(yq '.[].image_name' <<< "${CONTAINER_REGISTRIES}"); do
+  #           CONTAINER_IMAGE_DIGEST=$(regctl image digest "${CONTAINER_IMAGE_TAG}")
+  #           CONTAINER_REGISTRY_IMAGE="${CONTAINER_REGISTRY_IMAGE_NAME}@${CONTAINER_IMAGE_DIGEST}"
+  #           echo "*** ${CONTAINER_REGISTRY_IMAGE_NAME}"
 
-            #####################################
-            # Cosign
-            #####################################
+  #           #####################################
+  #           # Cosign
+  #           #####################################
 
-            # Verify the manifest list is signed
-            cosign verify \
-              --certificate-identity-regexp="${COSIGN_CERTIFICATE_IDENTITY_REGEXP}" \
-              --certificate-oidc-issuer="${COSIGN_CERTIFICATE_OIDC_ISSUER}" \
-              "${CONTAINER_REGISTRY_IMAGE}" | jq --color-output
+  #           # Verify the manifest list is signed
+  #           cosign verify \
+  #             --certificate-identity-regexp="${COSIGN_CERTIFICATE_IDENTITY_REGEXP}" \
+  #             --certificate-oidc-issuer="${COSIGN_CERTIFICATE_OIDC_ISSUER}" \
+  #             "${CONTAINER_REGISTRY_IMAGE}" | jq --color-output
 
-            # Verify if every platfrom image manifest is signed
-            regctl manifest get "${CONTAINER_REGISTRY_IMAGE}" --format '{{jsonPretty .}}' | jq -r '.manifests[].digest' | while read -r MANIFEST_DIGESTS; do
-              cosign verify \
-                --certificate-identity-regexp="${COSIGN_CERTIFICATE_IDENTITY_REGEXP}" \
-                --certificate-oidc-issuer="${COSIGN_CERTIFICATE_OIDC_ISSUER}" \
-                "${CONTAINER_REGISTRY_IMAGE_NAME}@${MANIFEST_DIGESTS}" | jq --color-output
-            done
+  #           # Verify if every platfrom image manifest is signed
+  #           regctl manifest get "${CONTAINER_REGISTRY_IMAGE}" --format '{{jsonPretty .}}' | jq -r '.manifests[].digest' | while read -r MANIFEST_DIGESTS; do
+  #             cosign verify \
+  #               --certificate-identity-regexp="${COSIGN_CERTIFICATE_IDENTITY_REGEXP}" \
+  #               --certificate-oidc-issuer="${COSIGN_CERTIFICATE_OIDC_ISSUER}" \
+  #               "${CONTAINER_REGISTRY_IMAGE_NAME}@${MANIFEST_DIGESTS}" | jq --color-output
+  #           done
 
-            #####################################
-            # SBOM
-            #####################################
+  #           #####################################
+  #           # SBOM
+  #           #####################################
 
-            cosign verify-attestation --type="https://cyclonedx.org/bom" \
-              --certificate-oidc-issuer="${COSIGN_CERTIFICATE_OIDC_ISSUER}" \
-              --certificate-identity-regexp="${COSIGN_CERTIFICATE_IDENTITY_REGEXP}" \
-              "${CONTAINER_REGISTRY_IMAGE}" | jq --color-output
+  #           cosign verify-attestation --type="https://cyclonedx.org/bom" \
+  #             --certificate-oidc-issuer="${COSIGN_CERTIFICATE_OIDC_ISSUER}" \
+  #             --certificate-identity-regexp="${COSIGN_CERTIFICATE_IDENTITY_REGEXP}" \
+  #             "${CONTAINER_REGISTRY_IMAGE}" | jq --color-output
 
-            cosign verify-attestation --type="https://cyclonedx.org/bom" \
-              --certificate-oidc-issuer="${COSIGN_CERTIFICATE_OIDC_ISSUER}" \
-              --certificate-identity-regexp="${COSIGN_CERTIFICATE_IDENTITY_REGEXP}" \
-              "${CONTAINER_REGISTRY_IMAGE}" 2>&1 | head -n 13 || true
+  #           cosign verify-attestation --type="https://cyclonedx.org/bom" \
+  #             --certificate-oidc-issuer="${COSIGN_CERTIFICATE_OIDC_ISSUER}" \
+  #             --certificate-identity-regexp="${COSIGN_CERTIFICATE_IDENTITY_REGEXP}" \
+  #             "${CONTAINER_REGISTRY_IMAGE}" 2>&1 | head -n 13 || true
 
-            cosign verify-attestation --type="https://cyclonedx.org/bom" \
-              --certificate-oidc-issuer="${COSIGN_CERTIFICATE_OIDC_ISSUER}" \
-              --certificate-identity-regexp="${COSIGN_CERTIFICATE_IDENTITY_REGEXP}" \
-              "${CONTAINER_REGISTRY_IMAGE}" | jq '.payload | @base64d | fromjson | .predicate' > /tmp/attestation.json
+  #           cosign verify-attestation --type="https://cyclonedx.org/bom" \
+  #             --certificate-oidc-issuer="${COSIGN_CERTIFICATE_OIDC_ISSUER}" \
+  #             --certificate-identity-regexp="${COSIGN_CERTIFICATE_IDENTITY_REGEXP}" \
+  #             "${CONTAINER_REGISTRY_IMAGE}" | jq '.payload | @base64d | fromjson | .predicate' > /tmp/attestation.json
 
-            trivy sbom --quiet /tmp/attestation.json
+  #           trivy sbom --quiet /tmp/attestation.json
 
-            #####################################
-            # SLSA Provenance
-            #####################################
+  #           #####################################
+  #           # SLSA Provenance
+  #           #####################################
 
-            # cosign verify-attestation --type="slsaprovenance" \
-            #   --certificate-oidc-issuer="${COSIGN_CERTIFICATE_OIDC_ISSUER}" \
-            #   --certificate-identity-regexp='^https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v[0-9]+.[0-9]+.[0-9]+$' \
-            #   "${CONTAINER_REGISTRY_IMAGE}" | jq --color-output
+  #           cosign verify-attestation --type="slsaprovenance" \
+  #             --certificate-oidc-issuer="${COSIGN_CERTIFICATE_OIDC_ISSUER}" \
+  #             --certificate-identity-regexp='^https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v[0-9]+.[0-9]+.[0-9]+$' \
+  #             "${CONTAINER_REGISTRY_IMAGE}" | jq --color-output
 
-            # slsa-verifier verify-image --print-provenance --source-uri "github.com/${GITHUB_REPOSITORY}" \
-            #   "${CONTAINER_REGISTRY_IMAGE}" | jq --color-output
+  #           slsa-verifier verify-image --print-provenance --source-uri "github.com/${GITHUB_REPOSITORY}" \
+  #             "${CONTAINER_REGISTRY_IMAGE}" | jq --color-output
 
-            #####################################
-            # Container Registry Manifests
-            #####################################
+  #           #####################################
+  #           # Container Registry Manifests
+  #           #####################################
 
-            cosign tree "${CONTAINER_REGISTRY_IMAGE}"
+  #           cosign tree "${CONTAINER_REGISTRY_IMAGE}"
 
-            cosign download attestation "${CONTAINER_REGISTRY_IMAGE}" | jq --color-output
+  #           cosign download attestation "${CONTAINER_REGISTRY_IMAGE}" | jq --color-output
 
-            regctl manifest get "${CONTAINER_REGISTRY_IMAGE}"
-            regctl manifest get "${CONTAINER_REGISTRY_IMAGE/@*/}:${CONTAINER_IMAGE_DIGEST/:/-}.att"
+  #           regctl manifest get "${CONTAINER_REGISTRY_IMAGE}"
+  #           regctl manifest get "${CONTAINER_REGISTRY_IMAGE/@*/}:${CONTAINER_IMAGE_DIGEST/:/-}.att"
 
-            for PLATFORM in ${CONTAINER_IMAGE_PLATFORMS//,/ }; do
-              regctl image config --platform="${PLATFORM}" "${CONTAINER_REGISTRY_IMAGE}"
-            done
+  #           for PLATFORM in ${CONTAINER_IMAGE_PLATFORMS//,/ }; do
+  #             regctl image config --platform="${PLATFORM}" "${CONTAINER_REGISTRY_IMAGE}"
+  #           done
 
-            # It should be possible to download the sbom/attestation per platform and check it by trivy/grype
-            # cosign download attestation --platform linux/arm64 ....
+  #           # It should be possible to download the sbom/attestation per platform and check it by trivy/grype
+  #           # cosign download attestation --platform linux/arm64 ....
 
-            # Doesn't work !!!!
-            # cosign download attestation \
-            #   --platform=linux/amd64 \
-            #   --predicate-type=https://cyclonedx.org/bom \
-            #   quay.io/petr_ruzicka/malware-cryptominer-container-test@sha256:6e3b825d39cdeb829a0e49fec809b93e23af76d3254c6277c106600196f3f77f | jq -r .payload | base64 -d | jq .predicate
-            #
-            # This is working: https://images.chainguard.dev/directory/image/go/provenance
-          done
+  #           # Doesn't work !!!!
+  #           # cosign download attestation \
+  #           #   --platform=linux/amd64 \
+  #           #   --predicate-type=https://cyclonedx.org/bom \
+  #           #   quay.io/petr_ruzicka/malware-cryptominer-container-test@sha256:6e3b825d39cdeb829a0e49fec809b93e23af76d3254c6277c106600196f3f77f | jq -r .payload | base64 -d | jq .predicate
+  #           #
+  #           # This is working: https://images.chainguard.dev/directory/image/go/provenance
+  #         done
