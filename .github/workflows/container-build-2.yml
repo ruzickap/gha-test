@@ -366,11 +366,9 @@ jobs:
         uses: anchore/sbom-action/download-syft@df80a981bc6edbc4e220a492d3cbe9f5547a6e75 # v0.17.9
         if: ${{ inputs.container_image_sign }}
 
-      - name: Sign + create SBOM
-        id: sign-sbom
+      - name: Create a new image based on source images
         env:
           CONTAINER_REGISTRIES: ${{ env.container_registries }}
-          SIGN: ${{ inputs.container_image_sign }}
         working-directory: /tmp/digests
         run: |
           # Taken from: https://docs.docker.com/build/ci/github-actions/multi-platform/#distribute-build-across-multiple-runners
@@ -382,16 +380,18 @@ jobs:
               $(printf "${CONTAINER_REGISTRY_IMAGE_NAME}@sha256:%s " *)
           done <<< "$(yq '.[].image_name' <<< "${CONTAINER_REGISTRIES}")"
 
+      - name: Sign + create SBOM
+        if: ${{ inputs.container_image_sign }}
+        id: sign-sbom
+        run: |
           # Sign all tags prepared by docker/metadata-action
-          if [[ "${SIGN}" = "true" ]]; then
-            while read -r DOCKER_METADATA_TAG; do
-              # Workaround for: https://github.com/docker/buildx/issues/2407
-              CONTAINER_IMAGE_DIGEST="$(docker buildx imagetools inspect "${DOCKER_METADATA_TAG}" --format "{{json .Manifest.Digest}}" | jq -r)"
-              echo "CONTAINER_IMAGE_DIGEST=${CONTAINER_IMAGE_DIGEST}" | tee -a "${GITHUB_OUTPUT}"
-              syft attest --output cyclonedx-json "${DOCKER_METADATA_TAG}@${CONTAINER_IMAGE_DIGEST}"
-              cosign sign --yes "${DOCKER_METADATA_TAG}@${CONTAINER_IMAGE_DIGEST}"
-            done <<< "$(jq -r '.tags[]' <<< "${DOCKER_METADATA_OUTPUT_JSON}")"
-          fi
+          while read -r DOCKER_METADATA_TAG; do
+            # Workaround for: https://github.com/docker/buildx/issues/2407
+            CONTAINER_IMAGE_DIGEST="$(docker buildx imagetools inspect "${DOCKER_METADATA_TAG}" --format "{{json .Manifest.Digest}}" | jq -r)"
+            echo "CONTAINER_IMAGE_DIGEST=${CONTAINER_IMAGE_DIGEST}" | tee -a "${GITHUB_OUTPUT}"
+            syft attest --output cyclonedx-json "${DOCKER_METADATA_TAG}@${CONTAINER_IMAGE_DIGEST}"
+            cosign sign --yes "${DOCKER_METADATA_TAG}@${CONTAINER_IMAGE_DIGEST}"
+          done <<< "$(jq -r '.tags[]' <<< "${DOCKER_METADATA_OUTPUT_JSON}")"
 
       - name: Remove docker credentials
         if: ${{ always() }}
