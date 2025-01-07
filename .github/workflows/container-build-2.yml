@@ -142,7 +142,7 @@ jobs:
           done
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@49b3bc8e6bdd4a60e6116a5414239cba5943d3cf # v3
         with:
           platforms: ${{ matrix.platform }}
 
@@ -451,7 +451,7 @@ jobs:
             username: petr_ruzicka+github_actions_access
             password: quay_container_registry_password
           # keep-sorted end
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.0.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@5a775b367a56d5bd118a224a811bba288150a563 # v2.0.0
     with:
       image: ${{ matrix.image_name }}
       digest: ${{ needs.container-build-push-merge.outputs.container_image_digest }}
