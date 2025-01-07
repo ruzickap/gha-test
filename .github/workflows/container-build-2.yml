@@ -83,18 +83,18 @@ env:
       image_name: c8n.io/ruzickap-github/malware-cryptominer-container-test
       username: ${{ secrets.c8n_container_registry_user }}
       password: ${{ secrets.c8n_container_registry_password }}
-    - registry: docker.io
-      image_name: docker.io/peru/malware-cryptominer-container-test
-      username: ${{ secrets.dockerhub_container_registry_user }}
-      password: ${{ secrets.dockerhub_container_registry_password }}
-    - registry: ghcr.io
-      image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container-test
-      username: ${{ github.actor }}
-      password: ${{ secrets.GITHUB_TOKEN }}
-    - registry: quay.io
-      image_name: quay.io/petr_ruzicka/malware-cryptominer-container-test
-      username: ${{ secrets.quay_container_registry_user }}
-      password: ${{ secrets.quay_container_registry_password }}
+    # - registry: docker.io
+    #   image_name: docker.io/peru/malware-cryptominer-container-test
+    #   username: ${{ secrets.dockerhub_container_registry_user }}
+    #   password: ${{ secrets.dockerhub_container_registry_password }}
+    # - registry: ghcr.io
+    #   image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container-test
+    #   username: ${{ github.actor }}
+    #   password: ${{ secrets.GITHUB_TOKEN }}
+    # - registry: quay.io
+    #   image_name: quay.io/petr_ruzicka/malware-cryptominer-container-test
+    #   username: ${{ secrets.quay_container_registry_user }}
+    #   password: ${{ secrets.quay_container_registry_password }}
     # keep-sorted end
   # Push the container image to the registry when triggered by a scheduled execution or a push to the default branch
   container_registry_push_image: ${{ github.event_name == 'schedule' || inputs.container_registry_push || (github.ref_name == github.event.repository.default_branch && github.event_name == 'push') }}
@@ -399,13 +399,10 @@ jobs:
         id: sign-sbom
         run: |
           # Sign all tags prepared by docker/metadata-action
-          while read -r DOCKER_METADATA_TAG; do
-            # Workaround for: https://github.com/docker/buildx/issues/2407
-            CONTAINER_IMAGE_DIGEST="$(docker buildx imagetools inspect "${DOCKER_METADATA_TAG}" --format "{{json .Manifest.Digest}}" | jq -r)"
-            echo "CONTAINER_IMAGE_DIGEST=${CONTAINER_IMAGE_DIGEST}" | tee -a "${GITHUB_OUTPUT}"
-            syft attest --output cyclonedx-json "${DOCKER_METADATA_TAG}@${CONTAINER_IMAGE_DIGEST}"
-            cosign sign --yes "${DOCKER_METADATA_TAG}@${CONTAINER_IMAGE_DIGEST}"
-          done <<< "$(jq -r '.tags[]' <<< "${DOCKER_METADATA_OUTPUT_JSON}")"
+          CONTAINER_IMAGE_DIGEST="$(docker buildx imagetools inspect "${DOCKER_METADATA_TAG}" --format "{{json .Manifest.Digest}}" | jq -r)"
+          echo "CONTAINER_IMAGE_DIGEST=${CONTAINER_IMAGE_DIGEST}" | tee -a "${GITHUB_OUTPUT}"
+          # syft attest --output cyclonedx-json "${DOCKER_METADATA_TAG}@${CONTAINER_IMAGE_DIGEST}"
+          cosign sign --yes "${DOCKER_METADATA_TAG}@${CONTAINER_IMAGE_DIGEST}"
 
       - name: Remove docker credentials
         if: ${{ always() }}
@@ -452,19 +449,19 @@ jobs:
             image_name: c8n.io/ruzickap-github/malware-cryptominer-container-test
             username: robot_ruzickap-github+github_actions_access
             password: c8n_container_registry_password
-          - registry: docker.io
-            image_name: docker.io/peru/malware-cryptominer-container-test
-            username: peru
-            password: dockerhub_container_registry_password
-          - registry: ghcr.io
-            image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container-test
-            username: ${{ github.actor }}
-            password: GITHUB_TOKEN
-          - registry: quay.io
-            image_name: quay.io/petr_ruzicka/malware-cryptominer-container-test
-            username: petr_ruzicka+github_actions_access
-            password: quay_container_registry_password
-          # keep-sorted end
+          # - registry: docker.io
+          #   image_name: docker.io/peru/malware-cryptominer-container-test
+          #   username: peru
+          #   password: dockerhub_container_registry_password
+          # - registry: ghcr.io
+          #   image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container-test
+          #   username: ${{ github.actor }}
+          #   password: GITHUB_TOKEN
+          # - registry: quay.io
+          #   image_name: quay.io/petr_ruzicka/malware-cryptominer-container-test
+          #   username: petr_ruzicka+github_actions_access
+          #   password: quay_container_registry_password
+          # # keep-sorted end
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.0.0
     with:
       image: ${{ matrix.image_name }}
@@ -506,6 +503,14 @@ jobs:
             # COSIGN_ATTESTATION_TYPE="https://spdx.dev/Document"
             # CONTAINER_IMAGE_PLATFORMS="linux/amd64,linux/arm64"
 
+            # CONTAINER_REGISTRY_IMAGE_NAME="c8n.io/ruzickap-github/malware-cryptominer-container-test"
+            # CONTAINER_IMAGE_DIGEST=$(regctl image digest "c8n.io/ruzickap-github/malware-cryptominer-container-test:latest")
+            # CONTAINER_REGISTRY_IMAGE="c8n.io/ruzickap-github/malware-cryptominer-container-test@${CONTAINER_IMAGE_DIGEST}"
+            # COSIGN_CERTIFICATE_IDENTITY_REGEXP="https://github.com/ruzickap/gha-test/.github/workflows"
+            # COSIGN_CERTIFICATE_OIDC_ISSUER="https://token.actions.githubusercontent.com"
+            # COSIGN_ATTESTATION_TYPE="https://cyclonedx.org/bom"
+            # CONTAINER_IMAGE_PLATFORMS="linux/amd64,linux/arm64"
+
             #####################################
             # Cosign
             #####################################
@@ -536,8 +541,7 @@ jobs:
             cosign verify-attestation --type="${COSIGN_ATTESTATION_TYPE}" \
               --certificate-oidc-issuer="${COSIGN_CERTIFICATE_OIDC_ISSUER}" \
               --certificate-identity-regexp="${COSIGN_CERTIFICATE_IDENTITY_REGEXP}" \
-              "${CONTAINER_REGISTRY_IMAGE}" | jq '.payload | @base64d | fromjson | .predicate' > /tmp/attestation.json
-            grype --add-cpes-if-none /tmp/attestation.json
+              "${CONTAINER_REGISTRY_IMAGE}" | jq '.payload | @base64d | fromjson | .predicate' | grype
 
             for PLATFORM in ${CONTAINER_IMAGE_PLATFORMS//,/ }; do
               cosign download attestation --platform="${PLATFORM}" --predicate-type="${COSIGN_ATTESTATION_TYPE}" \

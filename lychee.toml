@@ -35,6 +35,7 @@ exclude = [
   'https://token.actions.githubusercontent.com/',
   'https://spdx.dev/Document',
   'https://cyclonedx.org/bom',
+  'https://github.com/ruzickap/gha-test/.github/workflows',
 ]
 
 # Exclude these filesystem paths from getting checked
