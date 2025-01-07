@@ -33,6 +33,8 @@ exclude = [
   # Ignore all URLs which starts with 'file://'
   'file://',
   'https://token.actions.githubusercontent.com/',
+  'https://spdx.dev/Document',
+  'https://cyclonedx.org/bom',
 ]
 
 # Exclude these filesystem paths from getting checked
