@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.9.0](https://github.com/ruzickap/gha-test/compare/v1.8.1...v1.9.0) (2025-01-07)
+
+
+### Features
+
+* add container-build-2.yml ([#229](https://github.com/ruzickap/gha-test/issues/229)) ([dcd7d84](https://github.com/ruzickap/gha-test/commit/dcd7d842dcc50671bcd2ed5fbae9edd833e4bcef))
+* add cosign ([#234](https://github.com/ruzickap/gha-test/issues/234)) ([6da6571](https://github.com/ruzickap/gha-test/commit/6da6571afb209f83c051c08b275676fd1fdd0188))
+* add docker orig workflow + new Dockerfile ([#225](https://github.com/ruzickap/gha-test/issues/225)) ([2a2be29](https://github.com/ruzickap/gha-test/commit/2a2be2906807ea8d5be80fd40dbbc1c3d4981ff4))
+* disable container-build.yml ([#231](https://github.com/ruzickap/gha-test/issues/231)) ([99778ad](https://github.com/ruzickap/gha-test/commit/99778ad6d252b54a64ce00130bcc77aa68c86725))
+
+
+### Bug Fixes
+
+* add contents: read ([#236](https://github.com/ruzickap/gha-test/issues/236)) ([f5f163e](https://github.com/ruzickap/gha-test/commit/f5f163e5779605e4e114fe1f4da4ce6f68813081))
+* disable docker provenance ([#228](https://github.com/ruzickap/gha-test/issues/228)) ([ebf2879](https://github.com/ruzickap/gha-test/commit/ebf2879f2ae3699973a84dd6ab1b2004f8462b6a))
+* fix annotations ([#232](https://github.com/ruzickap/gha-test/issues/232)) ([057f7e6](https://github.com/ruzickap/gha-test/commit/057f7e6220e4787e800eb506a69377707f302bf8))
+* fix container-build-2.yml ([#230](https://github.com/ruzickap/gha-test/issues/230)) ([8d63f12](https://github.com/ruzickap/gha-test/commit/8d63f1267e019384a2c853417e197ba53846ef49))
+* fix permissions ([#238](https://github.com/ruzickap/gha-test/issues/238)) ([98e4560](https://github.com/ruzickap/gha-test/commit/98e456000de97ca348c1b21b58ca88162316d1c1))
+* fix slsa pinning issue - renovate ([#237](https://github.com/ruzickap/gha-test/issues/237)) ([13b7441](https://github.com/ruzickap/gha-test/commit/13b744168e2d6923fad5004516d43148281da79a))
+* fix typo in container repository ([#227](https://github.com/ruzickap/gha-test/issues/227)) ([6c95b67](https://github.com/ruzickap/gha-test/commit/6c95b67d22644d93c4018683e9888b0ff1a238ec))
+* gh annotations ([#233](https://github.com/ruzickap/gha-test/issues/233)) ([1ec980b](https://github.com/ruzickap/gha-test/commit/1ec980b366e9033c4dd622466bf6d303b9068cb8))
+* grype - only-fixed: true ([#239](https://github.com/ruzickap/gha-test/issues/239)) ([dcfc944](https://github.com/ruzickap/gha-test/commit/dcfc944be4fd099d83f15aa2ce9146ed25f8576f))
+
 ## [1.8.1](https://github.com/ruzickap/gha-test/compare/v1.8.0...v1.8.1) (2025-01-04)
 
 
