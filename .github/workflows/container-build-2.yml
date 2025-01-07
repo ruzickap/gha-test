@@ -408,7 +408,6 @@ jobs:
     if: ${{ inputs.container_image_sign || inputs.release_tag != '' }}
     permissions:
       actions: read # for detecting the Github Actions environment.
-      contents: read
       id-token: write # for creating OIDC tokens for signing.
       packages: write # for uploading attestations.
     strategy:
@@ -452,7 +451,7 @@ jobs:
             username: petr_ruzicka+github_actions_access
             password: quay_container_registry_password
           # keep-sorted end
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@5a775b367a56d5bd118a224a811bba288150a563 # v2.0.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.0.0
     with:
       image: ${{ matrix.image_name }}
       digest: ${{ needs.container-build-push-merge.outputs.container_image_digest }}
