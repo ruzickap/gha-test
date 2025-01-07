@@ -5,8 +5,9 @@ name: container-build-2
 on:
   workflow_dispatch:
     inputs:
-      container_registry_push:
-        description: "Push the container image to the registry"
+      # keep-sorted start
+      container_image_sign:
+        description: "SBOM + Sign the container image"
         type: boolean
         required: false
         default: false
@@ -15,19 +16,25 @@ on:
         type: boolean
         required: false
         default: true
-      container_image_sign:
-        description: "SBOM + Sign the container image"
+      container_registry_push:
+        description: "Push the container image to the registry"
         type: boolean
         required: false
         default: false
+      # keep-sorted end
   workflow_call:
     inputs:
+      # keep-sorted start
+      container_image_sign:
+        type: boolean
+        required: true
       container_registry_push:
         type: boolean
         required: true
       release_tag:
         type: string
         required: true
+      # keep-sorted end
   push:
     branches-ignore:
       - renovate/*
@@ -193,14 +200,12 @@ jobs:
             maintainer=${{ env.container_image_authors }}
 
             ## https://artifacthub.io/docs/topics/repositories/container-images/
-            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/README.md
+            # keep-sorted start sticky_comments=no
             # org.opencontainers.image.created - it is there by default
             # org.opencontainers.image.description - it is there by default (repository description)
-            org.opencontainers.image.documentation=${{ github.event.repository.html_url }}/blob/${{ github.sha }}/README.md
             # org.opencontainers.image.source - it is there by default
             # org.opencontainers.image.title - it is there by default
             # org.opencontainers.image.url - it is there by default
-            org.opencontainers.image.vendor=${{ env.container_image_vendor }}
             # org.opencontainers.image.version - it is there by default
             io.artifacthub.package.alternative-locations=${{ env.DOCKER_IMAGE_NAMES }}
             io.artifacthub.package.category=${{ env.container_image_category }}
@@ -208,26 +213,34 @@ jobs:
             io.artifacthub.package.license=${{ github.event.repository.license.spdx_id }}
             io.artifacthub.package.logo-url=${{ env.container_image_logo_url || 'https://raw.githubusercontent.com/kubernetes/community/487f994c013ea61d92cf9a341af7620037abbce3/icons/svg/resources/unlabeled/pod.svg' }}
             io.artifacthub.package.maintainers=[{"name":"${{ env.container_image_authors_name }}","email":"${{ env.container_image_authors }}"}]
+            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/README.md
+            org.opencontainers.image.documentation=${{ github.event.repository.html_url }}/blob/${{ github.sha }}/README.md
+            org.opencontainers.image.vendor=${{ env.container_image_vendor }}
+            # keep-sorted end
 
             ## https://specs.opencontainers.org/image-spec/annotations/?v=v1.0.1#pre-defined-annotation-keys
+            # keep-sorted start sticky_comments=no
             # org.opencontainers.image.created - it is there by default
-            org.opencontainers.image.authors=${{ env.container_image_authors }}
-            # org.opencontainers.image.url - it is there by default
-            # org.opencontainers.image.documentation - already set
-            # org.opencontainers.image.source - it is there by default
-            # org.opencontainers.image.version - it is there by default
-            # org.opencontainers.image.revision - it is there by default
-            # org.opencontainers.image.vendor - already set
-            # org.opencontainers.image.licenses - it is there by default
-            org.opencontainers.image.ref.name=${{ github.ref_name }}
-            # org.opencontainers.image.title - it is there by default
             # org.opencontainers.image.description - it is there by default (repository description)
+            # org.opencontainers.image.documentation - already set
+            # org.opencontainers.image.licenses - it is there by default
+            # org.opencontainers.image.revision - it is there by default
+            # org.opencontainers.image.source - it is there by default
+            # org.opencontainers.image.title - it is there by default
+            # org.opencontainers.image.url - it is there by default
+            # org.opencontainers.image.vendor - already set
+            # org.opencontainers.image.version - it is there by default
+            org.opencontainers.image.authors=${{ env.container_image_authors }}
+            org.opencontainers.image.ref.name=${{ github.ref_name }}
+            # keep-sorted end
 
             # https://github.com/badouralix/dockerfiles/blob/c91181b356f92574f26d0499ee3d2be2cacd0952/LABELS.md
+            # keep-sorted start sticky_comments=no
             com.github.actions.event_name=${{ github.event_name }}
             com.github.actions.job=${{ github.job }}
             com.github.actions.run_id=${{ github.run_id }}
             com.github.actions.run_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            # keep-sorted end
 
       - name: Push image to container registries
         uses: docker/build-push-action@48aba3b46d1b1fec4febb7c5d0c644b249a11355 # v6.10.0
