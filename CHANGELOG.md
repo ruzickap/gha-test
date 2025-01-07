@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.2](https://github.com/ruzickap/gha-test/compare/v1.9.1...v1.9.2) (2025-01-07)
+
+
+### Bug Fixes
+
+* fix signature issue ([#242](https://github.com/ruzickap/gha-test/issues/242)) ([d400163](https://github.com/ruzickap/gha-test/commit/d400163272e5f312f769258593c4bd7a60be6a85))
+
 ## [1.9.1](https://github.com/ruzickap/gha-test/compare/v1.9.0...v1.9.1) (2025-01-07)
 
 
