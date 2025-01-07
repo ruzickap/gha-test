@@ -167,7 +167,7 @@ jobs:
         with:
           fail-build: ${{ inputs.container_image_vulnerability_scan }}
           image: temporary_container-${{ github.run_id }}:latest
-          ##### only-fixed: true
+          only-fixed: true
           output-format: table
           severity-cutoff: high
 
