@@ -37,6 +37,11 @@
       matchUpdateTypes: ["patch"],
     },
     {
+      description: "Skip pinning for slsa-framework/slsa-github-generator",
+      matchPackageNames: ["slsa-framework/slsa-github-generator"],
+      pinDigests: false,
+    },
+    {
       description: "Update renovatebot/github-action minor updates on Sundays",
       matchPackageNames: ["renovatebot/github-action"],
       matchUpdateTypes: ["minor"],
