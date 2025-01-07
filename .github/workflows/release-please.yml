@@ -41,6 +41,7 @@ jobs:
       security-events: write
     uses: ./.github/workflows/container-build-2.yml
     with:
+      container_image_sign: true
       container_registry_push: true
       release_tag: ${{ needs.release-please.outputs.release_tag }}
     secrets: inherit
