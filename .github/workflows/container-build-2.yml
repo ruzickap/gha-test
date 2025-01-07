@@ -408,6 +408,7 @@ jobs:
     if: ${{ inputs.container_image_sign || inputs.release_tag != '' }}
     permissions:
       actions: read # for detecting the Github Actions environment.
+      contents: read
       id-token: write # for creating OIDC tokens for signing.
       packages: write # for uploading attestations.
     strategy:
