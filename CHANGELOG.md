@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/ruzickap/gha-test/compare/v1.10.0...v1.11.0) (2025-01-08)
+
+
+### Features
+
+* add tests ([#249](https://github.com/ruzickap/gha-test/issues/249)) ([ed68d5e](https://github.com/ruzickap/gha-test/commit/ed68d5eca83712a1f45854e0d9e60b10259030e6))
+
 ## [1.10.0](https://github.com/ruzickap/gha-test/compare/v1.9.3...v1.10.0) (2025-01-08)
 
 
