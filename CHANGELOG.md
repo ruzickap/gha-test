@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.3](https://github.com/ruzickap/gha-test/compare/v1.9.2...v1.9.3) (2025-01-08)
+
+
+### Bug Fixes
+
+* fix tag ([#244](https://github.com/ruzickap/gha-test/issues/244)) ([ae5a582](https://github.com/ruzickap/gha-test/commit/ae5a582622e97d6ece4ef3194ff7c7cdbbdb82d7))
+
 ## [1.9.2](https://github.com/ruzickap/gha-test/compare/v1.9.1...v1.9.2) (2025-01-07)
 
 

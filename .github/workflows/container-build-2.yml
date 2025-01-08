@@ -109,8 +109,8 @@ jobs:
     strategy:
       matrix:
         platform:
-          - linux/amd64
-          - linux/arm64
+          - amd64
+          - arm64
     permissions:
       id-token: write # for creating OIDC tokens for signing
       packages: write # for uploading attestations
@@ -135,6 +135,10 @@ jobs:
           # Get the directory where the Dockerfile is located
           echo "CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY=$(dirname "${CONTAINER_IMAGE_DOCKERFILE_LOCATION}")" | tee -a "${GITHUB_ENV}"
 
+          # Create list of image names for docker/metadata-action ("images" parameter)
+          CONTAINER_REGISTRY_IMAGE_NAMES=$(yq ".[].image_name" <<< "${CONTAINER_REGISTRIES}" )
+          echo "CONTAINER_REGISTRY_IMAGE_NAMES<<EOF"$'\n'"${CONTAINER_REGISTRY_IMAGE_NAMES}"$'\n'EOF | tee -a "${GITHUB_ENV}"
+
       - name: Login to container registries
         if: ${{ env.container_registry_push_image == 'true' }}
         env:
@@ -150,6 +154,7 @@ jobs:
           done
 
       - name: Set up QEMU
+        if: matrix.arch != 'amd64'
         uses: docker/setup-qemu-action@49b3bc8e6bdd4a60e6116a5414239cba5943d3cf # v3.2.0
         with:
           platforms: ${{ matrix.platform }}
@@ -165,7 +170,7 @@ jobs:
         with:
           file: ${{ env.container_image_dockerfile_location }}
           context: ${{ env.CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY }}
-          platforms: ${{ matrix.platform }}
+          platforms: linux/${{ matrix.platform }}
           load: true
           tags: temporary_container-${{ github.run_id }}:latest
 
@@ -251,7 +256,7 @@ jobs:
         with:
           file: ${{ env.container_image_dockerfile_location }}
           context: ${{ env.CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY }}
-          platforms: ${{ matrix.platform }}
+          platforms: linux/${{ matrix.platform }}
           provenance: false
           outputs: type=image,"name=${{ env.DOCKER_IMAGE_NAMES }}",push-by-digest=true,name-canonical=true,push=true
           annotations: ${{ steps.docker_meta.outputs.labels }}
@@ -270,29 +275,29 @@ jobs:
         env:
           CONTAINER_REGISTRIES: ${{ env.container_registries }}
           DIGEST: ${{ steps.docker-build-push.outputs.digest }}
-          PLATFORM: ${{ matrix.platform }}
+          PLATFORM: linux/${{ matrix.platform }}
         run: |
-          for CONTAINER_REGISTRY_IMAGE_NAME in $(yq '.[].image_name' <<< "${CONTAINER_REGISTRIES}"); do
-            cosign sign --yes "${CONTAINER_REGISTRY_IMAGE_NAME}@${DIGEST}"
+          for CONTAINER_REGISTRY_IMAGE_NAME in ${CONTAINER_REGISTRY_IMAGE_NAMES}; do
+            # cosign sign --yes "${CONTAINER_REGISTRY_IMAGE_NAME}@${DIGEST}"
             syft attest --output cyclonedx-json --platform "${PLATFORM}" "${CONTAINER_REGISTRY_IMAGE_NAME}@${DIGEST}"
           done
 
       - name: Export digest
         if: ${{ env.container_registry_push_image == 'true' }}
+        working-directory: ${{ runner.temp }}
         env:
           DIGEST: ${{ steps.docker-build-push.outputs.digest }}
           PLATFORM: ${{ matrix.platform }}
         run: |
-          mkdir -p /tmp/digests
+          mkdir digests
           touch "/tmp/digests/${DIGEST#sha256:}"
-          echo "PLATFORM_PAIR=${PLATFORM//\//-}" >> "${GITHUB_ENV}"
 
       - name: Upload digest
         if: ${{ env.container_registry_push_image == 'true' }}
         uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
-          name: digests-${{ env.PLATFORM_PAIR }}
-          path: /tmp/digests/*
+          name: digests-${{ matrix.platform }}
+          path: ${{ runner.temp }}/digests/*
           if-no-files-found: error
           retention-days: 1
 
@@ -328,8 +333,9 @@ jobs:
 
       - name: Download digests
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        id: download
         with:
-          path: /tmp/digests
+          path: ${{ runner.temp }}/digests
           pattern: digests-*
           merge-multiple: true
 
@@ -346,20 +352,14 @@ jobs:
             docker login "${REGISTRY}" --username "${USERNAME}" --password-stdin <<< "${PASSWORD}"
           done
 
-      - name: Set variables
-        env:
-          CONTAINER_REGISTRIES: ${{ env.container_registries }}
-        run: |
-          # Create list of image names for docker/metadata-action ("images" parameter)
-          CONTAINER_REGISTRY_IMAGE_NAME=$(yq ".[].image_name" <<< "${CONTAINER_REGISTRIES}" )
-          echo "CONTAINER_REGISTRY_IMAGE_NAME<<EOF"$'\n'"${CONTAINER_REGISTRY_IMAGE_NAME}"$'\n'EOF | tee -a "${GITHUB_ENV}"
-
       - name: Docker metadata
         uses: docker/metadata-action@369eb591f429131d6889c46b94e711f089e6ca96 # v5.6.1
         id: docker_meta
+        env:
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: index
         with:
           images: |
-            ${{ env.CONTAINER_REGISTRY_IMAGE_NAME }}
+            ${{ env.CONTAINER_REGISTRY_IMAGE_NAMES }}
           tags: |
             # Whever the pipeline runs form "main" - use "latest" container tag
             type=raw,value=latest,enable={{is_default_branch}}
@@ -380,19 +380,25 @@ jobs:
         uses: anchore/sbom-action/download-syft@df80a981bc6edbc4e220a492d3cbe9f5547a6e75 # v0.17.9
         if: ${{ inputs.container_image_sign }}
 
-      - name: Create a new image based on source images
+      - name: Create and push multi-platform image index
         env:
           CONTAINER_REGISTRIES: ${{ env.container_registries }}
-        working-directory: /tmp/digests
+        working-directory: ${{ steps.download.outputs.download-path }}/digests
         run: |
           # Taken from: https://docs.docker.com/build/ci/github-actions/multi-platform/#distribute-build-across-multiple-runners
           while read -r CONTAINER_REGISTRY_IMAGE_NAME; do
             # How to use environment variables within a command in jq script files: https://stackoverflow.com/questions/71681011/how-to-use-environment-variables-within-a-command-in-jq-script-files
             # shellcheck disable=SC2046  # Quote this to prevent word splitting
-            docker buildx imagetools create \
-              $(jq -cr --arg CONTAINER_REGISTRY_IMAGE_NAME "${CONTAINER_REGISTRY_IMAGE_NAME}" '[.tags[] | select(contains($CONTAINER_REGISTRY_IMAGE_NAME))] | map("-t " + .) | join(" ")' <<< "${DOCKER_METADATA_OUTPUT_JSON}") \
-              $(printf "${CONTAINER_REGISTRY_IMAGE_NAME}@sha256:%s " *)
-          done <<< "$(yq '.[].image_name' <<< "${CONTAINER_REGISTRIES}")"
+            # docker buildx imagetools create \
+            #   $(jq -cr --arg CONTAINER_REGISTRY_IMAGE_NAME "${CONTAINER_REGISTRY_IMAGE_NAME}" '[.tags[] | select(contains($CONTAINER_REGISTRY_IMAGE_NAME))] | map("--tag " + .) | join(" ")' <<< "${DOCKER_METADATA_OUTPUT_JSON}") \
+            #   $(printf "${CONTAINER_REGISTRY_IMAGE_NAME}@sha256:%s " *)
+
+            readarray -t annotations < <(jq -r '.annotations[] | ("--annotation", .)' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
+            readarray -t tags < <(jq -r --arg CONTAINER_REGISTRY_IMAGE_NAME "${CONTAINER_REGISTRY_IMAGE_NAME}" '[.tags[] | select(contains($CONTAINER_REGISTRY_IMAGE_NAME))] | ("--tag", .)' <<< "${DOCKER_METADATA_OUTPUT_JSON}")
+            readarray -t refs < <(printf "${CONTAINER_REGISTRY_IMAGE_NAME}@sha256:%s " *)
+            docker buildx imagetools create "${annotations[@]}" "${tags[@]}" "${refs[@]}"
+
+          done <<< "${CONTAINER_REGISTRY_IMAGE_NAMES}"
 
       - name: Sign + create SBOM
         if: ${{ inputs.container_image_sign }}
@@ -406,9 +412,9 @@ jobs:
           echo "CONTAINER_IMAGE_DIGEST=${CONTAINER_IMAGE_DIGEST}" | tee -a "${GITHUB_OUTPUT}"
 
           while read -r CONTAINER_REGISTRY_IMAGE_NAME; do
-            cosign sign --yes "${CONTAINER_REGISTRY_IMAGE_NAME}@${CONTAINER_IMAGE_DIGEST}"
+            cosign sign --recursive --yes "${CONTAINER_REGISTRY_IMAGE_NAME}@${CONTAINER_IMAGE_DIGEST}"
             syft attest --output cyclonedx-json "${CONTAINER_REGISTRY_IMAGE_NAME}@${CONTAINER_IMAGE_DIGEST}"
-          done <<< "$(yq '.[].image_name' <<< "${CONTAINER_REGISTRIES}")"
+          done <<< "${CONTAINER_REGISTRY_IMAGE_NAMES}"
 
       - name: Remove docker credentials
         if: ${{ always() }}
@@ -495,7 +501,7 @@ jobs:
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
           brew install cosign grype regclient slsa-verifier
 
-          for CONTAINER_REGISTRY_IMAGE_NAME in $(yq '.[].image_name' <<< "${CONTAINER_REGISTRIES}"); do
+          for CONTAINER_REGISTRY_IMAGE_NAME in ${CONTAINER_REGISTRY_IMAGE_NAMES}; do
             CONTAINER_REGISTRY_IMAGE="${CONTAINER_REGISTRY_IMAGE_NAME}@${CONTAINER_IMAGE_DIGEST}"
             echo "*** ${CONTAINER_REGISTRY_IMAGE_NAME}"
 
@@ -574,6 +580,7 @@ jobs:
 
             cosign download attestation "${CONTAINER_REGISTRY_IMAGE}" | jq --color-output '.payload |= .[:2000] + "...<rest_is_removed>..."'
 
+            # Note: "regctl manifest get" should contain "Annotations"
             regctl manifest get "${CONTAINER_REGISTRY_IMAGE}"
             regctl manifest get "${CONTAINER_REGISTRY_IMAGE/@*/}:${CONTAINER_IMAGE_DIGEST/:/-}.att"
 
