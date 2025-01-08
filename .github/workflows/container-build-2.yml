@@ -43,8 +43,8 @@ on:
     paths:
       - Dockerfile
       - .github/workflows/container-build-2.yml
-  # schedule:
-  #   - cron: "0 7 4 * *"
+  schedule:
+    - cron: "0 0 9 * *"
 
 permissions:
   actions: read
@@ -85,14 +85,14 @@ env:
       image_name: c8n.io/ruzickap-github/malware-cryptominer-container-test
       username: ${{ secrets.c8n_container_registry_user }}
       password: ${{ secrets.c8n_container_registry_password }}
-    # - registry: docker.io
-    #   image_name: docker.io/peru/malware-cryptominer-container-test
-    #   username: ${{ secrets.dockerhub_container_registry_user }}
-    #   password: ${{ secrets.dockerhub_container_registry_password }}
-    # - registry: ghcr.io
-    #   image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container-test
-    #   username: ${{ github.actor }}
-    #   password: ${{ secrets.GITHUB_TOKEN }}
+    - registry: docker.io
+      image_name: docker.io/peru/malware-cryptominer-container-test
+      username: ${{ secrets.dockerhub_container_registry_user }}
+      password: ${{ secrets.dockerhub_container_registry_password }}
+    - registry: ghcr.io
+      image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container-test
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
     - registry: quay.io
       image_name: quay.io/petr_ruzicka/malware-cryptominer-container-test
       username: ${{ secrets.quay_container_registry_user }}
@@ -103,16 +103,28 @@ env:
   # keep-sorted end
 
 jobs:
+  # Workaround: https://stackoverflow.com/questions/74072206/github-actions-use-variables-in-matrix-definition
+  container-build-push-matrix-platform:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix_platform_json: ${{ steps.matrix-platform.outputs.MATRIX_PLATFORM_JSON }}
+    steps:
+      - name: Parse container_image_platforms for Matrix Platform
+        id: matrix-platform
+        env:
+          CONTAINER_IMAGE_PLATFORMS: ${{ env.container_image_platforms }}
+        run: |
+          echo "MATRIX_PLATFORM_JSON=$(jq -cR 'split(",")' <<< "${CONTAINER_IMAGE_PLATFORMS}")" | tee -a "${GITHUB_OUTPUT}"
+
   container-build-push:
     name: ${{ matrix.platform }} - build (and push)
     runs-on: ubuntu-latest
+    needs: container-build-push-matrix-platform
     outputs:
       container_image_platform_digest: ${{ steps.docker-build-push.outputs.digest }}
     strategy:
       matrix:
-        platform:
-          - amd64
-          - arm64
+        platform: ${{ fromJSON(needs.container-build-push-matrix-platform.outputs.matrix_platform_json) }}
     permissions:
       id-token: write # for creating OIDC tokens for signing
       packages: write # for uploading attestations
@@ -137,6 +149,9 @@ jobs:
           # Get the directory where the Dockerfile is located
           echo "CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY=$(dirname "${CONTAINER_IMAGE_DOCKERFILE_LOCATION}")" | tee -a "${GITHUB_ENV}"
 
+          # Replace "/" by "-" in platform variable to be used in "Export digest"
+          echo "PLATFORM=$(echo "${{ matrix.platform }}" | tr '/' '-')" | tee -a "${GITHUB_ENV}"
+
       - name: Login to container registries
         if: ${{ env.container_registry_push_image == 'true' }}
         env:
@@ -152,7 +167,7 @@ jobs:
           done
 
       - name: Set up QEMU
-        if: matrix.platform != 'amd64'
+        if: ${{ !contains(matrix.platform, 'amd64') }}
         uses: docker/setup-qemu-action@49b3bc8e6bdd4a60e6116a5414239cba5943d3cf # v3.2.0
         with:
           platforms: ${{ matrix.platform }}
@@ -168,7 +183,7 @@ jobs:
         with:
           file: ${{ env.container_image_dockerfile_location }}
           context: ${{ env.CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY }}
-          platforms: linux/${{ matrix.platform }}
+          platforms: ${{ matrix.platform }}
           load: true
           tags: temporary_container-${{ github.run_id }}:latest
 
@@ -254,7 +269,7 @@ jobs:
         with:
           file: ${{ env.container_image_dockerfile_location }}
           context: ${{ env.CONTAINER_IMAGE_DOCKER_BUILD_DIRECTORY }}
-          platforms: linux/${{ matrix.platform }}
+          platforms: ${{ matrix.platform }}
           provenance: false
           outputs: type=image,"name=${{ env.DOCKER_IMAGE_NAMES }}",push-by-digest=true,name-canonical=true,push=true
           annotations: ${{ steps.docker_meta.outputs.labels }}
@@ -273,7 +288,7 @@ jobs:
         env:
           CONTAINER_REGISTRIES: ${{ env.container_registries }}
           DIGEST: ${{ steps.docker-build-push.outputs.digest }}
-          PLATFORM: linux/${{ matrix.platform }}
+          PLATFORM: ${{ matrix.platform }}
         run: |
           while read -r CONTAINER_REGISTRY_IMAGE_NAME; do
             syft attest --output cyclonedx-json --platform "${PLATFORM}" "${CONTAINER_REGISTRY_IMAGE_NAME}@${DIGEST}"
@@ -293,7 +308,7 @@ jobs:
         if: ${{ env.container_registry_push_image == 'true' }}
         uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
-          name: digests-${{ matrix.platform }}
+          name: digests-${{ env.PLATFORM }}
           path: ${{ runner.temp }}/digests/*
           if-no-files-found: error
           retention-days: 1
@@ -316,7 +331,7 @@ jobs:
   container-build-push-merge:
     name: merge container images and generate sbom, provenance and signatures
     runs-on: ubuntu-latest
-    needs: [container-build-push]
+    needs: container-build-push
     if: ${{ needs.container-build-push.outputs.container_image_platform_digest != '' }}
     permissions:
       id-token: write # for creating OIDC tokens for signing
@@ -411,6 +426,7 @@ jobs:
 
           while read -r CONTAINER_REGISTRY_IMAGE_NAME; do
             cosign sign --recursive --yes "${CONTAINER_REGISTRY_IMAGE_NAME}@${CONTAINER_IMAGE_DIGEST}"
+            # Syft doesn't support recursive attestation yet - this is only for index manifest
             syft attest --output cyclonedx-json "${CONTAINER_REGISTRY_IMAGE_NAME}@${CONTAINER_IMAGE_DIGEST}"
           done <<< "$(yq '.[].image_name' <<< "${CONTAINER_REGISTRIES}")"
 
@@ -425,7 +441,7 @@ jobs:
 
   provenance:
     name: ${{ matrix.registry }} - provenance
-    needs: [container-build-push-merge]
+    needs: container-build-push-merge
     if: ${{ inputs.container_image_sign || inputs.release_tag != '' }}
     permissions:
       actions: read # for detecting the Github Actions environment.
@@ -459,14 +475,14 @@ jobs:
             image_name: c8n.io/ruzickap-github/malware-cryptominer-container-test
             username: robot_ruzickap-github+github_actions_access
             password: c8n_container_registry_password
-          # - registry: docker.io
-          #   image_name: docker.io/peru/malware-cryptominer-container-test
-          #   username: peru
-          #   password: dockerhub_container_registry_password
-          # - registry: ghcr.io
-          #   image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container-test
-          #   username: ${{ github.actor }}
-          #   password: GITHUB_TOKEN
+          - registry: docker.io
+            image_name: docker.io/peru/malware-cryptominer-container-test
+            username: peru
+            password: dockerhub_container_registry_password
+          - registry: ghcr.io
+            image_name: ghcr.io/${{ github.repository_owner }}/malware-cryptominer-container-test
+            username: ${{ github.actor }}
+            password: GITHUB_TOKEN
           - registry: quay.io
             image_name: quay.io/petr_ruzicka/malware-cryptominer-container-test
             username: petr_ruzicka+github_actions_access
