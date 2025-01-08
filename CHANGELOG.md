@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/ruzickap/gha-test/compare/v1.9.3...v1.10.0) (2025-01-08)
+
+
+### Features
+
+* redesign signing ([#247](https://github.com/ruzickap/gha-test/issues/247)) ([6265e7c](https://github.com/ruzickap/gha-test/commit/6265e7c81341e093d8f77ec65331ef2e71c49381))
+
 ## [1.9.3](https://github.com/ruzickap/gha-test/compare/v1.9.2...v1.9.3) (2025-01-08)
 
 
