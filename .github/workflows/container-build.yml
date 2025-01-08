@@ -103,7 +103,7 @@ jobs:
       container_image_digest: ${{ steps.docker-build-push.outputs.digest }}
     services:
       registry:
-        image: registry:2@sha256:659d0b14276ef61b9ec46d6d07c77aaa714158312d83700199eed592359c3267
+        image: registry:2@sha256:26f7266535a3a1dae81e137ba4935c59d96e7bb4b700f64e4af8959ca5ab0419
         ports:
           - 5000:5000
     steps:
