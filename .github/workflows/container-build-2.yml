@@ -60,7 +60,7 @@ env:
   container_image_category: security
   container_image_dockerfile_location: Dockerfile
   container_image_logo_url: https://raw.githubusercontent.com/MISP/intelligence-icons/513abc840b7ac92e4f8a4a7ecab2964007bf25f5/svg/threat_actor.svg
-  container_image_platforms: linux/amd64,linux/arm64
+  container_image_platforms: linux/amd64,linux/arm64,linux/arm/v7
   container_image_repository_url: https://quay.io/repository/petr_ruzicka/malware-cryptominer-container?tab=tags
   container_image_vendor: MyCompany
   container_registries: |
@@ -117,8 +117,8 @@ jobs:
           echo "MATRIX_PLATFORM_JSON=$(jq -cR 'split(",")' <<< "${CONTAINER_IMAGE_PLATFORMS}")" | tee -a "${GITHUB_OUTPUT}"
 
   container-build-push:
-    name: ${{ matrix.platform }} - build (and push)
-    runs-on: ubuntu-latest
+    name: ${{ matrix.platform }} - build
+    runs-on: ${{ contains(matrix.platform, 'arm') && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     needs: container-build-push-matrix-platform
     outputs:
       container_image_platform_digest: ${{ steps.docker-build-push.outputs.digest }}
@@ -167,7 +167,7 @@ jobs:
           done
 
       - name: Set up QEMU
-        if: ${{ !contains(matrix.platform, 'amd64') }}
+        if: ${{ !contains(matrix.platform, 'amd64') && !contains(matrix.platform, 'arm') }}
         uses: docker/setup-qemu-action@53851d14592bedcffcf25ea515637cff71ef929a # v3.3.0
         with:
           platforms: ${{ matrix.platform }}
