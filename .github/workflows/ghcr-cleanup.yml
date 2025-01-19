@@ -21,6 +21,7 @@ jobs:
           delete-orphaned-images: true
           delete-partial-images: true
           dry-run: true
+          package: malware-cryptominer-container-test
           validate: true
 
       - name: Delete "br-*" tags older than 2 months
@@ -30,3 +31,4 @@ jobs:
           dry-run: true
           delete-tags: br-*
           older-than: 2 months
+          package: malware-cryptominer-container-test
