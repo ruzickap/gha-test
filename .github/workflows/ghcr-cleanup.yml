@@ -1,0 +1,32 @@
+name: ghcr-cleanup
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 0 0 1 * *
+
+permissions: read-all
+
+jobs:
+  delete-untagged-images:
+    name: Delete Untagged Images
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Delete orphaned, partial, ghost images
+        uses: dataaxiom/ghcr-cleanup-action@v1
+        with:
+          delete-ghost-images: true
+          delete-orphaned-images: true
+          delete-partial-images: true
+          dry-run: true
+          validate: true
+
+      - name: Delete "br-*" tags older than 2 months
+        uses: dataaxiom/ghcr-cleanup-action@v1
+        with:
+          use-regex: true
+          dry-run: true
+          delete-tags: br-*
+          older-than: 2 months
