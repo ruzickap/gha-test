@@ -13,6 +13,9 @@ on:
 
 permissions: read-all
 
+concurrency:
+  group: container-build
+
 jobs:
   delete-untagged-images:
     runs-on: ubuntu-latest
