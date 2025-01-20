@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.12.0](https://github.com/ruzickap/gha-test/compare/v1.11.0...v1.12.0) (2025-01-20)
+
+
+### Features
+
+* add arm64 hosted runner ([#252](https://github.com/ruzickap/gha-test/issues/252)) ([e340911](https://github.com/ruzickap/gha-test/commit/e3409117fef21025ac1cf32852e38dfb4b969988))
+* add config for release-please ([#259](https://github.com/ruzickap/gha-test/issues/259)) ([740d2f5](https://github.com/ruzickap/gha-test/commit/740d2f5a3d57d103a44194cf8b38b27e429bf454))
+* add ghcr-cleanup ([#254](https://github.com/ruzickap/gha-test/issues/254)) ([3d2ad0a](https://github.com/ruzickap/gha-test/commit/3d2ad0af8144fca0f17b5f69659d54c727e8c9a7))
+
+
+### Bug Fixes
+
+* add delete-untagged ([#256](https://github.com/ruzickap/gha-test/issues/256)) ([b3cf49c](https://github.com/ruzickap/gha-test/commit/b3cf49cf6b35d483c1ca71912ed52e84da899c64))
+* add package to ghcr-cleanup ([#255](https://github.com/ruzickap/gha-test/issues/255)) ([d6f6624](https://github.com/ruzickap/gha-test/commit/d6f66247ae9415befbe5e64635978aff0f36316b))
+* branch test ([#257](https://github.com/ruzickap/gha-test/issues/257)) ([14fcc0e](https://github.com/ruzickap/gha-test/commit/14fcc0e00a80695dd9ff45600f37e1d0b562b7af))
+* fix issue with release-please-config ([#260](https://github.com/ruzickap/gha-test/issues/260)) ([8d01019](https://github.com/ruzickap/gha-test/commit/8d01019efd1a460dcea8cbac3e57893ad90fef85))
+* fix pr issue in main ([#258](https://github.com/ruzickap/gha-test/issues/258)) ([6393790](https://github.com/ruzickap/gha-test/commit/63937902d25fabd1e5b8ef3ab427e08d36672b12))
+
 ## [1.11.0](https://github.com/ruzickap/gha-test/compare/v1.10.0...v1.11.0) (2025-01-08)
 
 
