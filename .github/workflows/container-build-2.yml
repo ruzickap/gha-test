@@ -176,7 +176,7 @@ jobs:
         uses: docker/setup-buildx-action@6524bf65af31da8d45b59e8c27de4bd072b392f5 # v3.8.0
 
       - name: Build temporary container image
-        uses: docker/build-push-action@b32b51a8eda65d6793cd0494a773d4f6bcef32dc # v6.11.0
+        uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # v6.12.0
         id: docker-build-push-temporary
         env:
           DOCKER_BUILD_SUMMARY: false
@@ -261,7 +261,7 @@ jobs:
             # keep-sorted end
 
       - name: Push image to container registries
-        uses: docker/build-push-action@b32b51a8eda65d6793cd0494a773d4f6bcef32dc # v6.11.0
+        uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # v6.12.0
         if: ${{ env.container_registry_push_image == 'true' }}
         id: docker-build-push
         env:
