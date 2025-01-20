@@ -2,14 +2,19 @@ name: ghcr-cleanup
 
 on:
   workflow_dispatch:
+    inputs:
+      dry-run:
+        description: "Dry run"
+        type: boolean
+        required: false
+        default: true
   schedule:
-    - cron: 0 0 1 * *
+    - cron: 10 5 * * *
 
 permissions: read-all
 
 jobs:
   delete-untagged-images:
-    name: Delete Untagged Images
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -20,15 +25,23 @@ jobs:
           delete-ghost-images: true
           delete-orphaned-images: true
           delete-partial-images: true
-          dry-run: true
+          delete-untagged: true
+          dry-run: ${{ github.event.inputs.dry-run || false }}
           package: malware-cryptominer-container-test
           validate: true
 
-      - name: Delete "br-*" tags older than 2 months
-        uses: dataaxiom/ghcr-cleanup-action@v1
-        with:
-          use-regex: true
-          dry-run: true
-          delete-tags: br-*
-          older-than: 2 months
-          package: malware-cryptominer-container-test
+      # - name: Delete "br-*" tags older than 1 months
+      #   uses: dataaxiom/ghcr-cleanup-action@v1
+      #   with:
+      #     use-regex: true
+      #     dry-run: ${{ github.event.inputs.dry-run || false }}
+      #     delete-tags: br-*
+      #     older-than: 1 month
+      #     package: malware-cryptominer-container-test
+
+      # - name: Test
+      #   uses: dataaxiom/ghcr-cleanup-action@v1
+      #   with:
+      #     dry-run: ${{ github.event.inputs.dry-run || false }}
+      #     delete-tags: brxxx
+      #     package: malware-cryptominer-container-test
