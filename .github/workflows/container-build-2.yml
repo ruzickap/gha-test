@@ -42,7 +42,6 @@ on:
       - renovate/*
     paths:
       - Dockerfile
-      - .github/workflows/container-build-2.yml
   schedule:
     - cron: "0 0 9 * *"
 
