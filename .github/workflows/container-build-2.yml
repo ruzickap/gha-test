@@ -43,7 +43,7 @@ on:
     paths:
       - Dockerfile
   schedule:
-    - cron: "0 0 9 * *"
+    - cron: 1 1 1 * *
 
 permissions:
   actions: read
