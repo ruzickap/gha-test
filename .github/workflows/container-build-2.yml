@@ -48,6 +48,10 @@ on:
 permissions:
   actions: read
 
+# Use concurrency to prevent running when ghcr-cleanup is running
+concurrency:
+  group: container-build
+
 defaults:
   run:
     shell: bash -euxo pipefail {0}
