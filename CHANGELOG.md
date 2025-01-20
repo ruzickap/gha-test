@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.12.1](https://github.com/ruzickap/gha-test/compare/v1.12.0...v1.12.1) (2025-01-20)
+
+
+### Bug Fixes
+
+* another fix for release-please-config ([#262](https://github.com/ruzickap/gha-test/issues/262)) ([a0f485a](https://github.com/ruzickap/gha-test/commit/a0f485a84b73c3e03342fbca761e21d06b5e853e))
+* fix release-please-config ([#261](https://github.com/ruzickap/gha-test/issues/261)) ([0638782](https://github.com/ruzickap/gha-test/commit/063878222fe61b7280fe485573ee17566170f7f4))
+
 ## [1.12.0](https://github.com/ruzickap/gha-test/compare/v1.11.0...v1.12.0) (2025-01-20)
 
 
