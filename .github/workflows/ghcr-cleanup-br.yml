@@ -1,0 +1,27 @@
+name: ghcr-cleanup-br
+
+on:
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: "Dry run"
+        type: boolean
+        required: false
+        default: true
+
+permissions: read-all
+
+jobs:
+  ghcr-cleanup-br:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Delete "br-${{ github.head_ref }}" tag
+        uses: dataaxiom/ghcr-cleanup-action@v1
+        with:
+          dry-run: true
+          delete-tags: br-${{ github.head_ref }}
+          package: malware-cryptominer-container-test
