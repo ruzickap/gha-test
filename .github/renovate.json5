@@ -16,6 +16,9 @@
     ":enableVulnerabilityAlertsWithLabel(security)",
     ":pinSkipCi",
   ],
+  kubernetes: {
+    fileMatch: ["^deploy/.+\\.ya?ml$"]
+  },
   labels: [
     "renovate",
     "renovate/{{replace '.*/' '' depName}}",
