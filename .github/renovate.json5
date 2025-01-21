@@ -1,6 +1,9 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   // # keep-sorted start block=yes
+  "git-submodules": {
+    enabled: true,
+  },
   configMigration: true,
   // Keep the extends started with ":" at the end of the list to allow overriding
   extends: [
@@ -14,9 +17,6 @@
     ":enableVulnerabilityAlertsWithLabel(security)",
     ":pinSkipCi",
   ],
-  git-submodules: {
-    enabled: true,
-  },
   kubernetes: {
     fileMatch: ["^deploy/.+\\.ya?ml$"]
   },
