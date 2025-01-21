@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: malware-cryptominer-container
+spec:
+  selector:
+    matchLabels:
+      app: malware-cryptominer-container
+  template:
+    metadata:
+      labels:
+        app: malware-cryptominer-container
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: malware-cryptominer-container
+          image: quay.io/petr_ruzicka/malware-cryptominer-container:3
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              port: 8081
+          readinessProbe:
+            httpGet:
+              port: 8081
+          resources:
+            limits:
+              cpu: 400m
+              memory: 64Mi
+            requests:
+              cpu: 200m
+              memory: 32Mi
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      securityContext:
+        runAsUser: 10000
+      volumes:
+        - name: tmp
+          emptyDir: {}
