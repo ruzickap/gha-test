@@ -49,7 +49,7 @@ jobs:
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload: |
             channel: ${{ secrets.SLACK_CHANNEL_ID }}
-            text: "${{ github.event.pull_request.user.login }}: ${{ github.event.pull_request.html_url }} `${{ github.event.pull_request.title }}` (+${{ github.event.pull_request.additions }}, -${{ github.event.pull_request.deletions }})"
+            text: "💡 *${{ github.event.pull_request.user.login }}*: <${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}> (+${{ github.event.pull_request.additions }}, -${{ github.event.pull_request.deletions }})"
 
       - name: Save slack message timestamp to file
         run: |
@@ -61,21 +61,10 @@ jobs:
           path: slack-message-timestamp.txt
           key: ${{ github.event.pull_request.html_url }}
 
-  debug:
-    runs-on: ubuntu-latest
-    name: Debug
-    steps:
-      - name: Debug
-        run: |
-          echo "github.event.action: ${{ github.event.action }}"
-          echo "github.event.pull_request.merged: ${{ github.event.pull_request.merged }}"
-          echo "github.event.pull_request.draft: ${{ github.event.pull_request.draft }}"
-          echo "github.event.pull_request.html_url: ${{ github.event.pull_request.html_url }}"
-
   slack-emoji-react:
     runs-on: ubuntu-latest
     name: Adds emoji reaction to slack message when a PR is closed or reviewed
-    if: (github.event.action == 'closed' && github.event.pull_request.merged == false) || github.event.action == 'submitted'
+    if: github.event.action == 'closed' || github.event.action == 'submitted'
     steps:
       - name: Read slack message timestamp from cache
         uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
