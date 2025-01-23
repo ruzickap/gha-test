@@ -13,10 +13,11 @@ on:
     types:
       - submitted
 
-env:
-  SLACK_CHANNEL: github-notifications
-
 permissions: read-all
+
+defaults:
+  run:
+    shell: bash -euxo pipefail {0}
 
 jobs:
   slack-notification:
@@ -24,16 +25,36 @@ jobs:
     name: Sends a message to Slack when a PR is opened
     if: (github.event.action == 'opened' && github.event.pull_request.draft == false) || github.event.action == 'ready_for_review'
     steps:
+      # - name: Post PR summary message to slack
+      #   env:
+      #     SLACK_MESSAGE: "${{ github.event.pull_request.user.login }}: ${{ github.event.pull_request.html_url }} `${{ github.event.pull_request.title }}` (+${{ github.event.pull_request.additions }}, -${{ github.event.pull_request.deletions }})"
+      #   run: |
+      #     # checkov:skip=CKV_GHA_3
+      #     curl -X POST -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
+      #     -H "Content-type: application/json; charset=utf-8" \
+      #     --data '{"channel":"${{env.SLACK_CHANNEL}}","text":"${{env.SLACK_MESSAGE}}"}' \
+      #     https://slack.com/api/chat.postMessage | tee -a output.json
+      #     jq -r '.ts' < output.json > slack-message-timestamp.txt
+      # - name: Cache slack message timestamp
+      #   uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+      #   with:
+      #     path: slack-message-timestamp.txt
+      #     key: ${{ github.event.pull_request.html_url }}
+
       - name: Post PR summary message to slack
-        env:
-          SLACK_MESSAGE: "${{ github.event.pull_request.user.login }}: ${{ github.event.pull_request.html_url }} `${{ github.event.pull_request.title }}` (+${{ github.event.pull_request.additions }}, -${{ github.event.pull_request.deletions }})"
+        id: message
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: ${{ secrets.SLACK_CHANNEL_ID }}
+            text: "${{ github.event.pull_request.user.login }}: ${{ github.event.pull_request.html_url }} `${{ github.event.pull_request.title }}` (+${{ github.event.pull_request.additions }}, -${{ github.event.pull_request.deletions }})"
+
+      - name: Save slack message timestamp to file
         run: |
-          # checkov:skip=CKV_GHA_3
-          curl -X POST -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
-          -H "Content-type: application/json; charset=utf-8" \
-          --data '{"channel":"${{env.SLACK_CHANNEL}}","text":"${{env.SLACK_MESSAGE}}"}' \
-          https://slack.com/api/chat.postMessage | tee -a output.json
-          jq -r '.ts' < output.json > slack-message-timestamp.txt
+          echo "${{ steps.message.outputs.ts }}" > slack-message-timestamp.txt
+
       - name: Cache slack message timestamp
         uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
@@ -45,6 +66,16 @@ jobs:
     name: Adds emoji reaction to slack message when a PR is closed or reviewed
     if: (github.event.action == 'closed' && github.event.pull_request.merged == false) || github.event.action == 'submitted'
     steps:
+      - name: Read slack message timestamp from cache
+        uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: slack-message-timestamp.txt
+          key: ${{ github.event.pull_request.html_url }}
+
+      - name: Save slack timestamp as an environment variable
+        run: |
+          echo "SLACK_TIMESTAMP=$(cat slack-message-timestamp.txt)" | tee -a "${GITHUB_ENV}"
+
       - name: Decide which emoji to add
         run: |
           if [[ "${{ github.event.action }}" == "closed" ]]; then
@@ -60,18 +91,24 @@ jobs:
               echo "EMOJI=speech_balloon" >> "${GITHUB_ENV}"
             fi
           fi
-      - name: Read slack message timestamp from cache
-        uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
-        with:
-          path: slack-message-timestamp.txt
-          key: ${{ github.event.pull_request.html_url }}
-      - name: React to PR summary message in slack with emoji
-        run: |
-          SLACK_TIMESTAMP="$(cat slack-message-timestamp.txt)"
-          echo "${{ env.EMOJI }} -> ${SLACK_TIMESTAMP}"
 
-          # checkov:skip=CKV_GHA_3
-          curl -X POST -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
-          -H "Content-type: application/json; charset=utf-8" \
-          --data "{\"channel\":\"${{env.SLACK_CHANNEL}}\",\"timestamp\":\"${SLACK_TIMESTAMP}\",\"name\":\"${{ env.EMOJI }}\"}" \
-          https://slack.com/api/reactions.add
+      # - name: React to PR summary message in slack with emoji
+      #   run: |
+      #     SLACK_TIMESTAMP="$(cat slack-message-timestamp.txt)"
+      #     echo "${{ env.EMOJI }} -> ${SLACK_TIMESTAMP}"
+
+      #     # checkov:skip=CKV_GHA_3
+      #     curl -X POST -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
+      #     -H "Content-type: application/json; charset=utf-8" \
+      #     --data "{\"channel\":\"${{env.SLACK_CHANNEL}}\",\"timestamp\":\"${SLACK_TIMESTAMP}\",\"name\":\"${{ env.EMOJI }}\"}" \
+      #     https://slack.com/api/reactions.add
+
+      - name: React to PR summary message in slack with emoji
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: reactions.add
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: ${{ secrets.SLACK_CHANNEL_ID }}
+            timestamp: "${{ env.SLACK_TIMESTAMP }}"
+            name: ${{ env.EMOJI}}
