@@ -61,6 +61,17 @@ jobs:
           path: slack-message-timestamp.txt
           key: ${{ github.event.pull_request.html_url }}
 
+  debug:
+    runs-on: ubuntu-latest
+    name: Debug
+    steps:
+      - name: Debug
+        run: |
+          echo "github.event.action: ${{ github.event.action }}"
+          echo "github.event.pull_request.merged: ${{ github.event.pull_request.merged }}"
+          echo "github.event.pull_request.draft: ${{ github.event.pull_request.draft }}"
+          echo "github.event.pull_request.html_url: ${{ github.event.pull_request.html_url }}"
+
   slack-emoji-react:
     runs-on: ubuntu-latest
     name: Adds emoji reaction to slack message when a PR is closed or reviewed
