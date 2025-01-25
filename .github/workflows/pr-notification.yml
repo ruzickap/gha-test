@@ -8,6 +8,7 @@ on:
   pull_request:
     types:
       - opened
+      - ready_for_review
       - review_requested
       - closed
   issue_comment:
@@ -61,7 +62,7 @@ jobs:
   slack-emoji-react:
     runs-on: ubuntu-latest
     name: Adds emoji reaction to slack message when a PR is closed or reviewed
-    if: github.event.action == 'closed' || github.event.action == 'review_requested' || github.event.action == 'created' || github.event.action == 'submitted'
+    if: ${{ github.event.pull_request.html_url != '' && (github.event.action == 'closed' || github.event.action == 'review_requested' || github.event.action == 'created' || github.event.action == 'submitted') }}
     steps:
       # gh commands needs to be executed in the repository
       - name: Checkout Code
@@ -70,44 +71,43 @@ jobs:
       # https://stackoverflow.com/questions/74640750/github-actions-not-finding-cache
       # I can not use the cache action in this job because the cache is not shared between runs
       - name: Save slack timestamp as an environment variable
+        id: slack-timestamp
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "SLACK_TIMESTAMP=$(gh cache list --json key --jq '.[].key|capture("${{ github.event.pull_request.html_url }}-(?<x>.+)").x')" | tee -a "${GITHUB_ENV}"
+          # if [[ "${{ github.event.pull_request.html_url }}" != '' ]]; then
+            echo "SLACK_TIMESTAMP=$(gh cache list --json key --jq '.[].key|capture("${{ github.event.pull_request.html_url }}-(?<x>.+)").x')" | tee -a "${GITHUB_ENV}"
+          #   echo "github_event_pull_request_html_url=true" >> "${GITHUB_OUTPUT}"
+          # fi
 
       - name: Decide which emoji to add
+        # if: steps.slack-timestamp.outputs.github_event_pull_request_html_url == 'true'
         run: |
-          # if [[ "${{ github.event.pull_request.merged }}" == "closed" ]]; then
-          # if [[ "${{ github.event.merged }}" == "closed" ]]; then
-          # github.event.review.state == 'approved' (https://github.com/orgs/community/discussions/25372)
-          # if: contains(github.event.comment.html_url, '/pull/')
-
-          if [[ "${{ github.event.action }}" == "closed" ]]; then
-            if [[ "${{ github.event.pull_request.merged }}" == "false" ]]; then
-              echo "EMOJI=no-entry" >> "${GITHUB_ENV}"
-            fi
-          fi
-
-          # For reviewer actions
-          if [[ "${{ github.event.action }}" == "submitted" ]]; then
-            if [[ "${{ github.event.review.state }}" == "approved" ]]; then
-              echo "EMOJI=white_check_mark" >> "${GITHUB_ENV}"
-            elif [[ "${{ github.event.review.state }}" == "changes_requested" ]]; then
-              echo "EMOJI=cross_mark" >> "${GITHUB_ENV}"
-            elif [[ "${{ github.event.review.state }}" == "commented" ]]; then
-              echo "EMOJI=speech_balloon" >> "${GITHUB_ENV}"
-            fi
-          fi
-
-          if [[ "${{ github.event.action }}" == "created" ]] && [[ "${{ github.event_name }}" == "issue_comment" ]]; then
-            echo "EMOJI=speech_baloon" >> "${GITHUB_ENV}"
-          fi
-
-          if [[ "${{ github.event.action }}" == "review_requested" ]]; then
-            echo "EMOJI=eyes" >> "${GITHUB_ENV}"
-          fi
+          case "${{ github.event.action }}" in
+            closed)
+              if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
+                echo "EMOJI=white_check_mark" >> "${GITHUB_ENV}" # ✅
+              fi
+              ;;
+            submitted)
+              if [[ "${{ github.event.review.state }}" == "approved" ]]; then
+                echo "EMOJI=ok" >> "${GITHUB_ENV}" # 🆗
+              elif [[ "${{ github.event.review.state }}" == "commented" ]]; then
+                echo "EMOJI=speech_balloon" >> "${GITHUB_ENV}" # 💬
+              fi
+              ;;
+            created)
+              if [[ "${{ github.event_name }}" == "issue_comment" ]]; then
+                echo "EMOJI=speech_baloon" >> "${GITHUB_ENV}" # 💬
+              fi
+              ;;
+            review_requested)
+              echo "EMOJI=eyes" >> "${GITHUB_ENV}" # 👀
+              ;;
+          esac
 
       - name: React to PR summary message in slack with emoji
+        # if: steps.slack-timestamp.outputs.github_event_pull_request_html_url == 'true'
         uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d # v2.0.0
         with:
           method: reactions.add
