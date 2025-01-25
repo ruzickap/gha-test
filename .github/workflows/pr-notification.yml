@@ -47,11 +47,15 @@ jobs:
             channel: ${{ secrets.SLACK_CHANNEL_ID }}
             text: "💡 *${{ github.event.pull_request.user.login }}*: <${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}> (+${{ github.event.pull_request.additions }}, -${{ github.event.pull_request.deletions }})"
 
+      - name: Create file with slack message timestamp
+        run: |
+          echo "${{ steps.message.outputs.ts }}" > slack-message-timestamp.txt
+
       - name: Cache slack message timestamp
         uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           # Use any existing file
-          path: README.md
+          path: slack-message-timestamp.txt
           key: slack-message-timestamp-${{ github.event.pull_request.html_url }}-${{ steps.message.outputs.ts }}
 
   slack-emoji-react:
