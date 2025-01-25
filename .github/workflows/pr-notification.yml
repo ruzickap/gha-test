@@ -62,7 +62,7 @@ jobs:
   slack-emoji-react:
     runs-on: ubuntu-latest
     name: Adds emoji reaction to slack message when a PR is closed or reviewed
-    if: ${{ github.event.pull_request.html_url != '' && (github.event.action == 'closed' || github.event.action == 'review_requested' || github.event.action == 'created' || github.event.action == 'submitted') }}
+    # if: ${{ github.event.action == 'closed' || github.event.action == 'review_requested' || github.event.action == 'created' || github.event.action == 'submitted' }}
     steps:
       # gh commands needs to be executed in the repository
       - name: Checkout Code
@@ -75,13 +75,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # if [[ "${{ github.event.pull_request.html_url }}" != '' ]]; then
+          if [[ "${{ github.event.pull_request.html_url }}" != '' ]]; then
             echo "SLACK_TIMESTAMP=$(gh cache list --json key --jq '.[].key|capture("${{ github.event.pull_request.html_url }}-(?<x>.+)").x')" | tee -a "${GITHUB_ENV}"
-          #   echo "github_event_pull_request_html_url=true" >> "${GITHUB_OUTPUT}"
-          # fi
+            echo "github_event_pull_request_html_url=true" >> "${GITHUB_OUTPUT}"
+          fi
 
       - name: Decide which emoji to add
-        # if: steps.slack-timestamp.outputs.github_event_pull_request_html_url == 'true'
+        if: ${{ steps.slack-timestamp.outputs.github_event_pull_request_html_url == 'true' }}
         run: |
           case "${{ github.event.action }}" in
             closed)
@@ -104,10 +104,13 @@ jobs:
             review_requested)
               echo "EMOJI=eyes" >> "${GITHUB_ENV}" # 👀
               ;;
+            *)
+              echo "EMOJI=false" >> "${GITHUB_ENV}"
+              ;;
           esac
 
       - name: React to PR summary message in slack with emoji
-        # if: steps.slack-timestamp.outputs.github_event_pull_request_html_url == 'true'
+        if: ${{ steps.slack-timestamp.outputs.github_event_pull_request_html_url == 'true' && env.EMOJI != 'false' }}
         uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d # v2.0.0
         with:
           method: reactions.add
@@ -115,4 +118,4 @@ jobs:
           payload: |
             channel: ${{ secrets.SLACK_CHANNEL_ID }}
             timestamp: "${{ env.SLACK_TIMESTAMP }}"
-            name: ${{ env.EMOJI}}
+            name: ${{ env.EMOJI }}
