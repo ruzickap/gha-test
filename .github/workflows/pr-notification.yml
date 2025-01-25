@@ -61,8 +61,11 @@ jobs:
           echo "SLACK_TIMESTAMP=$(gh cache list --json key --jq '.[].key|capture("${{ github.event.pull_request.html_url }}-(?<x>.+)").x')" | tee -a "${GITHUB_ENV}"
 
       - name: Decide which emoji to add
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "${GITHUB_CONTEXT}"
+          env
           if [[ "${{ github.event.action }}" == "closed" ]]; then
             if [[ "${{ github.event.pull_request.merged }}" == "false" ]]; then
               echo "EMOJI=no-entry" >> "${GITHUB_ENV}"
