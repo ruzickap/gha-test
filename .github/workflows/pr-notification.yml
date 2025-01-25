@@ -37,8 +37,6 @@ jobs:
             text: "💡 *${{ github.event.pull_request.user.login }}*: <${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}> (+${{ github.event.pull_request.additions }}, -${{ github.event.pull_request.deletions }})"
 
       - name: Cache slack message timestamp
-        env:
-          GITHUB_REF: refs/heads/main
         uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           # Use any existing file
@@ -50,34 +48,21 @@ jobs:
     name: Adds emoji reaction to slack message when a PR is closed or reviewed
     if: github.event.action == 'closed' || github.event.action == 'submitted'
     steps:
-      # https://stackoverflow.com/questions/74640750/github-actions-not-finding-cache
-      # - name: Read slack message timestamp from cache
-      #   uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
-      #   id: restore-cache
-      #   with:
-      #     path: slack-message-timestamp.txt
-      #     key: slack-message-timestamp-${{ github.event.pull_request.html_url }}
-      #     fail-on-cache-miss: true
-
       # gh commands needs to be executed in the repository
       - name: Checkout Code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Restore slack message timestamp from cache
+      # https://stackoverflow.com/questions/74640750/github-actions-not-finding-cache
+      # I can not use the cache action in this job because the cache is not shared between runs
+      - name: Save slack timestamp as an environment variable
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh cache list
-          gh cache list --json key
-          gh cache list --json key --jq '.[].key|capture("${{ github.event.pull_request.html_url }}-(?<x>.+)").x'
           echo "SLACK_TIMESTAMP=$(gh cache list --json key --jq '.[].key|capture("${{ github.event.pull_request.html_url }}-(?<x>.+)").x')" | tee -a "${GITHUB_ENV}"
-
-      # - name: Save slack timestamp as an environment variable
-      #   run: |
-      #     echo "SLACK_TIMESTAMP=$(cat slack-message-timestamp.txt)" | tee -a "${GITHUB_ENV}"
 
       - name: Decide which emoji to add
         run: |
+          echo "${GITHUB_CONTEXT}"
           if [[ "${{ github.event.action }}" == "closed" ]]; then
             if [[ "${{ github.event.pull_request.merged }}" == "false" ]]; then
               echo "EMOJI=no-entry" >> "${GITHUB_ENV}"
