@@ -4,7 +4,6 @@
   "git-submodules": {
     enabled: true,
   },
-  // configMigration: true,
   // Keep the extends started with ":" at the end of the list to allow overriding
   extends: [
     "config:recommended",

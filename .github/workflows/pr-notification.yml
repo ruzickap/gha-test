@@ -20,9 +20,9 @@ on:
 
 permissions: read-all
 
-# defaults:
-#   run:
-#     shell: bash -euxo pipefail {0}
+defaults:
+  run:
+    shell: bash -euxo pipefail {0}
 
 jobs:
   debug:
@@ -32,7 +32,7 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
-          echo "${GITHUB_CONTEXT}" | jq -c
+          echo "${GITHUB_CONTEXT}"
   slack-notification:
     runs-on: ubuntu-latest
     name: Sends a message to Slack when a PR is opened
@@ -55,14 +55,12 @@ jobs:
       - name: Cache slack message timestamp
         uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
-          # Use any existing file
           path: slack-message-timestamp.txt
           key: slack-message-timestamp-${{ github.event.pull_request.html_url }}-${{ steps.message.outputs.ts }}
 
   slack-emoji-react:
     runs-on: ubuntu-latest
     name: Adds emoji reaction to slack message when a PR is closed or reviewed
-    # if: ${{ github.event.action == 'closed' || github.event.action == 'review_requested' || github.event.action == 'created' || github.event.action == 'submitted' }}
     steps:
       # gh commands needs to be executed in the repository
       - name: Checkout Code
@@ -76,8 +74,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [[ "${{ github.event.pull_request.html_url }}" != '' ]]; then
-            echo "SLACK_TIMESTAMP=$(gh cache list --json key --jq '.[].key|capture("${{ github.event.pull_request.html_url }}-(?<x>.+)").x')" | tee -a "${GITHUB_ENV}"
-            echo "github_event_pull_request_html_url=true" >> "${GITHUB_OUTPUT}"
+            SLACK_TIMESTAMP=$(gh cache list --json key --jq '.[].key|capture("${{ github.event.pull_request.html_url }}-(?<x>.+)").x')
+            echo "SLACK_TIMESTAMP=${SLACK_TIMESTAMP}" | tee -a "${GITHUB_ENV}"
+            if [[ "${SLACK_TIMESTAMP}" != '' ]]; then
+              echo "github_event_pull_request_html_url=true" >> "${GITHUB_OUTPUT}"
+            fi
           fi
 
       - name: Decide which emoji to add
@@ -94,11 +95,6 @@ jobs:
                 echo "EMOJI=ok" >> "${GITHUB_ENV}" # 🆗
               elif [[ "${{ github.event.review.state }}" == "commented" ]]; then
                 echo "EMOJI=speech_balloon" >> "${GITHUB_ENV}" # 💬
-              fi
-              ;;
-            created)
-              if [[ "${{ github.event_name }}" == "issue_comment" ]]; then
-                echo "EMOJI=speech_baloon" >> "${GITHUB_ENV}" # 💬
               fi
               ;;
             review_requested)
