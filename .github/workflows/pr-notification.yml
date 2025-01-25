@@ -10,17 +10,28 @@ on:
       - opened
       - ready_for_review
       - closed
+  issue_comment:
+    types:
+      - created
   pull_request_review:
     types:
       - submitted
 
 permissions: read-all
 
-defaults:
-  run:
-    shell: bash -euxo pipefail {0}
+# defaults:
+#   run:
+#     shell: bash -euxo pipefail {0}
 
 jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo -e "****\n${GITHUB_CONTEXT}"
   slack-notification:
     runs-on: ubuntu-latest
     name: Sends a message to Slack when a PR is opened
@@ -61,11 +72,12 @@ jobs:
           echo "SLACK_TIMESTAMP=$(gh cache list --json key --jq '.[].key|capture("${{ github.event.pull_request.html_url }}-(?<x>.+)").x')" | tee -a "${GITHUB_ENV}"
 
       - name: Decide which emoji to add
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
-          echo "${GITHUB_CONTEXT}"
-          env
+          # if [[ "${{ github.event.pull_request.merged }}" == "closed" ]]; then
+          # if [[ "${{ github.event.merged }}" == "closed" ]]; then
+
+          # if: contains(github.event.comment.html_url, '/pull/')
+
           if [[ "${{ github.event.action }}" == "closed" ]]; then
             if [[ "${{ github.event.pull_request.merged }}" == "false" ]]; then
               echo "EMOJI=no-entry" >> "${GITHUB_ENV}"
