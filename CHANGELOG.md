@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.13.0](https://github.com/ruzickap/gha-test/compare/v1.12.1...v1.13.0) (2025-01-25)
+
+
+### Features
+
+* add debug ([#282](https://github.com/ruzickap/gha-test/issues/282)) ([e4e3a95](https://github.com/ruzickap/gha-test/commit/e4e3a9585934511991d7da0971ef25525b5da74a))
+* add debug2 ([#284](https://github.com/ruzickap/gha-test/issues/284)) ([55a38ca](https://github.com/ruzickap/gha-test/commit/55a38ca4b0b17adee4c066695f048ab180de9b5d))
+* add k8s to renovate ([#270](https://github.com/ruzickap/gha-test/issues/270)) ([6e75e4c](https://github.com/ruzickap/gha-test/commit/6e75e4c6b722725f0cfd813e4a11401c9839f0ef))
+* debug4 ([#285](https://github.com/ruzickap/gha-test/issues/285)) ([6ee2079](https://github.com/ruzickap/gha-test/commit/6ee2079ad8e23b077eb4a026fac48f19b95fcf6e))
+* migrate renovate config ([#271](https://github.com/ruzickap/gha-test/issues/271)) ([b905bef](https://github.com/ruzickap/gha-test/commit/b905bef0960eded519d275f61b856debd3f6c425))
+
+
+### Bug Fixes
+
+* another fix for pr-notification ([#278](https://github.com/ruzickap/gha-test/issues/278)) ([7016dd1](https://github.com/ruzickap/gha-test/commit/7016dd1da76023d87ec91ed1d9f264d199b9c007))
+* fix branch issue ([#281](https://github.com/ruzickap/gha-test/issues/281)) ([7d94fd8](https://github.com/ruzickap/gha-test/commit/7d94fd8cfe5175e8f6185b1a1c083e086a775484))
+* fix pr notification ([#276](https://github.com/ruzickap/gha-test/issues/276)) ([4411825](https://github.com/ruzickap/gha-test/commit/4411825c1835c8fd6d56a12af0517ebec6d8404c))
+* fix release-please ([#269](https://github.com/ruzickap/gha-test/issues/269)) ([66c8d56](https://github.com/ruzickap/gha-test/commit/66c8d560574f05af5ac4ffd0028aba6f5fc2d0f6))
+* fix release-please-config.json ([#267](https://github.com/ruzickap/gha-test/issues/267)) ([1b8c47f](https://github.com/ruzickap/gha-test/commit/1b8c47f1215f6d727d0034b837d0974fa0135842))
+* fix renovate ([#273](https://github.com/ruzickap/gha-test/issues/273)) ([c63a6c2](https://github.com/ruzickap/gha-test/commit/c63a6c278bf80ac1e75bd9981a336798c1f33c89))
+* use new slack gha for pr-notification ([#275](https://github.com/ruzickap/gha-test/issues/275)) ([9fa6667](https://github.com/ruzickap/gha-test/commit/9fa666776b9a3a998cb30372a8766bb9fc4e3400))
+
 ## [1.12.1](https://github.com/ruzickap/gha-test/compare/v1.12.0...v1.12.1) (2025-01-20)
 
 
