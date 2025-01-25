@@ -8,7 +8,7 @@ on:
   pull_request:
     types:
       - opened
-      - ready_for_review
+      - review_requested
       - closed
   issue_comment:
     types:
@@ -61,7 +61,7 @@ jobs:
   slack-emoji-react:
     runs-on: ubuntu-latest
     name: Adds emoji reaction to slack message when a PR is closed or reviewed
-    if: github.event.action == 'closed' || github.event.action == 'submitted'
+    if: github.event.action == 'closed' || github.event.action == 'review_requested' || github.event.action == 'created' || github.event.action == 'submitted'
     steps:
       # gh commands needs to be executed in the repository
       - name: Checkout Code
@@ -86,7 +86,10 @@ jobs:
             if [[ "${{ github.event.pull_request.merged }}" == "false" ]]; then
               echo "EMOJI=no-entry" >> "${GITHUB_ENV}"
             fi
-          elif [[ "${{ github.event.action }}" == "submitted" ]]; then
+          fi
+
+          # For reviewer actions
+          if [[ "${{ github.event.action }}" == "submitted" ]]; then
             if [[ "${{ github.event.review.state }}" == "approved" ]]; then
               echo "EMOJI=white_check_mark" >> "${GITHUB_ENV}"
             elif [[ "${{ github.event.review.state }}" == "changes_requested" ]]; then
@@ -95,7 +98,14 @@ jobs:
               echo "EMOJI=speech_balloon" >> "${GITHUB_ENV}"
             fi
           fi
-          echo "EMOJI=speech_balloon" >> "${GITHUB_ENV}"
+
+          if [[ "${{ github.event.action }}" == "created" ]] && [[ "${{ github.event_name }}" == "issue_comment" ]]; then
+            echo "EMOJI=speech_baloon" >> "${GITHUB_ENV}"
+          fi
+
+          if [[ "${{ github.event.action }}" == "review_requested" ]]; then
+            echo "EMOJI=eyes" >> "${GITHUB_ENV}"
+          fi
 
       - name: React to PR summary message in slack with emoji
         uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d # v2.0.0
