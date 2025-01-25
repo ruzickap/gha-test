@@ -76,7 +76,6 @@ jobs:
           # if [[ "${{ github.event.pull_request.merged }}" == "closed" ]]; then
           # if [[ "${{ github.event.merged }}" == "closed" ]]; then
           # github.event.review.state == 'approved' (https://github.com/orgs/community/discussions/25372)
-
           # if: contains(github.event.comment.html_url, '/pull/')
 
           if [[ "${{ github.event.action }}" == "closed" ]]; then
