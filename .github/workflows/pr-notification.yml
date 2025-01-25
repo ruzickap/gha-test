@@ -31,7 +31,7 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
-          echo -e "****\n${GITHUB_CONTEXT}"
+          echo "${GITHUB_CONTEXT}" | jq -c
   slack-notification:
     runs-on: ubuntu-latest
     name: Sends a message to Slack when a PR is opened
@@ -75,6 +75,7 @@ jobs:
         run: |
           # if [[ "${{ github.event.pull_request.merged }}" == "closed" ]]; then
           # if [[ "${{ github.event.merged }}" == "closed" ]]; then
+          # github.event.review.state == 'approved' (https://github.com/orgs/community/discussions/25372)
 
           # if: contains(github.event.comment.html_url, '/pull/')
 
@@ -91,6 +92,7 @@ jobs:
               echo "EMOJI=speech_balloon" >> "${GITHUB_ENV}"
             fi
           fi
+          echo "EMOJI=speech_balloon" >> "${GITHUB_ENV}"
 
       - name: React to PR summary message in slack with emoji
         uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d # v2.0.0
