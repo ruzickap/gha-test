@@ -33,6 +33,7 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "${GITHUB_CONTEXT}"
+
   slack-notification:
     runs-on: ubuntu-latest
     name: Sends a message to Slack when a PR is opened
@@ -61,6 +62,7 @@ jobs:
   slack-emoji-react:
     runs-on: ubuntu-latest
     name: Adds emoji reaction to slack message when a PR is closed or reviewed
+    if: ${{ startsWith(github.event.pull_request.html_url, 'https') }}
     steps:
       # gh commands needs to be executed in the repository
       - name: Checkout Code
@@ -73,12 +75,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [[ "${{ github.event.pull_request.html_url }}" != '' ]]; then
-            SLACK_TIMESTAMP=$(gh cache list --json key --jq '.[].key|capture("${{ github.event.pull_request.html_url }}-(?<x>.+)").x')
-            echo "SLACK_TIMESTAMP=${SLACK_TIMESTAMP}" | tee -a "${GITHUB_ENV}"
-            if [[ "${SLACK_TIMESTAMP}" != '' ]]; then
-              echo "github_event_pull_request_html_url=true" >> "${GITHUB_OUTPUT}"
-            fi
+          SLACK_TIMESTAMP=$(gh cache list --json key --jq '.[].key|capture("${{ github.event.pull_request.html_url }}-(?<x>.+)").x')
+          echo "SLACK_TIMESTAMP=${SLACK_TIMESTAMP}" | tee -a "${GITHUB_ENV}"
+          if [[ "${SLACK_TIMESTAMP}" != '' ]]; then
+            echo "github_event_pull_request_html_url=true" >> "${GITHUB_OUTPUT}"
           fi
 
       - name: Decide which emoji to add
@@ -91,11 +91,17 @@ jobs:
               fi
               ;;
             submitted)
-              if [[ "${{ github.event.review.state }}" == "approved" ]]; then
-                echo "EMOJI=ok" >> "${GITHUB_ENV}" # 🆗
-              elif [[ "${{ github.event.review.state }}" == "commented" ]]; then
-                echo "EMOJI=speech_balloon" >> "${GITHUB_ENV}" # 💬
-              fi
+              case "${{ github.event.review.state }}" in
+                changes_requested)
+                  echo "EMOJI=repeat" >> "${GITHUB_ENV}" # 🔁
+                  ;;
+                approved)
+                  echo "EMOJI=ok" >> "${GITHUB_ENV}" # 🆗
+                  ;;
+                commented)
+                  echo "EMOJI=speech_balloon" >> "${GITHUB_ENV}" # 💬
+                  ;;
+              esac
               ;;
             review_requested)
               echo "EMOJI=eyes" >> "${GITHUB_ENV}" # 👀
