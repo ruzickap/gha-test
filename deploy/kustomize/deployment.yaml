@@ -14,7 +14,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: malware-cryptominer-container
-          image: quay.io/petr_ruzicka/malware-cryptominer-container:3
+          image: quay.io/petr_ruzicka/malware-cryptominer-container:3@sha256:f81b2bb3cc1fc68a653e6dd3ee9c81d3dc49b26a1a345fed01dd4f5cb068703f
           imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false
