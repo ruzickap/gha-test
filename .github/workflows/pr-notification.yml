@@ -84,13 +84,13 @@ jobs:
         if: ${{ steps.slack-timestamp.outputs.github_event_pull_request_html_url == 'true' }}
         run: |
           case "${{ github.event.action }}" in
+            created)
+              if [[ "${{ github.event_name }}" == 'issue_comment' ]]; then
+                echo "EMOJI=speech_balloon" >> "${GITHUB_ENV}" # 💬
+              fi
+              ;;
             submitted)
               case "${{ github.event.review.state }}" in
-                created)
-                  if [[ "${{ github.event_name }}" == 'issue_comment' ]]; then
-                    echo "EMOJI=speech_balloon" >> "${GITHUB_ENV}" # 💬
-                  fi
-                  ;;
                 changes_requested)
                   echo "EMOJI=repeat" >> "${GITHUB_ENV}" # 🔁
                   ;;
@@ -122,7 +122,7 @@ jobs:
             name: ${{ env.EMOJI }}
 
       - name: Update the original message with success
-        if: ${{ github.event.pull_request.merged == 'true' && steps.slack-timestamp.outputs.github_event_pull_request_html_url == 'true' }}
+        if: ${{ github.event.pull_request.merged && steps.slack-timestamp.outputs.github_event_pull_request_html_url == 'true' }}
         uses: slackapi/slack-github-action@v2.0.0
         with:
           method: chat.update
