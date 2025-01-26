@@ -84,13 +84,13 @@ jobs:
         if: ${{ steps.slack-timestamp.outputs.github_event_pull_request_html_url == 'true' }}
         run: |
           case "${{ github.event.action }}" in
-            closed)
-              if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
-                echo "EMOJI=white_check_mark" >> "${GITHUB_ENV}" # ✅
-              fi
-              ;;
             submitted)
               case "${{ github.event.review.state }}" in
+                created)
+                  if [[ "${{ github.event_name }}" == 'issue_comment' ]]; then
+                    echo "EMOJI=speech_balloon" >> "${GITHUB_ENV}" # 💬
+                  fi
+                  ;;
                 changes_requested)
                   echo "EMOJI=repeat" >> "${GITHUB_ENV}" # 🔁
                   ;;
@@ -120,3 +120,20 @@ jobs:
             channel: ${{ secrets.SLACK_CHANNEL_ID }}
             timestamp: "${{ env.SLACK_TIMESTAMP }}"
             name: ${{ env.EMOJI }}
+
+      - name: Update the original message with success
+        if: ${{ github.event.pull_request.merged == 'true' && steps.slack-timestamp.outputs.github_event_pull_request_html_url == 'true' }}
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: chat.update
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: ${{ secrets.SLACK_CHANNEL_ID }}
+            ts: "${{ env.SLACK_TIMESTAMP }}"
+            text: "✅ *${{ github.event.pull_request.user.login }}*: <${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}> (+${{ github.event.pull_request.additions }}, -${{ github.event.pull_request.deletions }})"
+            attachments:
+              - color: "28a745"
+                fields:
+                  - title: "Status"
+                    short: true
+                    value: "Completed"
