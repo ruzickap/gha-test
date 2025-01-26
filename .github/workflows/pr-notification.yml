@@ -1,7 +1,6 @@
 name: pr-notification
 
-# https://github.com/slackapi/slack-github-action/issues/269
-# https://github.com/ctriolo/action-post-or-update-slack-message-from-cache/
+# Based on: https://github.com/slackapi/slack-github-action/issues/269
 
 on:
   workflow_dispatch:
@@ -62,7 +61,7 @@ jobs:
   slack-emoji-react:
     runs-on: ubuntu-latest
     name: Adds emoji reaction to slack message when a PR is closed or reviewed
-    if: ${{ startsWith(github.event.pull_request.html_url, 'https') }}
+    if: ${{ startsWith(github.event.pull_request.html_url, 'https') || startsWith(github.event.issue.pull_request.html_url, 'https') }}
     steps:
       # gh commands needs to be executed in the repository
       - name: Checkout Code
@@ -75,7 +74,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          SLACK_TIMESTAMP=$(gh cache list --json key --jq '.[].key|capture("${{ github.event.pull_request.html_url }}-(?<x>.+)").x')
+          SLACK_TIMESTAMP=$(gh cache list --json key --jq '.[].key|capture("${{ github.event.pull_request.html_url || github.event.issue.pull_request.html_url }}-(?<x>.+)").x')
           echo "SLACK_TIMESTAMP=${SLACK_TIMESTAMP}" | tee -a "${GITHUB_ENV}"
           if [[ "${SLACK_TIMESTAMP}" != '' ]]; then
             echo "github_event_pull_request_html_url=true" >> "${GITHUB_OUTPUT}"
