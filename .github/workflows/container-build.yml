@@ -283,7 +283,7 @@ jobs:
         if: ${{ env.container_registry_push_image == 'true' && inputs.container_image_sign }}
 
       - name: Install Syft
-        uses: anchore/sbom-action/download-syft@df80a981bc6edbc4e220a492d3cbe9f5547a6e75 # v0.17.9
+        uses: anchore/sbom-action/download-syft@f325610c9f50a54015d37c8d16cb3b0e2c8f4de0 # v0.18.0
         if: ${{ env.container_registry_push_image == 'true' && inputs.container_image_sign }}
 
       - name: Sign + create SBOM
@@ -401,7 +401,7 @@ jobs:
         if: ${{ inputs.container_image_sign }}
 
       - name: Install Syft
-        uses: anchore/sbom-action/download-syft@df80a981bc6edbc4e220a492d3cbe9f5547a6e75 # v0.17.9
+        uses: anchore/sbom-action/download-syft@f325610c9f50a54015d37c8d16cb3b0e2c8f4de0 # v0.18.0
         if: ${{ inputs.container_image_sign }}
 
       - name: Create and push multi-platform image index
