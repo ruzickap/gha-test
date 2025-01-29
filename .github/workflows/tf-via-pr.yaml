@@ -1,0 +1,140 @@
+---
+name: tf-via-pr
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: TF command
+        required: true
+        type: choice
+        options:
+          - plan
+          - apply
+        default: plan
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, closed, labeled]
+  schedule:
+    - cron: 0 0 * * *
+
+permissions: read-all
+
+env:
+  AWS_REGION: eu-central-1
+  AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+  TF_VIA_PR_TOOL: tofu
+  TF_VIA_PR_WORKING_DIRECTORY: terraform
+  TF_VIA_PR_RETENTION_DAYS: 1
+
+# Use concurrency to prevent running tf-via-pr simultaneously
+concurrency:
+  group: tf-via-pr
+
+defaults:
+  run:
+    shell: bash -euxo pipefail {0}
+
+jobs:
+  tf-via-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read # Required to identify workflow run
+      checks: write # Required to add status summary
+      contents: read # Required to checkout repository
+      id-token: write # Required to identify workflow run
+      pull-requests: write # Required to add comment and label
+
+    steps:
+      - name: debug
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "${GITHUB_CONTEXT}"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@4fc4975a852c8cd99761e2de1f4ba73402e44dd9 # v4.0.3
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_wrapper: false
+
+      - name: Set variables for the tf-via-pr action
+        id: variables
+        env:
+          GITHUB_EVENT_PULL_REQUEST_MERGED: ${{ github.event.pull_request.merged }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          PR_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'run-plan') && 'run-plan' || contains(github.event.pull_request.labels.*.name, 'run-apply') && 'run-apply' || contains(github.event.pull_request.labels.*.name, 'run-destroy') && 'run-destroy' }}
+          INPUTS_COMMAND: ${{ inputs.command }}
+        run: |
+          # Use "plan" as default command
+          # Should be used for scheduled runs and when PR is opened
+          echo "TF_VIA_PR_COMMAND=plan" | tee -a "${GITHUB_ENV}"
+
+          if [[ "${GITHUB_EVENT_PULL_REQUEST_MERGED}" == "true" ]]; then
+            echo "TF_VIA_PR_COMMAND=apply" | tee -a "${GITHUB_ENV}"
+          fi
+
+          # Trigger on schedule (cron) event with -refresh-only to open an issue on configuration drift.
+          # if [[ "${GITHUB_EVENT_NAME}" == "schedule" ]]; then
+          #   echo "TF_VIA_PR_COMMAND=plan" | tee -a "${GITHUB_ENV}"
+          # fi
+
+          if [[ -n "${PR_LABEL}" ]]; then
+            echo "PR_LABEL=${PR_LABEL}" | tee -a "${GITHUB_ENV}"
+            if [[ "${PR_LABEL}" == "run-apply" ]]; then
+              echo "TF_VIA_PR_COMMAND=apply" | tee -a "${GITHUB_ENV}"
+            fi
+          fi
+
+      - name: Provision TF
+        uses: op5dev/tf-via-pr@v13
+        id: provision
+        with:
+          command: ${{ env.TF_VIA_PR_COMMAND }}
+          retention-days: ${{ env.TF_VIA_PR_RETENTION_DAYS }}
+          tool: ${{ env.TF_VIA_PR_TOOL }}
+          working-directory: ${{ env.TF_VIA_PR_WORKING_DIRECTORY }}
+
+        # Trigger on schedule (cron) event with -refresh-only to open an issue on configuration drift.
+      - name: Open issue on drift
+        if: ${{ steps.provision.outputs.exitcode != 0 && github.event_name == 'schedule' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DIFF: ${{ steps.provision.outputs.diff }}
+          RUN: ${{ steps.provision.outputs.run-url }}
+          RESULT: ${{ steps.provision.outputs.result }}
+          SUMMARY: ${{ steps.provision.outputs.summary }}
+        run: |
+          gh api "/repos/{owner}/{repo}/issues" \
+            --method POST \
+            --field title="Configuration drift detected" \
+            --field body="[View log.](${RUN})
+          <details><summary>Diff of changes.</summary>
+
+          \`\`\`diff
+          ${DIFF}
+          \`\`\`
+          </details>
+          <details><summary>${SUMMARY}</summary>
+
+          \`\`\`hcl
+          ${RESULT}
+          \`\`\`
+          </details>"
+
+      - name: Remove label
+        if: ${{ env.PR_LABEL != 'false' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
+          PR_LABEL: ${{ env.PR_LABEL }}
+        run: gh api "/repos/{owner}/{repo}/issues/${PR_NUMBER}/labels/${PR_LABEL}" --method DELETE
