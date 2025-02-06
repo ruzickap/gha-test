@@ -64,7 +64,7 @@ jobs:
           set -x
           echo "GITHUB_PULL_REQUEST_LABELS=$(gh pr view "${GITHUB_PULL_REQUEST_NUMBER}" --json labels -q '.labels|map(.name)')" | tee -a "${GITHUB_OUTPUT}"
 
-      - uses: actions/create-github-app-token@136412a57a7081aa63c935a2cc2918f76c34f514 # v1.11.2
+      - uses: actions/create-github-app-token@67e27a7eb7db372a1c61a7f9bdab8699e9ee57f7 # v1.11.3
         if: ${{ contains(fromJSON(steps.pull-request-labels.outputs.GITHUB_PULL_REQUEST_LABELS), 'renovate-pr') }}
         id: app-token
         with:
