@@ -21,12 +21,19 @@ terraform {
 
 locals {
   region           = "us-east-1"
-  name             = "ruzickap-test-bucket"
+  name             = "ruzickap-gha-test-bucket"
   object_ownership = "BucketOwnerEnforced"
 }
 
 provider "aws" {
   region = local.region
+  default_tags {
+    tags = {
+      Environment = "Dev"
+      Owner       = "ruzickap"
+      GitHub      = "https://github.com/ruzickap/gha-test/tree/main/terraform"
+    }
+  }
 }
 
 # trivy:ignore:AVD-AWS-0089 trivy:ignore:AVD-AWS-0132
