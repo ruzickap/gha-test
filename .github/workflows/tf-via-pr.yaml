@@ -20,13 +20,13 @@ on:
           - apply
           - destroy
         default: plan
-  push:
-    paths:
-      - terraform/**
-  pull_request:
-    types: [opened, labeled]
-  schedule:
-    - cron: 0 0 * * *
+  # push:
+  #   paths:
+  #     - terraform/**
+  # pull_request:
+  #   types: [opened, labeled]
+  # schedule:
+  #   - cron: 0 0 * * *
 
 permissions: read-all
 
