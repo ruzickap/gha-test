@@ -21,6 +21,8 @@ on:
           - destroy
         default: plan
   push:
+    branches:
+      - main
     paths:
       - terraform/**
   pull_request:
