@@ -33,9 +33,15 @@ on:
 permissions: read-all
 
 env:
+  # keep-sorted start
   AWS_REGION: eu-central-1
   AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+  TF_CLI_ARGS_apply: "-auto-approve"
+  TF_CLI_ARGS_destroy: "-auto-approve"
+  TF_INPUT: "false"
+  TF_IN_AUTOMATION: "true"
   TOFU_WORKING_DIRECTORY: terraform
+  # keep-sorted end
 
 # Use concurrency to prevent running tofu-terraform simultaneously
 concurrency:
