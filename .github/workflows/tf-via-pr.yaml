@@ -1,6 +1,13 @@
 ---
 name: tf-via-pr
 
+# Use-cases:
+# * When new PR is opened with changes in `terraform` directory - run `terraform plan`
+# * When PR is merged with changes in `terraform` directory - run `terraform apply`
+# * When PR is labeled by `run-plan/apply/destroy` - run `terraform plan/apply/destroy`
+# * When scheduled - run `terraform plan` and open an issue on configuration drift
+# * When manually called using workflow_dispatch - run `terraform plan/apply/destroy`
+
 on:
   workflow_dispatch:
     inputs:
@@ -11,11 +18,13 @@ on:
         options:
           - plan
           - apply
+          - destroy
         default: plan
   push:
-    branches: [main]
+    paths:
+      - terraform/**
   pull_request:
-    types: [opened, synchronize, closed, labeled]
+    types: [opened, labeled]
   schedule:
     - cron: 0 0 * * *
 
@@ -75,27 +84,31 @@ jobs:
           PR_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'run-plan') && 'run-plan' || contains(github.event.pull_request.labels.*.name, 'run-apply') && 'run-apply' || contains(github.event.pull_request.labels.*.name, 'run-destroy') && 'run-destroy' }}
           INPUTS_COMMAND: ${{ inputs.command }}
         run: |
-          # Use "plan" as default command
-          # Should be used for scheduled runs and when PR is opened
-          echo "TF_VIA_PR_COMMAND=plan" | tee -a "${GITHUB_ENV}"
+          # If inputs.command form workflow_dispatch is set - use it as tf-via-pr.command
+          if [[ -z "${INPUTS_COMMAND}" ]]; then
+            # Use "plan" as default command - it should be used for scheduled runs and when PR is opened
+            echo "TF_VIA_PR_COMMAND=plan" | tee -a "${GITHUB_ENV}"
 
-          if [[ "${GITHUB_EVENT_PULL_REQUEST_MERGED}" == "true" ]]; then
-            echo "TF_VIA_PR_COMMAND=apply" | tee -a "${GITHUB_ENV}"
-          fi
-
-          # Trigger on schedule (cron) event with -refresh-only to open an issue on configuration drift.
-          # if [[ "${GITHUB_EVENT_NAME}" == "schedule" ]]; then
-          #   echo "TF_VIA_PR_COMMAND=plan" | tee -a "${GITHUB_ENV}"
-          # fi
-
-          if [[ -n "${PR_LABEL}" ]]; then
-            echo "PR_LABEL=${PR_LABEL}" | tee -a "${GITHUB_ENV}"
-            if [[ "${PR_LABEL}" == "run-apply" ]]; then
+            if [[ "${GITHUB_EVENT_PULL_REQUEST_MERGED}" == "true" ]]; then
               echo "TF_VIA_PR_COMMAND=apply" | tee -a "${GITHUB_ENV}"
             fi
+
+            if [[ -n "${PR_LABEL}" ]]; then
+              echo "PR_LABEL=${PR_LABEL}" | tee -a "${GITHUB_ENV}"
+              case "${PR_LABEL}" in
+                run-apply)
+                  echo "TF_VIA_PR_COMMAND=apply" | tee -a "${GITHUB_ENV}"
+                  ;;
+                run-destroy)
+                  echo "TF_VIA_PR_COMMAND=destroy" | tee -a "${GITHUB_ENV}"
+                  ;;
+              esac
+            fi
+          else
+            echo "TF_VIA_PR_COMMAND=${INPUTS_COMMAND}" | tee -a "${GITHUB_ENV}"
           fi
 
-      - name: Provision TF
+      - name: Provision TF - ${{ env.TF_VIA_PR_COMMAND }}
         uses: op5dev/tf-via-pr@v13
         id: provision
         with:
