@@ -2,7 +2,7 @@
 name: tofu-terraform
 
 # Use-cases:
-# * Nevel label PR with `tofu-plan/apply/destroy` at the same time (wait for the previous action to finish)
+# * Nevel label PR with more then two "tofu" labels because of concurrency: https://github.com/orgs/community/discussions/41518
 # * When there is a new commit pushed to the branch with changes in `terraform` directory - run `terraform plan`
 # * When PR is merged with changes in `terraform` directory - run `terraform apply`
 # * When PR is labeled by `tofu-plan/apply/destroy` with changes in `terraform` directory - run `terraform plan/apply/destroy`
@@ -22,10 +22,12 @@ on:
           - destroy
         default: plan
   push:
+    # https://stackoverflow.com/questions/76037078/why-is-my-github-action-on-paths-also-triggered-when-pushing-a-new-tag
+    branches:
+      - "**"
     paths:
       - terraform/**
   pull_request:
-    # types: [labeled, closed]
     types: [labeled]
     paths:
       - terraform/**
@@ -77,7 +79,6 @@ jobs:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           PR_LABEL: ${{ github.event.label.name }}
           INPUTS_COMMAND: ${{ inputs.tofu_command }}
-          # GITHUB_EVENT_PULL_REQUEST_MERGED: ${{ github.event.pull_request.merged}}
           GITHUB_EVENT_REPOSITORY_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           # If inputs.tofu_command form workflow_dispatch is set - use it as tofu_command
@@ -91,10 +92,6 @@ jobs:
             if [[ "${GITHUB_EVENT_NAME}" = "push" && "${GITHUB_REF_NAME}" = "${GITHUB_EVENT_REPOSITORY_DEFAULT_BRANCH}" ]]; then
               echo "TOFU_COMMAND=apply" | tee -a "${GITHUB_ENV}"
             fi
-
-            # if [[ "${GITHUB_EVENT_PULL_REQUEST_MERGED}" = "true" || "${GITHUB_EVENT_NAME}" = "schedule" ]]; then
-            #   echo "TOFU_COMMAND=apply" | tee -a "${GITHUB_ENV}"
-            # fi
 
             case "${PR_LABEL}" in
               tofu-apply)
