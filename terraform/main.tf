@@ -21,7 +21,7 @@ terraform {
 
 locals {
   region           = "us-east-1"
-  name             = "ruzickap-gha-test-bucket-1"
+  name             = "ruzickap-gha-test-bucket-5"
   object_ownership = "BucketOwnerEnforced"
 }
 

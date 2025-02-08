@@ -55,6 +55,8 @@ defaults:
 
 jobs:
   tofu-terraform:
+    # If the action is triggered by a pull request event then run it only for labels `tofu-plan/apply/destroy`
+    if: ${{ github.event_name == 'pull_request' && ( contains(github.event.pull_request.labels.*.name, 'tofu-plan') || contains(github.event.pull_request.labels.*.name, 'tofu-apply') || contains(github.event.pull_request.labels.*.name, 'tofu-destroy')) || contains(fromJson('["workflow_dispatch", "schedule", "push"]'), github.event_name) }}
     runs-on: ubuntu-latest
     permissions:
       actions: read # Required to identify workflow run
@@ -83,7 +85,6 @@ jobs:
         uses: opentofu/setup-opentofu@v1
 
       - name: Set variables
-        id: variables
         env:
           GITHUB_EVENT_PULL_REQUEST_MERGED: ${{ github.event.pull_request.merged }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
