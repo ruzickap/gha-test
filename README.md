@@ -1,6 +1,6 @@
 # gha-test
 
-GitHub Action test repository
+GitHub Action test repository.
 
 Version test...
 
