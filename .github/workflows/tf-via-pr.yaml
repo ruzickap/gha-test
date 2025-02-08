@@ -63,7 +63,7 @@ jobs:
           echo "${GITHUB_CONTEXT}"
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@4fc4975a852c8cd99761e2de1f4ba73402e44dd9 # v4.0.3
@@ -72,7 +72,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup OpenTofu
-        uses: opentofu/setup-opentofu@v1
+        uses: opentofu/setup-opentofu@592200bd4b9bbf4772ace78f887668b1aee8f716 # v1
         with:
           tofu_wrapper: false
 
@@ -109,7 +109,7 @@ jobs:
           fi
 
       - name: Provision TF - ${{ env.TF_VIA_PR_COMMAND }}
-        uses: op5dev/tf-via-pr@v13
+        uses: op5dev/tf-via-pr@db1b9474e179cd1b9dad4583c2c3181f926cdd23 # v13
         id: provision
         with:
           command: ${{ env.TF_VIA_PR_COMMAND }}
