@@ -2,6 +2,7 @@
 name: tofu-terraform
 
 # Use-cases:
+# * Nevel label PR with `tofu-plan/apply/destroy` at the same time (wait for the previous action to finish)
 # * When there is a new commit pushed to the branch with changes in `terraform` directory - run `terraform plan`
 # * When PR is merged with changes in `terraform` directory - run `terraform apply`
 # * When PR is labeled by `tofu-plan/apply/destroy` with changes in `terraform` directory - run `terraform plan/apply/destroy`
@@ -73,12 +74,10 @@ jobs:
       - name: Set variables
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
-          PR_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'tofu-plan') && 'tofu-plan' || contains(github.event.pull_request.labels.*.name, 'tofu-apply') && 'tofu-apply' || contains(github.event.pull_request.labels.*.name, 'tofu-destroy') && 'tofu-destroy' }}
+          PR_LABEL: ${{ github.event.label.name }}
           INPUTS_COMMAND: ${{ inputs.tofu_command }}
           GITHUB_EVENT_PULL_REQUEST_MERGED: ${{ github.event.pull_request.merged}}
         run: |
-          echo "PR_LABEL=${PR_LABEL}" | tee -a "${GITHUB_ENV}"
-
           # If inputs.tofu_command form workflow_dispatch is set - use it as tofu_command
           if [[ -z "${INPUTS_COMMAND}" ]]; then
 
@@ -96,6 +95,9 @@ jobs:
                 ;;
               tofu-destroy)
                 echo "TOFU_COMMAND=destroy" | tee -a "${GITHUB_ENV}"
+                ;;
+              tofu-plan)
+                echo "TOFU_COMMAND=plan" | tee -a "${GITHUB_ENV}"
                 ;;
             esac
           else
@@ -127,9 +129,9 @@ jobs:
           tofu -chdir="${TOFU_WORKING_DIRECTORY}" "${TOFU_COMMAND}" | ruby -pe 'print Time.now.strftime("[%Y-%m-%d %H:%M:%S] ")'
 
       - name: Remove label
-        if: ${{ env.PR_LABEL != 'false' }}
+        if: ${{ github.event.label.name != '' && env.TOFU_COMMAND != '' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
-          PR_LABEL: ${{ env.PR_LABEL }}
+          PR_LABEL: ${{ github.event.label.name }}
         run: gh api "/repos/{owner}/{repo}/issues/${PR_NUMBER}/labels/${PR_LABEL}" --method DELETE
