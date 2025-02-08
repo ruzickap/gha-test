@@ -25,7 +25,8 @@ on:
     paths:
       - terraform/**
   pull_request:
-    types: [labeled, closed]
+    # types: [labeled, closed]
+    types: [labeled]
     paths:
       - terraform/**
   schedule:
@@ -76,7 +77,8 @@ jobs:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           PR_LABEL: ${{ github.event.label.name }}
           INPUTS_COMMAND: ${{ inputs.tofu_command }}
-          GITHUB_EVENT_PULL_REQUEST_MERGED: ${{ github.event.pull_request.merged}}
+          # GITHUB_EVENT_PULL_REQUEST_MERGED: ${{ github.event.pull_request.merged}}
+          GITHUB_EVENT_REPOSITORY_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           # If inputs.tofu_command form workflow_dispatch is set - use it as tofu_command
           if [[ -z "${INPUTS_COMMAND}" ]]; then
@@ -85,9 +87,14 @@ jobs:
               echo "TOFU_COMMAND=plan" | tee -a "${GITHUB_ENV}"
             fi
 
-            if [[ "${GITHUB_EVENT_PULL_REQUEST_MERGED}" = "true" || "${GITHUB_EVENT_NAME}" = "schedule" ]]; then
+            # Run after PR is merged
+            if [[ "${GITHUB_EVENT_NAME}" = "push" && "${GITHUB_REF_NAME}" = "${GITHUB_EVENT_REPOSITORY_DEFAULT_BRANCH}" ]]; then
               echo "TOFU_COMMAND=apply" | tee -a "${GITHUB_ENV}"
             fi
+
+            # if [[ "${GITHUB_EVENT_PULL_REQUEST_MERGED}" = "true" || "${GITHUB_EVENT_NAME}" = "schedule" ]]; then
+            #   echo "TOFU_COMMAND=apply" | tee -a "${GITHUB_ENV}"
+            # fi
 
             case "${PR_LABEL}" in
               tofu-apply)
