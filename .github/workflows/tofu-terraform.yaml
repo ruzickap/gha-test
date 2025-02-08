@@ -21,12 +21,12 @@ on:
           - destroy
         default: plan
   push:
-    branches:
+    branches-ignore:
       - main
     paths:
       - terraform/**
   pull_request:
-    types: [opened, synchronize, labeled]
+    types: [opened, reopened, synchronize, labeled, closed]
     paths:
       - terraform/**
   schedule:
