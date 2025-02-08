@@ -26,7 +26,7 @@ on:
     paths:
       - terraform/**
   pull_request:
-    types: [opened, reopened, synchronize, labeled, closed]
+    types: [labeled, closed]
     paths:
       - terraform/**
   schedule:
