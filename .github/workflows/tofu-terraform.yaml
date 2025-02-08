@@ -2,10 +2,10 @@
 name: tofu-terraform
 
 # Use-cases:
-# * When new PR is opened with changes in `terraform` directory - run `terraform plan`
+# * When there is a new commit pushed to the branch with changes in `terraform` directory - run `terraform plan`
 # * When PR is merged with changes in `terraform` directory - run `terraform apply`
-# * When PR is labeled by `tofu-plan/apply/destroy` - run `terraform plan/apply/destroy`
-# * When scheduled - run `terraform plan` and open an issue on configuration drift
+# * When PR is labeled by `tofu-plan/apply/destroy` with changes in `terraform` directory - run `terraform plan/apply/destroy`
+# * When scheduled - run `terraform apply`
 # * When manually called using workflow_dispatch - run `terraform plan/apply/destroy`
 
 on:
@@ -25,6 +25,8 @@ on:
       - terraform/**
   pull_request:
     types: [labeled, closed]
+    paths:
+      - terraform/**
   schedule:
     - cron: 0 0 * * *
 
@@ -73,18 +75,18 @@ jobs:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           PR_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'tofu-plan') && 'tofu-plan' || contains(github.event.pull_request.labels.*.name, 'tofu-apply') && 'tofu-apply' || contains(github.event.pull_request.labels.*.name, 'tofu-destroy') && 'tofu-destroy' }}
           INPUTS_COMMAND: ${{ inputs.tofu_command }}
-          GITHUB_EVENT_REPOSITORY_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GITHUB_EVENT_PULL_REQUEST_MERGED: ${{ github.event.pull_request.merged}}
         run: |
           echo "PR_LABEL=${PR_LABEL}" | tee -a "${GITHUB_ENV}"
 
           # If inputs.tofu_command form workflow_dispatch is set - use it as tofu_command
           if [[ -z "${INPUTS_COMMAND}" ]]; then
-            # Use "plan" as default command - it should be used for scheduled runs and when PR is opened
-            if [[ "${GITHUB_EVENT_NAME}" == "push" || "${GITHUB_EVENT_NAME}" == "schedule" ]]; then
+
+            if [[ "${GITHUB_EVENT_NAME}" = "push" ]]; then
               echo "TOFU_COMMAND=plan" | tee -a "${GITHUB_ENV}"
             fi
 
-            if [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_EVENT_REPOSITORY_DEFAULT_BRANCH}" == "${GITHUB_REF_NAME}" ]]; then
+            if [[ "${GITHUB_EVENT_PULL_REQUEST_MERGED}" = "true" || "${GITHUB_EVENT_NAME}" = "schedule" ]]; then
               echo "TOFU_COMMAND=apply" | tee -a "${GITHUB_ENV}"
             fi
 
