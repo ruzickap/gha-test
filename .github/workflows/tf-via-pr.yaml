@@ -109,7 +109,7 @@ jobs:
           fi
 
       - name: Provision TF - ${{ env.TF_VIA_PR_COMMAND }}
-        uses: op5dev/tf-via-pr@db1b9474e179cd1b9dad4583c2c3181f926cdd23 # v13
+        uses: op5dev/tf-via-pr@e3ad5ba455917af28a5282365ba7f22b4a005464 # v13.0.2
         id: provision
         with:
           command: ${{ env.TF_VIA_PR_COMMAND }}
