@@ -72,7 +72,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup OpenTofu
-        uses: opentofu/setup-opentofu@592200bd4b9bbf4772ace78f887668b1aee8f716 # v1
+        uses: opentofu/setup-opentofu@592200bd4b9bbf4772ace78f887668b1aee8f716 # v1.0.5
         with:
           tofu_wrapper: false
 
