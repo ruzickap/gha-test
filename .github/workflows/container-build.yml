@@ -279,7 +279,7 @@ jobs:
           labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Install cosign
-        uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # v3.7.0
+        uses: sigstore/cosign-installer@c56c2d3e59e4281cc41dea2217323ba5694b171e # v3.8.0
         if: ${{ env.container_registry_push_image == 'true' && inputs.container_image_sign }}
 
       - name: Install Syft
@@ -397,7 +397,7 @@ jobs:
             latest=false
 
       - name: Install cosign
-        uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # v3.7.0
+        uses: sigstore/cosign-installer@c56c2d3e59e4281cc41dea2217323ba5694b171e # v3.8.0
         if: ${{ inputs.container_image_sign }}
 
       - name: Install Syft
