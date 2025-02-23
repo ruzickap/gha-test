@@ -191,7 +191,7 @@ jobs:
           tags: temporary_container-${{ github.run_id }}:latest
 
       - name: Grype [table] - scan container image
-        uses: anchore/scan-action@abae793926ec39a78ab18002bc7fc45bbbd94342 # v6.0.0
+        uses: anchore/scan-action@7c05671ae9be166aeb155bad2d7df9121823df32 # v6.1.0
         with:
           fail-build: ${{ inputs.container_image_vulnerability_scan }}
           image: temporary_container-${{ github.run_id }}:latest
@@ -201,7 +201,7 @@ jobs:
 
       # Write to multiple output files (like syft): https://github.com/anchore/grype/issues/648
       - name: Grype [sarif] - scan container image
-        uses: anchore/scan-action@abae793926ec39a78ab18002bc7fc45bbbd94342 # v6.0.0
+        uses: anchore/scan-action@7c05671ae9be166aeb155bad2d7df9121823df32 # v6.1.0
         if: ${{ env.container_registry_push_image == 'true' }}
         id: grype-scan
         with:
