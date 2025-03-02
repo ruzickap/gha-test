@@ -2,7 +2,7 @@
 
 GitHub Action test repository.
 
-Version test...
+Version test
 
 [//]: # (x-release-please-start-version)
 
