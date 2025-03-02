@@ -212,7 +212,7 @@ jobs:
           severity-cutoff: high
 
       - name: Docker metadata
-        uses: docker/metadata-action@369eb591f429131d6889c46b94e711f089e6ca96 # v5.6.1
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
         if: ${{ env.container_registry_push_image == 'true' }}
         id: docker_meta
         with:
@@ -376,7 +376,7 @@ jobs:
           echo "CONTAINER_REGISTRY_IMAGE_NAMES<<EOF"$'\n'"${CONTAINER_REGISTRY_IMAGE_NAMES}"$'\n'EOF | tee -a "${GITHUB_ENV}"
 
       - name: Docker metadata
-        uses: docker/metadata-action@369eb591f429131d6889c46b94e711f089e6ca96 # v5.6.1
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
         id: docker_meta
         env:
           # https://github.com/docker/docs/issues/18835
