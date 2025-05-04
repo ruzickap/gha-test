@@ -31,10 +31,14 @@ exclude = [
   '\$',
   # Ignore all URLs which starts with 'file://'
   'file://',
-  # returns 403 when accessed from GitHub Action
-  'stackoverflow\.com',
+  'https://cyclonedx.org/bom',
+  'https://github.com/ruzickap/gha-test/.github/workflows',
+  'https://spdx.dev/Document',
+  'https://token.actions.githubusercontent.com/',
   # returns 403 when accessed from GitHub Action
   'stackexchange\.com',
+  # returns 403 when accessed from GitHub Action
+  'stackoverflow\.com',
   # keep-sorted end
 ]
 
