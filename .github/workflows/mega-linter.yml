@@ -1,4 +1,7 @@
 ---
+# GitHub Actions workflow for MegaLinter code quality checks
+# Runs comprehensive linting and security checks on all supported file types
+# https://megalinter.io/
 name: mega-linter
 
 on:
@@ -10,15 +13,6 @@ on:
 permissions: read-all
 
 jobs:
-  github-context:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Debug
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: |
-          echo "${GITHUB_CONTEXT}"
-
   mega-linter:
     runs-on: ubuntu-latest
     if: ${{ (!startsWith(github.ref_name, 'renovate/') && !startsWith(github.ref_name, 'release-please--')) || github.event_name == 'workflow_dispatch' }}
@@ -27,6 +21,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      # Extract shell commands from markdown code blocks for validation
+      # This creates a README.sh file containing all bash/shell/sh code blocks
+      # from markdown files to ensure they are syntactically correct
       - name: Extract commands from markdown files
         run: |
           set -euxo pipefail
@@ -38,7 +35,7 @@ jobs:
           chmod a+x README.sh
 
       - name: 💡 MegaLinter
-        uses: oxsecurity/megalinter@04cf22b980c2e9c2121553417ed651c944afc8e1 # v8.6.0
+        uses: oxsecurity/megalinter@e08c2b05e3dbc40af4c23f41172ef1e068a7d651 # v8.8.0
         env:
           GITHUB_COMMENT_REPORTER: false
           # Disabled due to error: [GitHub Status Reporter] Error posting Status for REPOSITORY with ...: 403
