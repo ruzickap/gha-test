@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: malware-cryptominer-container-netpol
+  namespace: malware-cryptominer-container
+spec:
+  podSelector:
+    matchLabels:
+      app: malware-cryptominer-container
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: malware-cryptominer-container
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8081
+  egress:
+    - {} # Allow all egress traffic (can be restricted further based on requirements)
