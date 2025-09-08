@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: malware-cryptominer-container
+  namespace: malware-cryptominer-container
 spec:
   selector:
     matchLabels:
