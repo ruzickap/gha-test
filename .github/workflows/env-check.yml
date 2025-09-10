@@ -2,9 +2,6 @@ name: env-check
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - .github/workflows/env-check.yml
 
 permissions: read-all
 

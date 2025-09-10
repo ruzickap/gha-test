@@ -101,3 +101,54 @@ kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer
 <!-- x-release-please-end -->
 
 [Pod limit on Node - AWS EKS](https://stackoverflow.com/questions/57970896/pod-limit-on-node-aws-eks/57971006)
+
+---
+
+* Container Image:
+  * [quay.io/petr_ruzicka/malware-cryptominer-container:3](https://quay.io/petr_ruzicka/malware-cryptominer-container:2.0.0)<!-- x-release-please-start-version -->
+
+<!-- x-release-please-start-version -->
+
+```bash
+export AWS_DEFAULT_REGION="eu-central-1"
+
+aws cloudformation deploy --capabilities CAPABILITY_IAM \
+  --stack-name "${USER}-malware-cryptominer-container-ec2" \
+  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/malware-cryptominer-container:2.0.0" \
+  --template-file EC2InstanceWithDockerSample.yaml \
+  --tags "Name=${USER}-malware-cryptominer-container-ec2"
+
+# aws cloudformation delete-stack --stack-name ${USER}-malware-cryptominer-container-ec2
+```
+
+<!-- x-release-please-end -->
+
+<!-- x-release-please-start-major -->
+
+```bash
+export AWS_DEFAULT_REGION="eu-central-1"
+
+aws cloudformation deploy --capabilities CAPABILITY_IAM \
+  --stack-name "${USER}-malware-cryptominer-container-ec2" \
+  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/malware-cryptominer-container:1" \
+  --template-file EC2InstanceWithDockerSample.yaml \
+  --tags "Name=${USER}-malware-cryptominer-container-ec2"
+
+# aws cloudformation delete-stack --stack-name ${USER}-malware-cryptominer-container-ec2
+```
+
+<!-- x-release-please-end -->
+
+Run in Kubernetes:
+
+<!-- x-release-please-start-version -->
+
+```bash
+# Test release: 1.1.1
+# Test release: 1.1
+# Test release: 1
+
+kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:2.0.0
+```
+
+<!-- x-release-please-end -->
