@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.1](https://github.com/ruzickap/gha-test/compare/v1.13.0...v1.13.1) (2025-09-10)
+
+
+### Bug Fixes
+
+* standardize output formatting and enforce tag pushing in release-please workflow ([#333](https://github.com/ruzickap/gha-test/issues/333)) ([73ef08a](https://github.com/ruzickap/gha-test/commit/73ef08a7a703be88553d341f32e1122cccebafce))
+
 ## [1.13.0](https://github.com/ruzickap/gha-test/compare/v1.12.1...v1.13.0) (2025-09-10)
 
 
