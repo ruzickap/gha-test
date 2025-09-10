@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.1.0](https://github.com/ruzickap/gha-test/compare/v2.0.0...v2.1.0) (2025-09-10)
+
+
+### Features
+
+* add release-please configuration file and clean up workflow steps ([#337](https://github.com/ruzickap/gha-test/issues/337)) ([bde6091](https://github.com/ruzickap/gha-test/commit/bde609161c50e54532351de76069efc21f510578))
+* add release-please manifest and configuration files ([#339](https://github.com/ruzickap/gha-test/issues/339)) ([585fc84](https://github.com/ruzickap/gha-test/commit/585fc842263b2e830f8d491dc7d9fabb4916fa93))
+* add release-please manifest and configuration files ([#340](https://github.com/ruzickap/gha-test/issues/340)) ([86f7eb5](https://github.com/ruzickap/gha-test/commit/86f7eb5d49aba8f5704bf442c2ebdc7f76dd5d2b))
+* add release-please manifest and configuration files ([#342](https://github.com/ruzickap/gha-test/issues/342)) ([bcfd00e](https://github.com/ruzickap/gha-test/commit/bcfd00eab721e2fc60cf3f166dc683e5e7068a3f))
+
 ## [2.0.0](https://github.com/ruzickap/gha-test/compare/v1.13.1...v2.0.0) (2025-09-10)
 
 
