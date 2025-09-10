@@ -21,9 +21,6 @@ jobs:
     steps:
       - uses: googleapis/release-please-action@c2a5a2bd6a758a0937f1ddb1e8950609867ed15c # v4.3.0
         id: release
-        with:
-          release-type: simple
-          # skip-github-pull-request: true
 
       - name: Checkout repository
         if: ${{ steps.release.outputs.release_created }}
