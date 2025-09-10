@@ -6,11 +6,11 @@ Version test
 
 [//]: # (x-release-please-start-version)
 
-* Full Release: 1.0.5
+* Full Release: 2.1.0
 
 ```bash
 cat << EOF
-* Full Release: 1.0.5
+* Full Release: 2.1.0
 EOF
 ```
 
@@ -18,15 +18,15 @@ EOF
 
 [//]: # (x-release-please-start-major)
 
-* Full Release: 1.0.0
-* Major Release: 1
-* Major Release: test@1
+* Full Release: 2.0.0
+* Major Release: 2
+* Major Release: test@2
 
 ```bash
 cat << EOF
-* Full Release: 1.0.0
-* Major Release: 1
-* Major Release: test@1
+* Full Release: 2.0.0
+* Major Release: 2
+* Major Release: test@2
 EOF
 ```
 
@@ -34,15 +34,15 @@ EOF
 
 [//]: # (x-release-please-start-minor)
 
-* Full Release: 0.0.0
-* Minor Release: 0
-* Minor Release: test@0
+* Full Release: 1.0.0
+* Minor Release: 1
+* Minor Release: test@1
 
 ```bash
 cat << EOF
-* Full Release: 0.0.0
-* Minor Release: 0
-* Minor Release: test@0
+* Full Release: 1.0.0
+* Minor Release: 1
+* Minor Release: test@1
 EOF
 ```
 
@@ -50,23 +50,23 @@ EOF
 
 [//]: # (x-release-please-start-patch)
 
-* Full Release: 5.0.0
-* Patch Release: 5
-* Patch Release: test@5
+* Full Release: 0.0.0
+* Patch Release: 0
+* Patch Release: test@0
 
 MP4 Video:
 
-<https://github.com/ruzickap/gha-test/assets/1434387/d2f6c337-2679-4ba4-92f7-c8afb5ed88a5>
+<https://github.com/ruzickap/gha-test/assets/0/d2f6c337-2679-4ba4-92f7-c8afb5ed88a5>
 
 AV1 Video:
 
-<https://github.com/ruzickap/gha-test/assets/1434387/287b4432-89bc-48a7-b593-a1e1841136a3>
+<https://github.com/ruzickap/gha-test/assets/0/287b4432-89bc-48a7-b593-a1e1841136a3>
 
 ```bash
 cat << EOF
-* Full Release: 5.0.0
-* Patch Release: 5
-* Patch Release: test@5
+* Full Release: 0.0.0
+* Patch Release: 0
+* Patch Release: test@0
 EOF
 ```
 
@@ -84,7 +84,7 @@ echo "Test: $(date +'%F')"
 
 <!-- x-release-please-start-version -->
 ```bash
-kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:3.0.0
+kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:2.1.0
 ```
 <!-- x-release-please-end -->
 
@@ -96,7 +96,7 @@ kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer
 
 <!-- x-release-please-start-minor -->
 ```bash
-kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:2.1
+kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:1.1
 ```
 <!-- x-release-please-end -->
 
@@ -114,7 +114,7 @@ export AWS_DEFAULT_REGION="eu-central-1"
 
 aws cloudformation deploy --capabilities CAPABILITY_IAM \
   --stack-name "${USER}-malware-cryptominer-container-ec2" \
-  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/malware-cryptominer-container:2.0.0" \
+  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/malware-cryptominer-container:2.1.0" \
   --template-file EC2InstanceWithDockerSample.yaml \
   --tags "Name=${USER}-malware-cryptominer-container-ec2"
 
@@ -126,11 +126,11 @@ aws cloudformation deploy --capabilities CAPABILITY_IAM \
 <!-- x-release-please-start-major -->
 
 ```bash
-export AWS_DEFAULT_REGION="eu-central-1"
+export AWS_DEFAULT_REGION="eu-central-2"
 
 aws cloudformation deploy --capabilities CAPABILITY_IAM \
   --stack-name "${USER}-malware-cryptominer-container-ec2" \
-  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/malware-cryptominer-container:1" \
+  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/malware-cryptominer-container:2" \
   --template-file EC2InstanceWithDockerSample.yaml \
   --tags "Name=${USER}-malware-cryptominer-container-ec2"
 
@@ -144,11 +144,11 @@ Run in Kubernetes:
 <!-- x-release-please-start-version -->
 
 ```bash
-# Test release: 1.1.1
+# Test release: 2.1.0
 # Test release: 1.1
 # Test release: 1
 
-kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:2.0.0
+kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:2.1.0
 ```
 
 <!-- x-release-please-end -->
