@@ -123,6 +123,22 @@ aws cloudformation deploy --capabilities CAPABILITY_IAM \
 
 <!-- x-release-please-end -->
 
+<!-- x-release-please-start-major -->
+
+```bash
+export AWS_DEFAULT_REGION="eu-central-1"
+
+aws cloudformation deploy --capabilities CAPABILITY_IAM \
+  --stack-name "${USER}-malware-cryptominer-container-ec2" \
+  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/malware-cryptominer-container:1" \
+  --template-file EC2InstanceWithDockerSample.yaml \
+  --tags "Name=${USER}-malware-cryptominer-container-ec2"
+
+# aws cloudformation delete-stack --stack-name ${USER}-malware-cryptominer-container-ec2
+```
+
+<!-- x-release-please-end -->
+
 Run in Kubernetes:
 
 <!-- x-release-please-start-version -->
