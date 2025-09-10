@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/ruzickap/gha-test/compare/v1.13.1...v2.0.0) (2025-09-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove unused GHA and files ([#335](https://github.com/ruzickap/gha-test/issues/335))
+
+### Features
+
+* remove unused GHA and files ([#335](https://github.com/ruzickap/gha-test/issues/335)) ([574abfd](https://github.com/ruzickap/gha-test/commit/574abfd1b94a65d6ee8072c6aa01c3a08283f970))
+
 ## [1.13.1](https://github.com/ruzickap/gha-test/compare/v1.13.0...v1.13.1) (2025-09-10)
 
 
