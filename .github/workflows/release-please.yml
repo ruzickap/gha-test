@@ -58,7 +58,7 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
         run: |
           # Calculate time since last release
-          LAST_RELEASE_DATE=$(git log -1 --format=%ai $(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo HEAD))
+          LAST_RELEASE_DATE=$(git log -1 --format=%ai "$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo HEAD)")
           DAYS_SINCE_RELEASE=$(( ($(date +%s) - $(date -d "${LAST_RELEASE_DATE}" +%s)) / 86400 ))
 
           # Count commits included in release
