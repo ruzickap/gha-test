@@ -43,16 +43,16 @@ jobs:
           SHA=$(git rev-parse HEAD)
 
           echo "🏷️ Tag commit: ${SHA}"
-          echo "🔍 MAJOR: ${MAJOR}"
-          echo "🔍 MINOR: ${MINOR}"
+          echo "🔍 Major: ${MAJOR}"
+          echo "🔍 Minor: ${MINOR}"
           echo "🚀 Release tag: v${MAJOR}.${MINOR}"
 
           git tag -f "v${MAJOR}" "${SHA}"
           git tag -f "v${MAJOR}.${MINOR}" "${SHA}"
 
           # Push tags to remote
-          git push origin "v${MAJOR}"
-          git push origin "v${MAJOR}.${MINOR}"
+          git push --force origin "v${MAJOR}"
+          git push --force origin "v${MAJOR}.${MINOR}"
 
       - name: Collect comprehensive release metrics
         if: ${{ steps.release.outputs.release_created }}
