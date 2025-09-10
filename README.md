@@ -128,6 +128,10 @@ Run in Kubernetes:
 <!-- x-release-please-start-version -->
 
 ```bash
+# Test release: 1.1.1
+# Test release: 1.1
+# Test release: 1
+
 kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:2.0.0
 ```
 
