@@ -53,28 +53,3 @@ jobs:
           # Push tags to remote
           git push --force origin "v${MAJOR}"
           git push --force origin "v${MAJOR}.${MINOR}"
-
-      - name: Collect comprehensive release metrics
-        if: ${{ steps.release.outputs.release_created }}
-        run: |
-          # Calculate time since last release
-          LAST_RELEASE_DATE=$(git log -1 --format=%ai "$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo HEAD)")
-          DAYS_SINCE_RELEASE=$(( ($(date +%s) - $(date -d "${LAST_RELEASE_DATE}" +%s)) / 86400 ))
-
-          # Count commits included in release
-          LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null)
-          COMMIT_COUNT=$(git rev-list --count "${LAST_TAG:+$LAST_TAG..}HEAD")
-
-          # Categorize changes by type
-          FEAT_COUNT=$(git log --format=%s "${LAST_TAG:+$LAST_TAG..}HEAD" | grep -c "^feat:" || echo 0)
-          FIX_COUNT=$(git log --format=%s "${LAST_TAG:+$LAST_TAG..}HEAD" | grep -c "^fix:" || echo 0)
-
-          # Create summary file using cat
-          cat << EOF | tee "${GITHUB_STEP_SUMMARY}"
-          # 📊 Release Metrics
-
-          - 🗓️ **Days since last release:** ${DAYS_SINCE_RELEASE}
-          - 📦 **Total commits:** ${COMMIT_COUNT}
-          - ✨ **Features:** ${FEAT_COUNT}
-          - 🐛 **Bug fixes:** ${FIX_COUNT}
-          EOF
