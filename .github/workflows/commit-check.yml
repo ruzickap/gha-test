@@ -20,7 +20,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: commit-check/commit-check-action@v1
+      - uses: commit-check/commit-check-action@04667fa89b3d3feb0f28facf9c5ff944a5500e85 # v1
         env:
           GH_TOKEN: ${{ github.token }}
         with:
