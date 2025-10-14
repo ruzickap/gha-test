@@ -20,9 +20,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: commit-check/commit-check-action@04667fa89b3d3feb0f28facf9c5ff944a5500e85 # v1
+      - uses: commit-check/commit-check-action@d009e35187a28857656c738120c6be00c6e0d92a # v2.0.0
         env:
           GH_TOKEN: ${{ github.token }}
-        with:
-          commit-signoff: false
-          merge-base: true
