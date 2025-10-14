@@ -14,7 +14,8 @@ permissions: read-all
 
 jobs:
   mega-linter:
-    runs-on: ubuntu-24.04-arm
+    # No arm64 support yet
+    runs-on: ubuntu-latest
     if: ${{ (!startsWith(github.ref_name, 'renovate/') && !startsWith(github.ref_name, 'release-please--')) || github.event_name == 'workflow_dispatch' }}
     timeout-minutes: 30
     steps:
