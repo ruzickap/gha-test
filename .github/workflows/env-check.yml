@@ -27,7 +27,7 @@ jobs:
           env
 
   macos:
-    runs-on: ubuntu-24.04-arm
+    runs-on: macos-latest
     steps:
       - name: Show resources
         run: |
