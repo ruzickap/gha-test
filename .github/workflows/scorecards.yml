@@ -15,7 +15,7 @@ permissions: read-all
 
 jobs:
   scorecards:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     permissions:
       # Required for uploading SARIF results to GitHub Security tab
       security-events: write

@@ -7,7 +7,7 @@ permissions: read-all
 
 jobs:
   env-checker:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
@@ -27,7 +27,7 @@ jobs:
           env
 
   macos:
-    runs-on: macos-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - name: Show resources
         run: |
@@ -40,7 +40,7 @@ jobs:
           diskutil info disk0
 
   ubuntu:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - name: Show resources
         run: |
@@ -53,7 +53,7 @@ jobs:
           lshw
 
   ubuntu-colors:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - name: Install kubecolor
         run: |
