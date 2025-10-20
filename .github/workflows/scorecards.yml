@@ -15,7 +15,7 @@ permissions: read-all
 
 jobs:
   scorecards:
-    # No arm64 support yet
+    # ossf/scorecard-action doesn't support arm64
     runs-on: ubuntu-latest
     permissions:
       # Required for uploading SARIF results to GitHub Security tab
