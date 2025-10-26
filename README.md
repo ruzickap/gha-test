@@ -9,7 +9,7 @@
 [![Semantic Pull Request](https://github.com/ruzickap/gha-test/actions/workflows/semantic-pull-request.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/semantic-pull-request.yml)
 [![Stale](https://github.com/ruzickap/gha-test/actions/workflows/stale.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/stale.yml)
 
-GitHub Action test repository...
+GitHub Action test repository.
 
 Version test
 
