@@ -1,6 +1,6 @@
 [commit]
 # https://www.conventionalcommits.org
-conventional_commits = true
+#conventional_commits = true
 subject_capitalized = false
 #subject_imperative = true
 subject_max_length = 72
@@ -17,7 +17,7 @@ subject_max_length = 72
 
 [branch]
 # https://conventional-branch.github.io/
-conventional_branch = true
+#conventional_branch = true
 # allow_branch_types = ["feature", "bugfix", "hotfix", "release", "chore", "feat", "fix"]
 require_rebase_target = "origin/main"
 # ignore_authors = ["dependabot[bot]", "copilot[bot]", "pre-commit-ci[bot]", "renovate[bot]"]
