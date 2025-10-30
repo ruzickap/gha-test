@@ -21,6 +21,14 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
+      - name: Create commit-check.toml file
+        run: |
+          cat > commit-check.toml << EOF
+          [commit]
+          subject_capitalized = false
+          subject_max_length = 72
+          EOF
+
       - uses: commit-check/commit-check-action@fc0543792ea1ba666c86fea9792d1d72e253ca97 # v2.1.0
         env:
           GH_TOKEN: ${{ github.token }}
