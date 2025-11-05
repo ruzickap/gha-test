@@ -20,6 +20,23 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Test
+        run: |
+          git rev-parse HEAD
+          git log -n 5 --pretty=format:"%C(yellow)%h %Cgreen%ad %C(auto)%d %Creset%s %Cblue[%an]" --date=short
+
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: checkout-pr
+          fetch-depth: 0
+
+      - name: Test
+        run: |
+          cd checkout-pr
+          git rev-parse HEAD
+          git log -n 5 --pretty=format:"%C(yellow)%h %Cgreen%ad %C(auto)%d %Creset%s %Cblue[%an]" --date=short
+
       - name: Create commit-check.toml file
         run: |
           cat > commit-check.toml << EOF
