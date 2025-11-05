@@ -22,6 +22,7 @@ jobs:
 
       - name: Test
         run: |
+          set -x
           git rev-parse HEAD
           git log -n 5 --pretty=format:"%C(yellow)%h %Cgreen%ad %C(auto)%d %Creset%s %Cblue[%an]" --date=short
 
@@ -33,6 +34,7 @@ jobs:
 
       - name: Test
         run: |
+          set -x
           cd checkout-pr
           git rev-parse HEAD
           git log -n 5 --pretty=format:"%C(yellow)%h %Cgreen%ad %C(auto)%d %Creset%s %Cblue[%an]" --date=short
