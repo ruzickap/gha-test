@@ -1,0 +1,21 @@
+---
+name: setup-docker-action
+
+on:
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  setup-docker-action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker
+        uses: docker/setup-docker-action@efe9e3891a4f7307e689f2100b33a155b900a608 # v4.5.0
+        with:
+          daemon-config: |
+            {
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
