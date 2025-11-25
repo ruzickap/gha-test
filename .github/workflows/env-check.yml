@@ -19,6 +19,8 @@ jobs:
           echo "Repository: ${{ github.repository }}"
           echo "${{ github.actor }} | ${{ github.repository }}"
           echo "${GITHUB_REPOSITORY%/*} | ${GITHUB_REPOSITORY##*/} | ${GITHUB_REPOSITORY}"
+          uname -m
+          uname -a
           aws --version
           helm version
           kustomize version
@@ -32,6 +34,8 @@ jobs:
       - name: Show resources
         run: |
           set -x
+          uname -m
+          uname -a
           sysctl -n hw.ncpu
           system_profiler SPHardwareDataType
           top -l 1 -s 0 | grep PhysMem
@@ -59,6 +63,8 @@ jobs:
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
           set -x
+          uname -m
+          uname -a
           brew install kubecolor
           export KUBECOLOR_FORCE_COLORS=256
           /home/linuxbrew/.linuxbrew/bin/kubecolor version --client=true
