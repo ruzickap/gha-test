@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.2.0](https://github.com/ruzickap/gha-test/compare/v2.1.0...v2.2.0) (2025-12-03)
+
+
+### Features
+
+* improve commit-check config ([#356](https://github.com/ruzickap/gha-test/issues/356)) ([e430a94](https://github.com/ruzickap/gha-test/commit/e430a94a9481bdaf1c305f95e54f19dd76267f79))
+
+
+### Bug Fixes
+
+* test123 message ([#359](https://github.com/ruzickap/gha-test/issues/359)) ([2a57e0e](https://github.com/ruzickap/gha-test/commit/2a57e0e358144d7a37f689e71afa12d29657ab19))
+* update README ([#361](https://github.com/ruzickap/gha-test/issues/361)) ([d6c6438](https://github.com/ruzickap/gha-test/commit/d6c64380cfacaa2cb148137ccdb11b5799419915))
+
 ## [2.1.0](https://github.com/ruzickap/gha-test/compare/v2.0.0...v2.1.0) (2025-09-10)
 
 
