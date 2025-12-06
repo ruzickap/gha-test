@@ -9,7 +9,7 @@
    */
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
 
-  // # keep-sorted start block=yes
+  // keep-sorted start block=yes
   branchPrefix: "chore/renovate-pr/",
   customDatasources: {
     "grafana-dashboards": {
@@ -34,14 +34,7 @@
   packageRules: [
     {
       commitBody: "[skip ci]",
-      description: "Automerge all without running any tests",
-      groupName: "all dependencies",
-      matchPackagePatterns: ["*"],
-    },
-    {
-      commitBody: "[skip ci]",
-      datasources: ["custom.grafana-dashboards"],
-      description: "Include grafana-dashboards in all dependencies group",
+      description: "Group all dependencies including grafana-dashboards into a single commit",
       groupName: "all dependencies",
     },
   ],
@@ -87,5 +80,7 @@
       ],
     },
   ],
-  // # keep-sorted end
+  separateMajorMinor: false,
+  separateMinorPatch: false,
+  // keep-sorted end
 }
