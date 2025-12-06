@@ -1,7 +1,6 @@
 ---
 # GitHub Actions workflow for Semantic Pull Request validation
 # Validates that pull request titles follow conventional commits format
-# https://www.conventionalcommits.org/
 name: semantic-pull-request
 
 on:
