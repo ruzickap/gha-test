@@ -35,6 +35,7 @@
       automerge: true,
       commitBody: "[skip ci]",
       description: "Automerge all without running any tests",
+      groupName: "all dependencies",
       ignoreTests: true,
       matchPackagePatterns: ["*"],
     },
