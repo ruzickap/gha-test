@@ -44,7 +44,8 @@ jobs:
           SHOW_ELAPSED_TIME: true
           VALIDATE_ALL_CODEBASE: true
           ENABLE_LINTERS: SPELL_LYCHEE
-          SPELL_LYCHEE_ARGUMENTS: --user-agent "curl/8.4.0" --root-dir /github/workspace --verbose
+          SPELL_LYCHEE_ARGUMENTS: --user-agent "curl/8.4.0" --root-dir /github/workspace -vv
+          # Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36
           FAIL_IF_MISSING_LINTER_IN_FLAVOR: true
 
       - name: Check cache
