@@ -38,7 +38,7 @@ jobs:
           LOG_LEVEL: debug
           SHOW_ELAPSED_TIME: true
           VALIDATE_ALL_CODEBASE: true
-          ENABLE: SPELL_LYCHEE
+          ENABLE_LINTERS: SPELL_LYCHEE
           SPELL_LYCHEE_ARGUMENTS: -vvv
 
       - name: Save lychee cache
