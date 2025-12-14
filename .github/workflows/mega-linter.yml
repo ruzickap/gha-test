@@ -49,8 +49,17 @@ jobs:
           ENABLE_LINTERS: SPELL_LYCHEE
           SPELL_LYCHEE_ARGUMENTS: --user-agent "curl/8.4.0"
           FAIL_IF_MISSING_LINTER_IN_FLAVOR: true
-          SPELL_LYCHEE_PRE_COMMANDS: >-
-            [{"command": "echo", "root-dir = ${DEFAULT_WORKSPACE}": ">>" "lychee.toml"}, {"command": "cat", "lychee.toml"}]
+          # SPELL_LYCHEE_PRE_COMMANDS: >-
+          #   [{"command": "echo", "root-dir = ${DEFAULT_WORKSPACE}": ">>" "lychee.toml"}, {"command": "cat", "lychee.toml"}]
+          SPELL_LYCHEE_PRE_COMMANDS: >
+            [
+              {
+                "command": "echo root-dir = ${DEFAULT_WORKSPACE} >> lychee.toml"
+              },
+              {
+                "command": "cat lychee.toml"
+              }
+            ]
 
       # - name: Check cache
       #   run: |
