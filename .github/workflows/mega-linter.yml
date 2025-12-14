@@ -41,11 +41,10 @@ jobs:
           GITHUB_COMMENT_REPORTER: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LOG_LEVEL: DEBUG
-          SHOW_ELAPSED_TIME: true
+          SHOW_ELAPSED_TIME: false
           VALIDATE_ALL_CODEBASE: true
           ENABLE_LINTERS: SPELL_LYCHEE
-          SPELL_LYCHEE_ARGUMENTS: --user-agent "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36" --root-dir /github/workspace --verbose
-          # -vv
+          SPELL_LYCHEE_ARGUMENTS: --root-dir /github/workspace --verbose
 
       - name: Check cache
         run: |
