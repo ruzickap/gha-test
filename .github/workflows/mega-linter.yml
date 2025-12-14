@@ -60,7 +60,7 @@ jobs:
                 "command": "cat lychee.toml"
               },
               {
-                "command": "pwd ; ls -la ; env"
+                "command": "set -x ; pwd ; ls -la ; env"
               }
             ]
 
