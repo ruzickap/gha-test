@@ -44,7 +44,8 @@ jobs:
           SHOW_ELAPSED_TIME: true
           VALIDATE_ALL_CODEBASE: true
           ENABLE_LINTERS: SPELL_LYCHEE
-          SPELL_LYCHEE_ARGUMENTS: --verbose --user-agent "curl/8.4.0" --root-dir "${PWD}"
+          SPELL_LYCHEE_ARGUMENTS: --user-agent "curl/8.4.0" --root-dir "$(pwd)"
+          FAIL_IF_MISSING_LINTER_IN_FLAVOR: true
 
       # - name: Check cache
       #   run: |

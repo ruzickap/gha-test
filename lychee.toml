@@ -1,10 +1,18 @@
 # Configuration for lychee link checker
 # https://github.com/lycheeverse/lychee/blob/master/lychee.example.toml
 
+#############################  Display  #############################
+
+# Output format
+format = "detailed"
+
 #############################  Cache  ###############################
 
 # Enable link caching to avoid checking the same links on multiple runs
 cache = true
+
+# Exclude certain status codes from cache
+cache_exclude_status = [429]  # Rate limiting shouldn't be cached
 
 #############################  Requests  ############################
 
