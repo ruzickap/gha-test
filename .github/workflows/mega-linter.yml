@@ -44,7 +44,7 @@ jobs:
           SHOW_ELAPSED_TIME: true
           VALIDATE_ALL_CODEBASE: true
           ENABLE_LINTERS: SPELL_LYCHEE
-          SPELL_LYCHEE_ARGUMENTS: -vvv
+          SPELL_LYCHEE_ARGUMENTS: -vvv --user-agent "curl/8.4.0"
 
       # - name: Check cache
       #   run: |
