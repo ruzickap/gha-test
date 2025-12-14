@@ -21,13 +21,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
-      # - name: Restore lychee cache
-      #   id: restore-cache
-      #   uses: actions/cache/restore@v3
-      #   with:
-      #     path: .lycheecache
-      #     key: cache-lychee-${{ github.sha }}
-      #     restore-keys: cache-lychee-
+      - name: Restore lychee cache
+        id: restore-cache
+        uses: actions/cache/restore@v3
+        with:
+          path: .lycheecache
+          key: cache-lychee-${{ github.sha }}
+          restore-keys: cache-lychee-
 
       - name: Check cache
         run: |
@@ -47,14 +47,14 @@ jobs:
           SPELL_LYCHEE_ARGUMENTS: --user-agent "curl/8.4.0" --root-dir /github/workspace --verbose
           FAIL_IF_MISSING_LINTER_IN_FLAVOR: true
 
-      # - name: Check cache
-      #   run: |
-      #     set -x
-      #     ls -la .lycheecache || true
+      - name: Check cache
+        run: |
+          set -x
+          ls -la .lycheecache || true
 
-      # - name: Save lychee cache
-      #   uses: actions/cache/save@v3
-      #   if: always()
-      #   with:
-      #     path: .lycheecache
-      #     key: ${{ steps.restore-cache.outputs.cache-primary-key }}
+      - name: Save lychee cache
+        uses: actions/cache/save@v3
+        if: always()
+        with:
+          path: .lycheecache
+          key: ${{ steps.restore-cache.outputs.cache-primary-key }}
