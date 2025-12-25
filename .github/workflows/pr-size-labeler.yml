@@ -12,7 +12,7 @@ permissions: read-all
 
 jobs:
   pr-size-labeler:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     permissions:
       pull-requests: write
       contents: read
