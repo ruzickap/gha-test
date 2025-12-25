@@ -82,7 +82,7 @@
   prConcurrentLimit: 500,
   prHourlyLimit: 500,
   // Ignore repository's renovate config file (.github/renovate.json5)
-  requireConfig: "ignored",
+  // requireConfig: "ignored", - NOT NEEDED?
   separateMajorMinor: false,
   // # keep-sorted end
 }
