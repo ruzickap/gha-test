@@ -9,6 +9,8 @@
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
 
   // # keep-sorted start block=yes
+  automerge: true,
+  automergeType: "branch",
   branchPrefix: "chore/renovate-pr/",
   customDatasources: {
     "grafana-dashboards": {
@@ -78,9 +80,8 @@
       matchPackageNames: ["*"],
     },
   ],
-  prCommitsPerRunLimit: 500,
-  prConcurrentLimit: 500,
-  prHourlyLimit: 500,
+  // https://docs.renovatebot.com/configuration-options/#platformcommit
+  platformCommit: "enabled",
   // Ignore repository's renovate config file (.github/renovate.json5)
   // requireConfig: "ignored", - NOT NEEDED?
   separateMajorMinor: false,
