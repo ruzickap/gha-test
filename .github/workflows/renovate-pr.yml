@@ -37,8 +37,6 @@ env:
   # Target repository for Renovate to update
   # https://docs.renovatebot.com/self-hosted-configuration/#repositories
   RENOVATE_REPOSITORIES: ${{ github.repository }}
-  # Ignore default renovate config file in git repository
-  RENOVATE_REQUIRE_CONFIG: "ignored"
   # Username for Renovate commits
   # https://docs.renovatebot.com/self-hosted-configuration/#username
   RENOVATE_USERNAME: ${{ github.repository_owner }}
