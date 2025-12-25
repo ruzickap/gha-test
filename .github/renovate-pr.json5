@@ -110,6 +110,10 @@
   ],
   // Use platform's native API for commits (enables signed commits on GitHub)
   platformCommit: "enabled",
+  // Disable concurrent PR limit (0 = unlimited open PRs at once)
+  prConcurrentLimit: 0,
+  // Disable hourly PR limit (0 = unlimited PRs per hour)
+  prHourlyLimit: 0,
   // Combine major and minor updates into a single PR instead of separate ones
   separateMajorMinor: false,
   // # keep-sorted end

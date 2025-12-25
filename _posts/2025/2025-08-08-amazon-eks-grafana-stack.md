@@ -21,8 +21,6 @@ tags:
 image: https://raw.githubusercontent.com/grafana/.github/12fb002302b5efad6251075f45ce5ac22db69a3f/LGTM_wallpaper_1920x1080.png
 ---
 
-TEST12345
-
 I will outline the steps for setting up an [Amazon EKS](https://aws.amazon.com/eks/)
 environment that prioritizes security, including the configuration of standard
 applications.
