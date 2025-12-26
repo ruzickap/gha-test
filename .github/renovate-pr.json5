@@ -91,7 +91,6 @@
     ":disableDependencyDashboard", // Don't create dependency dashboard issues
     ":disableRateLimiting", // Disable rate limiting for faster updates
     ":docker", // Enable Docker container updates
-    ":enableVulnerabilityAlertsWithLabel(security)", // Add security label to vulnerability alerts
     ":pinSkipCi", // Pin dependencies and skip CI for pin-only updates
   ],
   // Skip waiting for tests to pass before automerging
@@ -110,10 +109,6 @@
   ],
   // Use platform's native API for commits (enables signed commits on GitHub)
   platformCommit: "enabled",
-  // Disable concurrent PR limit (0 = unlimited open PRs at once)
-  prConcurrentLimit: 0,
-  // Disable hourly PR limit (0 = unlimited PRs per hour)
-  prHourlyLimit: 0,
   // Combine major and minor updates into a single PR instead of separate ones
   separateMajorMinor: false,
   // # keep-sorted end
