@@ -1231,7 +1231,7 @@ to fit your environment and storage requirements:
 
 ```bash
 # renovate: datasource=helm depName=loki registryUrl=https://grafana.github.io/helm-charts
-LOKI_HELM_CHART_VERSION="6.46.0"
+LOKI_HELM_CHART_VERSION="6.49.0"
 
 helm repo add --force-update grafana https://grafana.github.io/helm-charts
 tee "${TMP_DIR}/${CLUSTER_FQDN}/helm_values-loki.yml" << EOF
@@ -1609,7 +1609,7 @@ to fit your environment and storage requirements:
 
 ```bash
 # renovate: datasource=helm depName=k8s-monitoring registryUrl=https://grafana.github.io/helm-charts
-K8S_MONITORING_HELM_CHART_VERSION="3.6.2"
+K8S_MONITORING_HELM_CHART_VERSION="3.7.0"
 
 # https://github.com/suxess-it/kubriX/blob/main/platform-apps/charts/k8s-monitoring/values-kubrix-default.yaml
 # https://github.com/ar2pi/potato-cluster/blob/main/kubernetes/helm/grafana-k8s-monitoring/values.yaml
@@ -1725,7 +1725,7 @@ and modify its [default values](https://github.com/grafana/helm-charts/blob/graf
 
 ```bash
 # renovate: datasource=helm depName=grafana registryUrl=https://grafana.github.io/helm-charts
-GRAFANA_HELM_CHART_VERSION="10.3.0"
+GRAFANA_HELM_CHART_VERSION="10.4.0"
 
 helm repo add --force-update grafana https://grafana.github.io/helm-charts
 tee "${TMP_DIR}/${CLUSTER_FQDN}/helm_values-grafana.yml" << EOF
@@ -2064,7 +2064,7 @@ and modify its [default values](https://github.com/oauth2-proxy/manifests/blob/o
 
 ```bash
 # renovate: datasource=helm depName=oauth2-proxy registryUrl=https://oauth2-proxy.github.io/manifests
-OAUTH2_PROXY_HELM_CHART_VERSION="9.0.0"
+OAUTH2_PROXY_HELM_CHART_VERSION="10.0.0"
 
 helm repo add --force-update oauth2-proxy https://oauth2-proxy.github.io/manifests
 tee "${TMP_DIR}/${CLUSTER_FQDN}/helm_values-oauth2-proxy.yml" << EOF
