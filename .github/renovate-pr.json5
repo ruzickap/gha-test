@@ -85,9 +85,6 @@
   // Keep the extends started with ":" at the end of the list to allow overriding
   extends: [
     "config:recommended", // Renovate's recommended configuration preset
-    "docker:pinDigests", // Pin Docker image digests for security
-    "helpers:pinGitHubActionDigestsToSemver", // Pin GitHub Actions to specific versions with semantic versioning
-    "security:openssf-scorecard", // Add OpenSSF Scorecard security insights
     ":disableDependencyDashboard", // Don't create dependency dashboard issues
     ":disableRateLimiting", // Disable rate limiting for faster updates
     ":docker", // Enable Docker container updates
@@ -111,5 +108,9 @@
   platformCommit: "enabled",
   // Combine major and minor updates into a single PR instead of separate ones
   separateMajorMinor: false,
+  // Disable vulnerability alerts to avoid requiring vulnerability-alerts permission
+  vulnerabilityAlerts: {
+    enabled: false,
+  },
   // # keep-sorted end
 }
