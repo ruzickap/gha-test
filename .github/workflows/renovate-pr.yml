@@ -40,15 +40,17 @@ env:
   RENOVATE_USERNAME: ${{ github.repository_owner }}
   # keep-sorted end
 
-permissions: write-all
+permissions: read-all
 
 jobs:
   renovate-pr:
     runs-on: ubuntu-24.04-arm
     if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'renovate-pr') }}
-    # permissions:
-    # issues: write
-    # pull-requests: write
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      security-events: read
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
