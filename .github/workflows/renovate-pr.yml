@@ -59,12 +59,6 @@ jobs:
           PR_NUMBER: ${{ github.event.number }}
         run: gh api "/repos/{owner}/{repo}/issues/${PR_NUMBER}/labels/renovate-pr" --method DELETE
 
-      - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
-        id: app-token
-        with:
-          app-id: ${{ secrets.MY_RENOVATE_GITHUB_APP_ID }}
-          private-key: ${{ secrets.MY_RENOVATE_GITHUB_PRIVATE_KEY }}
-
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@e0021407031f5be11a464abee9a0776171c79891 # v47.0.1
@@ -76,4 +70,4 @@ jobs:
         env:
           RENOVATE_INCLUDE_PATHS: ${{ steps.changed-files.outputs.all_changed_files }}
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
