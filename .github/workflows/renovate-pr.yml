@@ -66,9 +66,17 @@ jobs:
         with:
           files: "_posts/**"
 
+      - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        if: steps.changed-files.outputs.any_changed == 'true'
+        id: app-token
+        with:
+          app-id: ${{ secrets.MY_RENOVATE_GITHUB_APP_ID }}
+          private-key: ${{ secrets.MY_RENOVATE_GITHUB_PRIVATE_KEY }}
+
       - name: 💡 Self-hosted Renovate
+        if: steps.changed-files.outputs.any_changed == 'true'
         uses: renovatebot/github-action@f7fad228a053c69a98e24f8e4f6cf40db8f61e08 # v44.2.1
         env:
           RENOVATE_INCLUDE_PATHS: ${{ steps.changed-files.outputs.all_changed_files }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}

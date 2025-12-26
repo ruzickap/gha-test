@@ -108,9 +108,5 @@
   platformCommit: "enabled",
   // Combine major and minor updates into a single PR instead of separate ones
   separateMajorMinor: false,
-  // Disable vulnerability alerts to avoid requiring vulnerability-alerts permission
-  vulnerabilityAlerts: {
-    enabled: false,
-  },
   // # keep-sorted end
 }
