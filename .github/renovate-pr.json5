@@ -11,6 +11,8 @@
   // # keep-sorted start block=yes
   // Automatically merge dependency updates once all checks pass
   automerge: true,
+  // Merge strategy when automerging (squash combines commits into one)
+  automergeStrategy: "squash",
   // Merge directly to the branch without creating a separate PR
   automergeType: "branch",
   // Prefix for branches created by Renovate (chore/renovate-pr/dependency-1.x)
