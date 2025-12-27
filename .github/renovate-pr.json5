@@ -109,6 +109,8 @@
   ],
   // Use platform's native API for commits (enables signed commits on GitHub)
   platformCommit: "enabled",
+  // Run Renovate even if no config file is found in the target repository
+  requireConfig: "ignored",
   // Combine major and minor updates into a single PR instead of separate ones
   separateMajorMinor: false,
   // # keep-sorted end
