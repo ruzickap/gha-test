@@ -893,7 +893,8 @@ helm repo add --force-update vmware-tanzu https://vmware-tanzu.github.io/helm-ch
 cat > "${TMP_DIR}/${CLUSTER_FQDN}/helm_values-velero.yml" << EOF
 initContainers:
   - name: velero-plugin-for-aws
-    image: velero/velero-plugin-for-aws:v1.13.1
+    # renovate: datasource=github-tags depName=vmware-tanzu/velero-plugin-for-aws extractVersion=^(?<version>.+)$
+    image: velero/velero-plugin-for-aws:v1.13.0
     volumeMounts:
       - mountPath: /target
         name: plugins
