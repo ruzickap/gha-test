@@ -102,9 +102,6 @@
       groupName: "all dependencies",
       // Apply this rule to all packages
       matchPackageNames: ["*"],
-      // Explicitly enable automerge for all updates (including major)
-      // This overrides any inherited rules that disable automerge
-      automerge: true,
     },
   ],
   // Use platform's native API for commits (enables signed commits on GitHub)
