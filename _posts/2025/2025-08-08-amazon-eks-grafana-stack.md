@@ -21,8 +21,6 @@ tags:
 image: https://raw.githubusercontent.com/grafana/.github/12fb002302b5efad6251075f45ce5ac22db69a3f/LGTM_wallpaper_1920x1080.png
 ---
 
-TEST12345
-
 I will outline the steps for setting up an [Amazon EKS](https://aws.amazon.com/eks/)
 environment that prioritizes security, including the configuration of standard
 applications.
@@ -630,7 +628,7 @@ and modify its [default values](https://github.com/kubernetes-sigs/aws-load-bala
 
 ```bash
 # renovate: datasource=helm depName=aws-load-balancer-controller registryUrl=https://aws.github.io/eks-charts
-AWS_LOAD_BALANCER_CONTROLLER_HELM_CHART_VERSION="1.16.0"
+AWS_LOAD_BALANCER_CONTROLLER_HELM_CHART_VERSION="1.17.0"
 
 helm repo add --force-update eks https://aws.github.io/eks-charts
 tee "${TMP_DIR}/${CLUSTER_FQDN}/helm_values-aws-load-balancer-controller.yml" << EOF
@@ -895,7 +893,7 @@ helm repo add --force-update vmware-tanzu https://vmware-tanzu.github.io/helm-ch
 cat > "${TMP_DIR}/${CLUSTER_FQDN}/helm_values-velero.yml" << EOF
 initContainers:
   - name: velero-plugin-for-aws
-    # renovate: datasource=docker depName=velero/velero-plugin-for-aws extractVersion=^(?<version>.+)$
+    # renovate: datasource=github-tags depName=vmware-tanzu/velero-plugin-for-aws extractVersion=^(?<version>.+)$
     image: velero/velero-plugin-for-aws:v1.13.1
     volumeMounts:
       - mountPath: /target
@@ -1234,7 +1232,7 @@ to fit your environment and storage requirements:
 
 ```bash
 # renovate: datasource=helm depName=loki registryUrl=https://grafana.github.io/helm-charts
-LOKI_HELM_CHART_VERSION="6.46.0"
+LOKI_HELM_CHART_VERSION="6.49.0"
 
 helm repo add --force-update grafana https://grafana.github.io/helm-charts
 tee "${TMP_DIR}/${CLUSTER_FQDN}/helm_values-loki.yml" << EOF
@@ -1564,7 +1562,7 @@ to fit your environment and storage requirements:
 
 ```bash
 # renovate: datasource=helm depName=pyroscope registryUrl=https://grafana.github.io/helm-charts
-PYROSCOPE_HELM_CHART_VERSION="1.16.0"
+PYROSCOPE_HELM_CHART_VERSION="1.17.0"
 
 helm repo add --force-update grafana https://grafana.github.io/helm-charts
 tee "${TMP_DIR}/${CLUSTER_FQDN}/helm_values-pyroscope.yml" << EOF
@@ -1612,7 +1610,7 @@ to fit your environment and storage requirements:
 
 ```bash
 # renovate: datasource=helm depName=k8s-monitoring registryUrl=https://grafana.github.io/helm-charts
-K8S_MONITORING_HELM_CHART_VERSION="3.6.2"
+K8S_MONITORING_HELM_CHART_VERSION="3.7.1"
 
 # https://github.com/suxess-it/kubriX/blob/main/platform-apps/charts/k8s-monitoring/values-kubrix-default.yaml
 # https://github.com/ar2pi/potato-cluster/blob/main/kubernetes/helm/grafana-k8s-monitoring/values.yaml
@@ -1728,7 +1726,7 @@ and modify its [default values](https://github.com/grafana/helm-charts/blob/graf
 
 ```bash
 # renovate: datasource=helm depName=grafana registryUrl=https://grafana.github.io/helm-charts
-GRAFANA_HELM_CHART_VERSION="10.3.0"
+GRAFANA_HELM_CHART_VERSION="10.4.0"
 
 helm repo add --force-update grafana https://grafana.github.io/helm-charts
 tee "${TMP_DIR}/${CLUSTER_FQDN}/helm_values-grafana.yml" << EOF
@@ -1987,7 +1985,7 @@ dashboards:
     20842-cert-manager-kubernetes:
       # renovate: depName="Cert-manager-Kubernetes"
       gnetId: 20842
-      revision: 1
+      revision: 3
       datasource: Prometheus
     # keep-sorted end
 grafana.ini:
@@ -2067,7 +2065,7 @@ and modify its [default values](https://github.com/oauth2-proxy/manifests/blob/o
 
 ```bash
 # renovate: datasource=helm depName=oauth2-proxy registryUrl=https://oauth2-proxy.github.io/manifests
-OAUTH2_PROXY_HELM_CHART_VERSION="9.0.0"
+OAUTH2_PROXY_HELM_CHART_VERSION="10.0.0"
 
 helm repo add --force-update oauth2-proxy https://oauth2-proxy.github.io/manifests
 tee "${TMP_DIR}/${CLUSTER_FQDN}/helm_values-oauth2-proxy.yml" << EOF
