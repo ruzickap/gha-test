@@ -1726,7 +1726,7 @@ and modify its [default values](https://github.com/grafana/helm-charts/blob/graf
 
 ```bash
 # renovate: datasource=helm depName=grafana registryUrl=https://grafana.github.io/helm-charts
-GRAFANA_HELM_CHART_VERSION="10.4.3"
+GRAFANA_HELM_CHART_VERSION="10.5.4"
 
 helm repo add --force-update grafana https://grafana.github.io/helm-charts
 tee "${TMP_DIR}/${CLUSTER_FQDN}/helm_values-grafana.yml" << EOF
