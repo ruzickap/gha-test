@@ -1112,7 +1112,7 @@ and modify its [default values](https://github.com/kubernetes-sigs/external-dns/
 
 ```bash
 # renovate: datasource=helm depName=external-dns registryUrl=https://kubernetes-sigs.github.io/external-dns/
-EXTERNAL_DNS_HELM_CHART_VERSION="1.19.0"
+EXTERNAL_DNS_HELM_CHART_VERSION="1.20.0"
 
 helm repo add --force-update external-dns https://kubernetes-sigs.github.io/external-dns/
 tee "${TMP_DIR}/${CLUSTER_FQDN}/helm_values-external-dns.yml" << EOF
