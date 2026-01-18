@@ -725,7 +725,7 @@ to fit your environment and storage backend:
 
 ```bash
 # renovate: datasource=github-tags depName=aws/karpenter-provider-aws
-KARPENTER_HELM_CHART_VERSION="1.8.3"
+KARPENTER_HELM_CHART_VERSION="1.8.5"
 
 tee "${TMP_DIR}/${CLUSTER_FQDN}/helm_values-karpenter.yml" << EOF
 serviceMonitor:
