@@ -56,7 +56,7 @@
       datasourceTemplate: "custom.grafana-dashboards",
       customType: "regex",
       // Only scan markdown files for dashboard definitions
-      fileMatch: ["\\.md$"],
+      fileMatch: ["\\.md$", "\\.sh$"],
       // Match renovate comments followed by gnetId and revision fields
       matchStrings: [
         '# renovate: depName="(?<depName>.*)"\\n\\s+gnetId:\\s+(?<packageName>.*?)\\n\\s+revision:\\s+(?<currentValue>.*)',
@@ -80,6 +80,21 @@
       matchStrings: [
         "# renovate:( currentValue=(?<currentValue>.+?))?\\n.*https:\\/\\/raw.githubusercontent.com\\/(?<depName>[^\\/]+\\/[^\\/]+)\\/(?<currentDigest>[^\\/]+)\\/",
       ],
+    },
+    // Custom manager for GitHub Actions-style references with digest pinning in shell scripts
+    // Handles patterns like: uses: owner/repo@sha # version
+    // Example: ["flavor"]="uses: oxsecurity/megalinter/flavors/flavor@abc123 # 1.2.3"
+    {
+      customType: "regex",
+      // Scan shell scripts for these patterns
+      fileMatch: ["\\.sh$"],
+      // Match renovate comments followed by GitHub Actions-style references
+      // Captures: datasource, depName, versioning, digest (SHA), and version (from comment)
+      matchStrings: [
+        '# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)( versioning=(?<versioning>.+?))?\\n.*@(?<currentDigest>[a-f0-9]{40})\\s+#\\s*(?<currentValue>.+?)"',
+      ],
+      // Default to semantic versioning unless specified otherwise
+      versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
     },
   ],
   // Keep the extends started with ":" at the end of the list to allow overriding
