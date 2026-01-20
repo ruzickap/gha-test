@@ -8,97 +8,12 @@
    */
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
 
-  // # keep-sorted start block=yes
   // Automatically merge dependency updates once all checks pass
   automerge: true,
   // Merge directly to the branch without creating a separate PR
   automergeType: "branch",
   // Prefix for branches created by Renovate (chore/renovate-pr/dependency-1.x)
   branchPrefix: "chore/renovate-pr/",
-  // Custom datasources for fetching version info from non-standard sources
-  customDatasources: {
-    // Datasource for tracking Grafana dashboard revisions from grafana.com
-    "grafana-dashboards": {
-      // API endpoint template to fetch dashboard metadata by ID
-      defaultRegistryUrlTemplate: "https://grafana.com/api/dashboards/{{packageName}}",
-      // Response format from the Grafana API
-      format: "json",
-      // JSONata expression to extract revision number as the version
-      transformTemplates: ['{"releases":[{"version": $string(revision)}]}'],
-    },
-  },
-  // This allows Renovate to detect and update dependencies that aren't in standard package files
-  customManagers: [
-    {
-      customType: "regex",
-      // Template for extracting version numbers from custom patterns
-      extractVersionTemplate: "{{#if extractVersion}}{{{extractVersion}}}{{else}}^v?(?<version>.+)${{/if}}",
-
-      // File types to scan for custom dependency patterns
-      fileMatch: ["\\.ya?ml$", "\\.md$", "^Dockerfile$", "^entrypoint\\.sh$"],
-
-      // Regex pattern to match custom dependency declarations
-      // Format: # renovate: datasource=<source> depName=<name> [versioning=<type>] [extractVersion=<regex>] [registryUrl=<url>]
-      // Example: # renovate: datasource=github-releases depName=helm/helm versioning=semver
-      matchStrings: [
-        '# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)( versioning=(?<versioning>.+?))?( extractVersion=(?<extractVersion>.+?))?( registryUrl=(?<registryUrl>.+?))?\\s.*[=:]\\s*"?(?<currentValue>.+?)"?\\s',
-      ],
-
-      // Default to semantic versioning unless specified otherwise
-      versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
-    },
-    // Custom manager for Grafana dashboard revisions from grafana.com
-    // Example: # renovate: depName="My Dashboard"
-    //          gnetId: 12345
-    //          revision: 3
-    {
-      // Use the custom Grafana dashboards datasource defined above
-      datasourceTemplate: "custom.grafana-dashboards",
-      customType: "regex",
-      // Only scan markdown files for dashboard definitions
-      fileMatch: ["\\.sh$"],
-      // Match renovate comments followed by gnetId and revision fields
-      matchStrings: [
-        '# renovate: depName="(?<depName>.*)"\\n\\s+gnetId:\\s+(?<packageName>.*?)\\n\\s+revision:\\s+(?<currentValue>.*)',
-      ],
-      // Treat revision as a major-only version number
-      versioningTemplate: "regex:^(?<major>\\d+)$",
-    },
-    // Custom manager for raw GitHub content URLs (raw.githubusercontent.com)
-    // Tracks and updates commit digests in raw file URLs
-    {
-      // Default to "main" branch if no version is specified in the comment
-      currentValueTemplate: "{{#if currentValue}}{{{currentValue}}}{{else}}main{{/if}}",
-      customType: "regex",
-      // Use git-refs to track branch/tag/commit references
-      datasourceTemplate: "git-refs",
-      // Construct GitHub repo URL from the extracted dependency name
-      packageNameTemplate: "https://github.com/{{depName}}",
-      // Only scan markdown files
-      fileMatch: ["\\.md$"],
-      // Match raw.githubusercontent.com URLs and extract repo and commit digest
-      matchStrings: [
-        "# renovate:( currentValue=(?<currentValue>.+?))?\\n.*https:\\/\\/raw.githubusercontent.com\\/(?<depName>[^\\/]+\\/[^\\/]+)\\/(?<currentDigest>[^\\/]+)\\/",
-      ],
-    },
-    // Custom manager for GitHub Actions-style references with digest pinning in shell scripts
-    // Handles patterns like: uses: owner/repo@sha # version
-    // Example: ["flavor"]="uses: oxsecurity/megalinter/flavors/flavor@abc123 # 1.2.3"
-    {
-      customType: "regex",
-      // Scan shell scripts for these patterns
-      fileMatch: ["\\.sh$"],
-      // Match renovate comments followed by GitHub Actions-style references
-      // Captures: datasource, depName, digest (SHA), and version (from comment)
-      matchStrings: [
-        '# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)\\n.*@(?<currentDigest>[a-f0-9]{40}) # (?<currentValue>[^"]+)"',
-      ],
-      // Strip 'v' prefix from tags (v9.2.0 -> 9.2.0) to match currentValue format
-      extractVersionTemplate: "^v?(?<version>.+)$",
-      // Use semantic versioning for version comparison
-      versioningTemplate: "semver",
-    },
-  ],
   // Keep the extends started with ":" at the end of the list to allow overriding
   extends: [
     "config:recommended", // Renovate's recommended configuration preset
@@ -121,11 +36,22 @@
       matchPackageNames: ["*"],
     },
   ],
+  // This allows Renovate to detect and update dependencies that aren't in standard package files
+  customManagers: [
+    {
+      customType: "regex",
+      fileMatch: ["\\.sh$"],
+      matchStrings: [
+        '# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)\\n.*@(?<currentDigest>[a-f0-9]{40}) # (?<currentValue>[^"]+)"',
+      ],
+      // extractVersionTemplate: "^v?(?<version>.+)$",
+      // versioningTemplate: "semver",
+    },
+  ],
   // Use platform's native API for commits (enables signed commits on GitHub)
   platformCommit: "enabled",
   // Run Renovate even if no config file is found in the target repository
   requireConfig: "ignored",
   // Combine major and minor updates into a single PR instead of separate ones
   separateMajorMinor: false,
-  // # keep-sorted end
 }
