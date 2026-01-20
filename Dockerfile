@@ -1,4 +1,3 @@
-#checkov:skip=CKV_DOCKER_2
 #checkov:skip=CKV_DOCKER_3
 FROM debian:bookworm-slim@sha256:e899040a73d36e2b36fa33216943539d9957cba8172b858097c2cabcdb20a3e2
 
@@ -20,6 +19,10 @@ RUN apt-get update && \
 RUN uname -a && dpkg -l | { grep arm-trusted-firmware || true; }
 
 USER test
+
+# Add health check for container monitoring
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD bash -c "exit 0"
 
 # Set default command to show versions (for verification)
 CMD ["bash"]

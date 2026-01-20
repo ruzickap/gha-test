@@ -24,7 +24,7 @@
       extractVersionTemplate: "{{#if extractVersion}}{{{extractVersion}}}{{else}}^v?(?<version>.+)${{/if}}",
 
       // File types to scan for custom dependency patterns
-      fileMatch: ["\\.ya?ml$", "\\.md$", "^Dockerfile$", "^entrypoint\\.sh$"],
+      fileMatch: ["\\.ya?ml$", "\\.md$", "^Dockerfile$", "\\.sh$"],
 
       // Regex pattern to match custom dependency declarations
       // Format: # renovate: datasource=<source> depName=<name> [versioning=<type>] [extractVersion=<regex>] [registryUrl=<url>]
