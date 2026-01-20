@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# Test
-
 set -euo pipefail
 
 # Configuration
@@ -63,21 +61,21 @@ megalinter_flavor() {
 
   # Associative array mapping flavor names to full action references
   declare -A MEGALINTER_FLAVORS=(
-    # renovate: datasource=github-tags depName=oxsecurity/megalinter versioning=semver
+    # renovate: datasource=github-tags depName=oxsecurity/megalinter
     ["c_cpp"]="uses: oxsecurity/megalinter/flavors/c_cpp@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
-    # renovate: datasource=github-tags depName=oxsecurity/megalinter versioning=semver
+    # renovate: datasource=github-tags depName=oxsecurity/megalinter
     ["ci_light"]="uses: oxsecurity/megalinter/flavors/ci_light@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
-    # renovate: datasource=github-tags depName=oxsecurity/megalinter versioning=semver
+    # renovate: datasource=github-tags depName=oxsecurity/megalinter
     ["cupcake"]="uses: oxsecurity/megalinter/flavors/cupcake@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
-    # renovate: datasource=github-tags depName=oxsecurity/megalinter versioning=semver
+    # renovate: datasource=github-tags depName=oxsecurity/megalinter
     ["documentation"]="uses: oxsecurity/megalinter/flavors/documentation@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
-    # renovate: datasource=github-tags depName=oxsecurity/megalinter versioning=semver
+    # renovate: datasource=github-tags depName=oxsecurity/megalinter
     ["python"]="uses: oxsecurity/megalinter/flavors/python@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
-    # renovate: datasource=github-tags depName=oxsecurity/megalinter versioning=semver
+    # renovate: datasource=github-tags depName=oxsecurity/megalinter
     ["ruby"]="uses: oxsecurity/megalinter/flavors/ruby@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
-    # renovate: datasource=github-tags depName=oxsecurity/megalinter versioning=semver
+    # renovate: datasource=github-tags depName=oxsecurity/megalinter
     ["security"]="uses: oxsecurity/megalinter/flavors/security@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
-    # renovate: datasource=github-tags depName=oxsecurity/megalinter versioning=semver
+    # renovate: datasource=github-tags depName=oxsecurity/megalinter
     ["terraform"]="uses: oxsecurity/megalinter/flavors/terraform@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
   )
 

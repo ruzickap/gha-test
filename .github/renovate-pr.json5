@@ -89,9 +89,9 @@
       // Scan shell scripts for these patterns
       fileMatch: ["\\.sh$"],
       // Match renovate comments followed by GitHub Actions-style references
-      // Captures: datasource, depName, versioning, digest (SHA), and version (from comment)
+      // Captures: datasource, depName, versioning, extractVersion, digest (SHA), and version (from comment)
       matchStrings: [
-        '# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)( versioning=(?<versioning>.+?))?\\n.*@(?<currentDigest>[a-f0-9]{40})\\s+#\\s*(?<currentValue>.+?)"',
+        '# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)\\n.*@(?<currentDigest>[a-f0-9]{40}) # (?<currentValue>[^"]+)"',
       ],
       // Default to semantic versioning unless specified otherwise
       versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
