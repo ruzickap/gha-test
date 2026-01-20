@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+# Test123
+
 # Configuration
 GH_REPO_DEFAULTS_BASE="${GH_REPO_DEFAULTS_BASE:-${HOME}/git/my-git-projects/gh-repo-defaults}"
 
