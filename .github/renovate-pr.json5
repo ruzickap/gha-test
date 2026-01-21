@@ -8,6 +8,7 @@
    */
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
 
+  // # keep-sorted start block=yes
   // Automatically merge dependency updates once all checks pass
   automerge: true,
   // Merge directly to the branch without creating a separate PR
@@ -52,4 +53,5 @@
   requireConfig: "ignored",
   // Combine major and minor updates into a single PR instead of separate ones
   separateMajorMinor: false,
+  // # keep-sorted end
 }
