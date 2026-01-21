@@ -44,8 +44,6 @@
       matchStrings: [
         '# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)\\n.*@(?<currentDigest>[a-f0-9]{40}) # (?<currentValue>[^"]+)"',
       ],
-      // extractVersionTemplate: "^v?(?<version>.+)$",
-      // versioningTemplate: "semver",
     },
   ],
   // Use platform's native API for commits (enables signed commits on GitHub)
