@@ -64,21 +64,21 @@ megalinter_flavor() {
   # Associative array mapping flavor names to full action references
   declare -A MEGALINTER_FLAVORS=(
     # renovate: datasource=github-tags depName=oxsecurity/megalinter
-    ["c_cpp"]="uses: oxsecurity/megalinter/flavors/c_cpp@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
+    ["c_cpp"]="uses: oxsecurity/megalinter/flavors/c_cpp@42bb470545e359597e7f12156947c436e4e3fb9a # 9.3.0"
     # renovate: datasource=github-tags depName=oxsecurity/megalinter
-    ["ci_light"]="uses: oxsecurity/megalinter/flavors/ci_light@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
+    ["ci_light"]="uses: oxsecurity/megalinter/flavors/ci_light@42bb470545e359597e7f12156947c436e4e3fb9a # 9.3.0"
     # renovate: datasource=github-tags depName=oxsecurity/megalinter
-    ["cupcake"]="uses: oxsecurity/megalinter/flavors/cupcake@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
+    ["cupcake"]="uses: oxsecurity/megalinter/flavors/cupcake@42bb470545e359597e7f12156947c436e4e3fb9a # 9.3.0"
     # renovate: datasource=github-tags depName=oxsecurity/megalinter
-    ["documentation"]="uses: oxsecurity/megalinter/flavors/documentation@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
+    ["documentation"]="uses: oxsecurity/megalinter/flavors/documentation@42bb470545e359597e7f12156947c436e4e3fb9a # 9.3.0"
     # renovate: datasource=github-tags depName=oxsecurity/megalinter
-    ["python"]="uses: oxsecurity/megalinter/flavors/python@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
+    ["python"]="uses: oxsecurity/megalinter/flavors/python@42bb470545e359597e7f12156947c436e4e3fb9a # 9.3.0"
     # renovate: datasource=github-tags depName=oxsecurity/megalinter
-    ["ruby"]="uses: oxsecurity/megalinter/flavors/ruby@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
+    ["ruby"]="uses: oxsecurity/megalinter/flavors/ruby@42bb470545e359597e7f12156947c436e4e3fb9a # 9.3.0"
     # renovate: datasource=github-tags depName=oxsecurity/megalinter
-    ["security"]="uses: oxsecurity/megalinter/flavors/security@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
+    ["security"]="uses: oxsecurity/megalinter/flavors/security@42bb470545e359597e7f12156947c436e4e3fb9a # 9.3.0"
     # renovate: datasource=github-tags depName=oxsecurity/megalinter
-    ["terraform"]="uses: oxsecurity/megalinter/flavors/terraform@55a59b24a441e0e1943080d4a512d827710d4a9d # 9.2.0"
+    ["terraform"]="uses: oxsecurity/megalinter/flavors/terraform@42bb470545e359597e7f12156947c436e4e3fb9a # 9.3.0"
   )
 
   # Validate flavor
