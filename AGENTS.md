@@ -2,108 +2,160 @@
 
 ## Overview
 
-This document provides guidelines and best practices for AI agents working
-on this repository. Follow these standards to ensure consistency, quality,
-and maintainability across all contributions.
+This repository (`ruzickap/gha-test`) is a GitHub Actions test/template
+repository. It contains CI/CD workflows, linting configs, shell scripts,
+Terraform files, a Dockerfile, and Markdown documentation. There is no
+application source code or traditional test suite.
 
-## Table of Contents
+## Build/Lint/Test Commands
 
-- [AI Agent Guidelines](#ai-agent-guidelines)
-  - [Overview](#overview)
-  - [Table of Contents](#table-of-contents)
-  - [Markdown Files](#markdown-files)
-    - [Linting and Formatting](#linting-and-formatting)
-    - [Markdown Best Practices](#markdown-best-practices)
-  - [Version Control](#version-control)
-    - [Commit Messages](#commit-messages)
-      - [Format Rules](#format-rules)
-      - [Commit Message Structure](#commit-message-structure)
-        - [Example](#example)
-    - [Branching](#branching)
-    - [Pull Requests](#pull-requests)
-  - [Quality \& Best Practices](#quality--best-practices)
+CI runs via MegaLinter (`.mega-linter.yml`). Run individual linters
+locally as follows:
 
-## Markdown Files
+```bash
+# Markdown linting (Rust-based, config: .rumdl.toml)
+rumdl .
+rumdl README.md              # single file
 
-### Linting and Formatting
+# Shell script linting and formatting
+shellcheck --exclude=SC2317 path/to/script.sh
+shfmt --case-indent --indent 2 --space-redirects -d path/to/script.sh
+shfmt --case-indent --indent 2 --space-redirects -w path/to/script.sh
 
-- **Markdown compliance**: Ensure all Markdown files pass `rumdl` checks
-- **Code blocks**: For `bash`/`shell` code blocks:
-  - Verify they pass `shellcheck` validation
-  - Format with `shfmt` for consistency
+# JSON linting (allows comments)
+jsonlint --comments path/to/file.json
 
-### Markdown Best Practices
+# Link checking (config: lychee.toml)
+lychee .
+lychee README.md              # single file
 
-- Use proper heading hierarchy (don't skip levels)
-- Wrap lines at 80 characters for readability
-- Use semantic HTML only when necessary
+# Terraform
+tflint
+checkov --quiet -f cloudwatch-log-group-unencrypted.tf
+trivy config --severity HIGH,CRITICAL --ignore-unfixed .
+kics scan --fail-on high -p .
+
+# GitHub Actions workflow validation
+actionlint
+
+# TypeScript/JavaScript formatting
+prettier --html-whitespace-sensitivity=ignore --check .
+prettier --html-whitespace-sensitivity=ignore --write .
+
+# Run full MegaLinter locally via Docker (documentation flavor)
+docker run --rm -v "$(pwd):/tmp/lint" \
+  oxsecurity/megalinter/flavors/documentation:v9
+```
+
+There are no unit tests. Validation is done entirely through linting
+and security scanning in CI.
+
+## Code Style Guidelines
+
+### General
+
+- Use **two spaces** for indentation everywhere (YAML, shell, HCL, JSON)
+- Never use tabs
+- Wrap Markdown prose lines at **72 characters**
+- Use `# keep-sorted start` / `# keep-sorted end` blocks to maintain
+  sorted sections in YAML and JSON5 config files
+
+### Markdown
+
+- Use proper heading hierarchy (never skip levels)
+- Include language identifiers in code fences (`bash`, `json`, `hcl`)
 - Prefer code fences over inline code for multi-line examples
-- Include language identifiers in code fences
+- Shell code blocks (tagged `bash`, `shell`, or `sh`) are extracted
+  and validated with `shellcheck` + `shfmt` during CI
+- Exclude `CHANGELOG.md` from manual edits (auto-generated)
+
+### Shell Scripts
+
+- Shebang: `#!/usr/bin/env bash`
+- Strict mode: `set -euo pipefail`
+- Variables: **UPPERCASE** with braces (`${MY_VARIABLE}`)
+- Local variables in functions: `local` keyword, still uppercase
+- Quoting: always quote variables (`"${VAR}"`)
+- Conditionals: use `[[ ]]` (not `[ ]`)
+- Logging: use simple functions (`log`, `log_info`, `log_error`, `die`)
+  that write to stderr (`>&2`)
+- Error handling: validate inputs early, use `die` for fatal errors
+- Formatting: `shfmt --case-indent --indent 2 --space-redirects`
+- Linting: `shellcheck --exclude=SC2317`
+
+### Terraform (HCL)
+
+- Two-space indentation
+- Align `=` signs in attribute blocks
+- Document intentional security skips with inline comments:
+  - Checkov: `#checkov:skip=CKV_XXX:Reason`
+  - Trivy: `# trivy:ignore:AVD-XXX`
+  - KICS: inline comment with reason
+
+### Dockerfile
+
+- Pin base images to digest (`image@sha256:...`)
+- Use `SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]`
+- Clean up apt caches in the same `RUN` layer
+- Run as non-root user
+- Include `HEALTHCHECK` instruction
+- Add Checkov skip annotations with reasons
+
+### GitHub Actions Workflows
+
+- **Pin all actions to full SHA** with version comment:
+  `uses: actions/checkout@<sha> # v4.2.0`
+- Top-level `permissions: read-all`; elevate per-job as needed
+- Set `timeout-minutes` on every job
+- Start YAML files with `---` and a descriptive comment header
+- Use `# keep-sorted start/end` for sorted config blocks
+- Use Renovate annotations for automated dependency tracking:
+  `# renovate: datasource=github-releases depName=org/repo`
+
+### JSON / JSON5
+
+- Two-space indentation
+- Comments are allowed (validated with `jsonlint --comments`)
+- `.devcontainer/devcontainer.json` is excluded from linting
 
 ## Version Control
 
 ### Commit Messages
 
-#### Format Rules
-
-- **Conventional commit format**: Use standard types (`feat`, `fix`, `docs`,
-  `chore`, `refactor`, `test`, `style`, `perf`, `ci`, `build`, `revert`)
-- **Line limits**: Subject ≤ 80 characters, body lines ≤ 80 characters
-- **Single blank line**: Between subject and body, between body paragraphs
-
-#### Commit Message Structure
-
-- **Subject line**:
-  - Imperative mood (e.g., "add" not "added" or "adds")
-  - Use lower case (except for proper nouns and abbreviations)
-  - No period at the end
-  - Maximum 80 characters
-  - Format: `<type>: <description>`
-
-- **Body** (optional but recommended for non-trivial changes):
-  - Explain **what** changed and **why**
-  - Wrap lines at 80 characters
-  - Use Markdown formatting
-  - Separate paragraphs with blank lines
-  - Reference issues using keywords: `Fixes`, `Closes`, `Resolves`
-
-##### Example
-
-```markdown
-feat: add automated dependency updates
-
-- Implement Dependabot configuration
-- Configure weekly security updates
-- Add auto-merge for patch/minor updates
-
-Resolves: #123
-```
+Conventional commit format: `<type>: <description>`. Types: `feat`,
+`fix`, `docs`, `chore`, `refactor`, `test`, `style`, `perf`, `ci`,
+`build`, `revert`. Imperative mood, lowercase, no trailing period.
+Max 72 characters (subject and body lines). Body: explain **what**
+and **why**, reference issues with `Fixes`, `Closes`, or `Resolves`.
 
 ### Branching
 
-- **Naming convention**: Follow the
-  [Conventional Branch](https://conventional-branch.github.io/)
-  specification
-
-- **Naming guidelines**:
-  - Keep branch names concise and descriptive
-  - Use kebab-case (lower case with hyphens)
-  - Include issue number when applicable: `feat/123-add-feature-name`
+[Conventional Branch](https://conventional-branch.github.io/) format:
+`<type>/<description>` (`feature/`, `bugfix/`, `hotfix/`, `release/`,
+`chore/`). Lowercase, hyphens only. Include issue number when
+applicable: `feature/issue-42-add-feature`.
 
 ### Pull Requests
 
-- **Always create draft PR** - Create pull requests as drafts initially
-- **Title format** - Use conventional commit format (`feat: add new feature`)
-- **Description** - Include clear explanation of changes and motivation
-- **Link issues** - Reference related issues using keywords (Fixes, Closes,
-  Resolves)
+- Always create as **draft** initially
+- Title must follow conventional commit format
+- Include clear description and link related issues
 
-## Quality & Best Practices
+## Security Scanning
 
-- Pass pre-commit hooks
-- Follow project coding standards
-- Include tests for new functionality
-- Update documentation for user-facing changes
-- Make atomic, focused commits
-- Explain reasoning behind changes
-- Maintain consistent formatting
+- **Checkov**: IaC scanner (skips `CKV_GHA_7` via `.checkov.yml`)
+- **DevSkim**: Ignores DS162092, DS137138; excludes `CHANGELOG.md`
+- **KICS**: Fails only on HIGH severity
+- **Trivy**: HIGH/CRITICAL only, ignores unfixed vulnerabilities
+- **CodeQL**: GitHub Actions analysis on push to main
+
+## Quality Checklist
+
+- [ ] `rumdl .` passes for Markdown files
+- [ ] `shellcheck` and `shfmt` pass for shell scripts
+- [ ] `actionlint` passes for workflow files
+- [ ] `tflint` and `checkov` pass for Terraform files
+- [ ] `lychee` finds no broken links in changed files
+- [ ] Commit messages follow conventional commit format
+- [ ] Lines wrapped at 72 characters in Markdown/commits
+- [ ] GitHub Actions pinned to full SHA commits
