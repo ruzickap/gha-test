@@ -24,18 +24,13 @@
       extractVersionTemplate: "{{#if extractVersion}}{{{extractVersion}}}{{else}}^v?(?<version>.+)${{/if}}",
 
       // File types to scan for custom dependency patterns
-      fileMatch: ["\\.ya?ml$", "\\.md$", "^Dockerfile$", "\\.sh$"],
+      fileMatch: ["\\.ya?ml$", "\\.md$", "^Dockerfile$", "^entrypoint\\.sh$"],
 
-      // Regex patterns to match custom dependency declarations
+      // Regex pattern to match custom dependency declarations
+      // Format: # renovate: datasource=<source> depName=<name> [versioning=<type>] [extractVersion=<regex>] [registryUrl=<url>]
+      // Example: # renovate: datasource=github-releases depName=helm/helm versioning=semver
       matchStrings: [
-        // Format: # renovate: datasource=<source> depName=<name> [versioning=<type>] [extractVersion=<regex>] [registryUrl=<url>]
-        // Example: # renovate: datasource=github-releases depName=helm/helm versioning=semver
-        //          HELM_VERSION="3.14.0"
         '# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)( versioning=(?<versioning>.+?))?( extractVersion=(?<extractVersion>.+?))?( registryUrl=(?<registryUrl>.+?))?\\s.*[=:]\\s*"?(?<currentValue>.+?)"?\\s',
-        // Format for pinned GitHub Actions with digest in shell scripts
-        // Example: # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        //          ["key"]="uses: oxsecurity/megalinter/flavors/ci_light@abc123...def456 # 9.2.0"
-        '# renovate: datasource=(?<datasource>.+?) depName=(?<depName>.+?)\\n.*@(?<currentDigest>[a-f0-9]{40}) # (?<currentValue>[^"]+)"',
       ],
 
       // Default to semantic versioning unless specified otherwise
