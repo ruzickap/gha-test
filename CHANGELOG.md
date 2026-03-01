@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/ruzickap/gha-test/compare/v2.2.0...v2.2.1) (2026-03-01)
+
+
+### Bug Fixes
+
+* update Renovate configuration to use matchPackageNames ([#376](https://github.com/ruzickap/gha-test/issues/376)) ([466265f](https://github.com/ruzickap/gha-test/commit/466265fc7bd6ef3b1fdf685f73a1f28b54e83da3))
+
 ## [2.2.0](https://github.com/ruzickap/gha-test/compare/v2.1.0...v2.2.0) (2025-12-03)
 
 
