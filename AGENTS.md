@@ -15,7 +15,7 @@ locally as follows:
 ```bash
 # Markdown linting (Rust-based, config: .rumdl.toml)
 rumdl .
-rumdl README.md              # single file
+rumdl README.md # single file
 
 # Shell script linting and formatting
 shellcheck --exclude=SC2317 path/to/script.sh
@@ -27,7 +27,7 @@ jsonlint --comments path/to/file.json
 
 # Link checking (config: lychee.toml)
 lychee .
-lychee README.md              # single file
+lychee README.md # single file
 
 # Terraform
 tflint
@@ -63,6 +63,7 @@ and security scanning in CI.
 ### Markdown
 
 - Use proper heading hierarchy (never skip levels)
+- Wrap lines at 80 characters for readability
 - Include language identifiers in code fences (`bash`, `json`, `hcl`)
 - Prefer code fences over inline code for multi-line examples
 - Shell code blocks (tagged `bash`, `shell`, or `sh`) are extracted
