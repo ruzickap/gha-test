@@ -15,7 +15,7 @@ locally as follows:
 ```bash
 # Markdown linting (Rust-based, config: .rumdl.toml)
 rumdl .
-rumdl README.md              # single file
+rumdl README.md # single file
 
 # Shell script linting and formatting
 shellcheck --exclude=SC2317 path/to/script.sh
