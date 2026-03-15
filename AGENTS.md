@@ -63,6 +63,7 @@ and security scanning in CI.
 ### Markdown
 
 - Use proper heading hierarchy (never skip levels)
+- Wrap lines at 80 characters for readability
 - Include language identifiers in code fences (`bash`, `json`, `hcl`)
 - Prefer code fences over inline code for multi-line examples
 - Shell code blocks (tagged `bash`, `shell`, or `sh`) are extracted
