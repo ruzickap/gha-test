@@ -27,7 +27,7 @@ jsonlint --comments path/to/file.json
 
 # Link checking (config: lychee.toml)
 lychee .
-lychee README.md              # single file
+lychee README.md # single file
 
 # Terraform
 tflint
