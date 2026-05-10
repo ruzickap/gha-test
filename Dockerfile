@@ -1,5 +1,5 @@
 #checkov:skip=CKV_DOCKER_3
-FROM debian:bookworm-slim@sha256:e899040a73d36e2b36fa33216943539d9957cba8172b858097c2cabcdb20a3e2
+FROM debian:bookworm-slim@sha256:67b30a61dc87758f0caf819646104f29ecbda97d920aaf5edc834128ac8493d3
 
 ARG TARGETPLATFORM
 
