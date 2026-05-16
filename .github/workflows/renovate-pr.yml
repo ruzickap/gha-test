@@ -52,6 +52,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Remove label
         env:
@@ -72,6 +74,11 @@ jobs:
         with:
           app-id: ${{ secrets.MY_RENOVATE_GITHUB_APP_ID }}
           private-key: ${{ secrets.MY_RENOVATE_GITHUB_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+          permission-issues: write
+          permission-checks: read
+          permission-metadata: read
 
       - name: 💡 Self-hosted Renovate
         if: steps.changed-files.outputs.any_changed == 'true'
