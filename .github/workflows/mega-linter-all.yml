@@ -8,7 +8,8 @@ name: mega-linter-all
 on:
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   # Default MegaLinter (all linters)

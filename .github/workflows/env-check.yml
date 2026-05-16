@@ -3,21 +3,26 @@ name: env-check
 on:
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   env-checker:
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_REPO: ${{ github.repository }}
         run: |
           set -x
-          echo "Repository: ${{ github.repository }}"
-          echo "${{ github.actor }} | ${{ github.repository }}"
+          echo "Repository: ${GITHUB_REPO}"
+          echo "${GITHUB_ACTOR} | ${GITHUB_REPO}"
           echo "${GITHUB_REPOSITORY%/*} | ${GITHUB_REPOSITORY##*/} | ${GITHUB_REPOSITORY}"
           uname -m
           uname -a

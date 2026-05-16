@@ -33,7 +33,6 @@ lychee README.md # single file
 tflint
 checkov --quiet -f cloudwatch-log-group-unencrypted.tf
 trivy config --severity HIGH,CRITICAL --ignore-unfixed .
-kics scan --fail-on high -p .
 
 # GitHub Actions workflow validation
 actionlint
@@ -91,7 +90,6 @@ and security scanning in CI.
 - Document intentional security skips with inline comments:
   - Checkov: `#checkov:skip=CKV_XXX:Reason`
   - Trivy: `# trivy:ignore:AVD-XXX`
-  - KICS: inline comment with reason
 
 ### Dockerfile
 
@@ -146,7 +144,6 @@ applicable: `feature/issue-42-add-feature`.
 
 - **Checkov**: IaC scanner (skips `CKV_GHA_7` via `.checkov.yml`)
 - **DevSkim**: Ignores DS162092, DS137138; excludes `CHANGELOG.md`
-- **KICS**: Fails only on HIGH severity
 - **Trivy**: HIGH/CRITICAL only, ignores unfixed vulnerabilities
 - **CodeQL**: GitHub Actions analysis on push to main
 

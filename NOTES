@@ -1,0 +1,40 @@
+## Megalinter
+
+> Check for Terraform
+
+### Full scan
+
+* [2:39] Pull down action image 'ghcr.io/oxsecurity/megalinter:v9.3.0'
+* [1:06] Megalinter
+
++----MATCHING LINTERS-------------------+------------------------------------------------------------------------+----------------+------------+
+  | Descriptor | Linter                   | Criteria                                                               | Matching files | Format/Fix |
+  +------------+--------------------------+------------------------------------------------------------------------+----------------+------------+
+  | ACTION     | actionlint               | .yml|.yaml                                                             | 14             | no         |
+  | COPYPASTE  | jscpd                    |                                                                        | project        | no         |
+  | DOCKERFILE | hadolint                 | Containerfile|(.*\.)?Dockerfile                                        | 1              | no         |
+  | MARKDOWN   | markdown-table-formatter | .md                                                                    | 5              | no         |
+  | REPOSITORY | checkov                  |                                                                        | project        | no         |
+  | REPOSITORY | devskim                  |                                                                        | project        | no         |
+  | REPOSITORY | dustilock                |                                                                        | project        | no         |
+  | REPOSITORY | git_diff                 |                                                                        | project        | no         |
+  | REPOSITORY | gitleaks                 |                                                                        | project        | no         |
+  | REPOSITORY | grype                    |                                                                        | project        | no         |
+  | REPOSITORY | kics                     |                                                                        | project        | no         |
+  | REPOSITORY | secretlint               |                                                                        | project        | no         |
+  | REPOSITORY | syft                     |                                                                        | project        | no         |
+  | REPOSITORY | trivy                    |                                                                        | project        | no         |
+  | REPOSITORY | trivy-sbom               |                                                                        | project        | no         |
+  | REPOSITORY | trufflehog               |                                                                        | project        | no         |
+  | SPELL      | lychee                   | .md|.mdx|.markdown|.html|.htm|.rst|.txt|.json|.jsonc|.json5|.yaml|.yml | 24             | no         |
+  | TERRAFORM  | tflint                   | .tf                                                                    | project        | no         |
+  | TERRAFORM  | terraform-fmt            | .tf                                                                    | 1              | no         |
+  | YAML       | prettier                 | .yml|.yaml                                                             | 17             | no         |
+  | YAML       | yamllint                 | .yml|.yaml                                                             | 17             | no         |
+  | YAML       | v8r                      | .yml|.yaml                                                             | 17             | no         |
+  +------------+--------------------------+------------------------------------------------------------------------+----------------+------------+
+
+## Partial Swift scan
+
+* [0:45] Pull down action image 'ghcr.io/oxsecurity/megalinter-swift:v9.3.0'
+* [1:06] Megalinter
