@@ -3,7 +3,7 @@ name: virt-check
 on:
   workflow_dispatch:
 
-permissions: read-all
+permissions: {}
 
 jobs:
   virt-check-ubuntu:

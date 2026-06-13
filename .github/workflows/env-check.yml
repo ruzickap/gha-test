@@ -3,7 +3,8 @@ name: env-check
 on:
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   env-checker:
@@ -18,8 +19,8 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           set -x
-          echo "Repository: ${{ github.repository }}"
-          echo "${{ github.actor }} | ${{ github.repository }}"
+          echo "Repository: ${GITHUB_REPOSITORY}"
+          echo "${GITHUB_ACTOR} | ${GITHUB_REPOSITORY}"
           echo "${GITHUB_REPOSITORY%/*} | ${GITHUB_REPOSITORY##*/} | ${GITHUB_REPOSITORY}"
           uname -m
           uname -a
