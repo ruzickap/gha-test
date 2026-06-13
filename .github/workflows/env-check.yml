@@ -1,0 +1,88 @@
+---
+# GitHub Actions workflow for inspecting the runner environment
+# Manually triggered to dump the GitHub context and show hardware,
+# OS, and tool versions across Ubuntu (arm64) and macOS runners
+name: env-check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  env-checker:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          set -x
+          echo "Repository: ${GITHUB_REPOSITORY}"
+          echo "${GITHUB_ACTOR} | ${GITHUB_REPOSITORY}"
+          echo "${GITHUB_REPOSITORY%/*} | ${GITHUB_REPOSITORY##*/} | ${GITHUB_REPOSITORY}"
+          uname -m
+          uname -a
+          aws --version
+          helm version
+          kustomize version
+          kubectl version || true
+          echo "${GITHUB_CONTEXT}"
+          env
+
+  macos:
+    runs-on: macos-latest
+    timeout-minutes: 5
+    steps:
+      - name: Show resources
+        run: |
+          set -x
+          uname -m
+          uname -a
+          sysctl -n hw.ncpu
+          system_profiler SPHardwareDataType
+          top -l 1 -s 0 | grep PhysMem
+          df -h
+          diskutil list
+          diskutil info disk0
+
+  ubuntu:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - name: Show resources
+        run: |
+          sudo apt update &> /dev/null
+          sudo apt install -y lshw &> /dev/null
+          set -x
+          df -h
+          free -h
+          grep -Ewo 'vmx|lm|aes' /proc/cpuinfo  | sort | uniq | sed -e 's/aes/Hardware encryption=Yes (&)/g' -e 's/lm/64 bit cpu=Yes (&)/g' -e 's/vmx/Intel hardware virtualization=Yes (&)/g'
+          lshw
+
+  ubuntu-colors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Install kubecolor
+        run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          set -x
+          uname -m
+          uname -a
+          brew install kubecolor
+          export KUBECOLOR_FORCE_COLORS=256
+          /home/linuxbrew/.linuxbrew/bin/kubecolor version --client=true
+          kubecolor version --client=true
+          if true ; then
+            kubectl() { kubecolor "$@"; }
+            kubectl version --client=true
+          fi
+          echo "*** Last" ; sleep 1;
+          kubectl version --client=true

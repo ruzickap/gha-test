@@ -1,0 +1,31 @@
+---
+# GitHub Actions workflow for commit message validation
+# Validates commit messages against conventional commit format and other standards
+# Checks message format, branch naming, author details, and signoff requirements
+name: commit-check
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  commit-check:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: commit-check/commit-check-action@f237ed0085f49444ab5c85bdfa5cdcd490fc09c5 # v2.7.0
+        env:
+          CCHK_SUBJECT_CAPITALIZED: false
+          CCHK_SUBJECT_MAX_LENGTH: 72
+          # Skip branch-name checks for automation bots. Ex. dependabot hardcodes the `dependabot/<ecosystem>/...` branch prefix and cannot satisfy Conventional Branch
+          CCHK_IGNORE_AUTHORS: "copilot[bot],dependabot[bot],github-actions[bot]"
+          CCHK_BRANCH_IGNORE_AUTHORS: "copilot[bot],dependabot[bot],github-actions[bot]"
