@@ -1,2 +1,163 @@
 # gha-test
-GitHub Action Test repository
+
+[![CodeQL](https://github.com/ruzickap/gha-test/actions/workflows/codeql.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/codeql.yml)
+[![Commit Check](https://github.com/ruzickap/gha-test/actions/workflows/commit-check.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/commit-check.yml)
+[![MegaLinter](https://github.com/ruzickap/gha-test/actions/workflows/mega-linter.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/mega-linter.yml)
+[![Release Please](https://github.com/ruzickap/gha-test/actions/workflows/release-please.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/release-please.yml)
+[![Renovate](https://github.com/ruzickap/gha-test/actions/workflows/renovate.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/renovate.yml)
+[![Scorecards](https://github.com/ruzickap/gha-test/actions/workflows/scorecards.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/scorecards.yml)
+[![Semantic Pull Request](https://github.com/ruzickap/gha-test/actions/workflows/semantic-pull-request.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/semantic-pull-request.yml)
+[![Stale](https://github.com/ruzickap/gha-test/actions/workflows/stale.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/stale.yml)
+
+GitHub Action test repository...
+
+Version test
+
+[//]: # (x-release-please-start-version)
+
+* Full Release: 2.1.0
+
+```bash
+cat << EOF
+* Full Release: 2.1.0
+EOF
+```
+
+[//]: # (x-release-please-end)
+
+[//]: # (x-release-please-start-major)
+
+* Full Release: 2.0.0
+* Major Release: 2
+* Major Release: test@2
+
+```bash
+cat << EOF
+* Full Release: 2.0.0
+* Major Release: 2
+* Major Release: test@2
+EOF
+```
+
+[//]: # (x-release-please-end)
+
+[//]: # (x-release-please-start-minor)
+
+* Full Release: 1.0.0
+* Minor Release: 1
+* Minor Release: test@1
+
+```bash
+cat << EOF
+* Full Release: 1.0.0
+* Minor Release: 1
+* Minor Release: test@1
+EOF
+```
+
+[//]: # (x-release-please-end)
+
+[//]: # (x-release-please-start-patch)
+
+* Full Release: 0.0.0
+* Patch Release: 0
+* Patch Release: test@0
+
+MP4 Video:
+
+<https://github.com/ruzickap/gha-test/assets/0/d2f6c337-2679-4ba4-92f7-c8afb5ed88a5>
+
+AV1 Video:
+
+<https://github.com/ruzickap/gha-test/assets/0/287b4432-89bc-48a7-b593-a1e1841136a3>
+
+```bash
+cat << EOF
+* Full Release: 0.0.0
+* Patch Release: 0
+* Patch Release: test@0
+EOF
+```
+
+[//]: # (x-release-please-end)
+
+End...
+
+```bash
+echo "Test: $(date +'%F')"
+```
+
+```shell
+echo "Test: $(date +'%F')"
+```
+
+<!-- x-release-please-start-version -->
+```bash
+kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:2.1.0
+```
+<!-- x-release-please-end -->
+
+<!-- x-release-please-start-major -->
+```bash
+kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:2
+```
+<!-- x-release-please-end -->
+
+<!-- x-release-please-start-minor -->
+```bash
+kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:1.1
+```
+<!-- x-release-please-end -->
+
+[Pod limit on Node - AWS EKS](https://stackoverflow.com/questions/57970896/pod-limit-on-node-aws-eks/57971006)
+
+---
+
+* Container Image:
+  * [quay.io/petr_ruzicka/malware-cryptominer-container:3](https://quay.io/petr_ruzicka/malware-cryptominer-container:2.0.0)<!-- x-release-please-start-version -->
+
+<!-- x-release-please-start-version -->
+
+```bash
+export AWS_DEFAULT_REGION="eu-central-1"
+
+aws cloudformation deploy --capabilities CAPABILITY_IAM \
+  --stack-name "${USER}-malware-cryptominer-container-ec2" \
+  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/malware-cryptominer-container:2.1.0" \
+  --template-file EC2InstanceWithDockerSample.yaml \
+  --tags "Name=${USER}-malware-cryptominer-container-ec2"
+
+# aws cloudformation delete-stack --stack-name ${USER}-malware-cryptominer-container-ec2
+```
+
+<!-- x-release-please-end -->
+
+<!-- x-release-please-start-major -->
+
+```bash
+export AWS_DEFAULT_REGION="eu-central-2"
+
+aws cloudformation deploy --capabilities CAPABILITY_IAM \
+  --stack-name "${USER}-malware-cryptominer-container-ec2" \
+  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/malware-cryptominer-container:2" \
+  --template-file EC2InstanceWithDockerSample.yaml \
+  --tags "Name=${USER}-malware-cryptominer-container-ec2"
+
+# aws cloudformation delete-stack --stack-name ${USER}-malware-cryptominer-container-ec2
+```
+
+<!-- x-release-please-end -->
+
+Run in Kubernetes:
+
+<!-- x-release-please-start-version -->
+
+```bash
+# Test release: 2.1.0
+# Test release: 1.1
+# Test release: 1
+
+kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:2.1.0
+```
+
+<!-- x-release-please-end -->
