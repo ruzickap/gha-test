@@ -1,4 +1,7 @@
 ---
+# GitHub Actions workflow for validating Docker setup
+# Manually triggered to verify the docker/setup-docker-action with the
+# containerd snapshotter feature enabled
 name: setup-docker-action
 
 on:
@@ -9,6 +12,7 @@ permissions: read-all
 jobs:
   setup-docker-action:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Set up Docker
         uses: docker/setup-docker-action@0234bb73ccb40f0c430b795634f9247e2b5c2d23 # v5.2.0

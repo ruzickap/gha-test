@@ -1,3 +1,7 @@
+---
+# GitHub Actions workflow for inspecting the runner environment
+# Manually triggered to dump the GitHub context and show hardware,
+# OS, and tool versions across Ubuntu (arm64) and macOS runners
 name: env-check
 
 on:
@@ -9,6 +13,7 @@ permissions:
 jobs:
   env-checker:
     runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
@@ -33,6 +38,7 @@ jobs:
 
   macos:
     runs-on: macos-latest
+    timeout-minutes: 5
     steps:
       - name: Show resources
         run: |
@@ -48,6 +54,7 @@ jobs:
 
   ubuntu:
     runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
     steps:
       - name: Show resources
         run: |
@@ -61,6 +68,7 @@ jobs:
 
   ubuntu-colors:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Install kubecolor
         run: |

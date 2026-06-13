@@ -1,3 +1,7 @@
+---
+# GitHub Actions workflow for checking virtualization support
+# Manually triggered to inspect CPU virtualization features and free
+# up disk space on Ubuntu and macOS runners
 name: virt-check
 
 on:
@@ -8,6 +12,7 @@ permissions: {}
 jobs:
   virt-check-ubuntu:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Commands
         run: |
@@ -32,6 +37,7 @@ jobs:
 
   virt-check-mac:
     runs-on: macos-latest
+    timeout-minutes: 60
     steps:
       - name: Commands
         run: |

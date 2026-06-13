@@ -93,19 +93,19 @@ echo "Test: $(date +'%F')"
 
 <!-- x-release-please-start-version -->
 ```bash
-kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:2.1.0
+kubectl run demo-app --image=quay.io/petr_ruzicka/demo-container:2.1.0
 ```
 <!-- x-release-please-end -->
 
 <!-- x-release-please-start-major -->
 ```bash
-kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:2
+kubectl run demo-app --image=quay.io/petr_ruzicka/demo-container:2
 ```
 <!-- x-release-please-end -->
 
 <!-- x-release-please-start-minor -->
 ```bash
-kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:1.1
+kubectl run demo-app --image=quay.io/petr_ruzicka/demo-container:1.1
 ```
 <!-- x-release-please-end -->
 
@@ -114,7 +114,7 @@ kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer
 ---
 
 * Container Image:
-  * [quay.io/petr_ruzicka/malware-cryptominer-container:3](https://quay.io/petr_ruzicka/malware-cryptominer-container:2.0.0)<!-- x-release-please-start-version -->
+  * [quay.io/petr_ruzicka/demo-container:2.0.0](https://quay.io/petr_ruzicka/demo-container:2.0.0)
 
 <!-- x-release-please-start-version -->
 
@@ -122,12 +122,12 @@ kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer
 export AWS_DEFAULT_REGION="eu-central-1"
 
 aws cloudformation deploy --capabilities CAPABILITY_IAM \
-  --stack-name "${USER}-malware-cryptominer-container-ec2" \
-  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/malware-cryptominer-container:2.1.0" \
+  --stack-name "${USER}-demo-container-ec2" \
+  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/demo-container:2.1.0" \
   --template-file EC2InstanceWithDockerSample.yaml \
-  --tags "Name=${USER}-malware-cryptominer-container-ec2"
+  --tags "Name=${USER}-demo-container-ec2"
 
-# aws cloudformation delete-stack --stack-name ${USER}-malware-cryptominer-container-ec2
+# aws cloudformation delete-stack --stack-name ${USER}-demo-container-ec2
 ```
 
 <!-- x-release-please-end -->
@@ -138,12 +138,12 @@ aws cloudformation deploy --capabilities CAPABILITY_IAM \
 export AWS_DEFAULT_REGION="eu-central-2"
 
 aws cloudformation deploy --capabilities CAPABILITY_IAM \
-  --stack-name "${USER}-malware-cryptominer-container-ec2" \
-  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/malware-cryptominer-container:2" \
+  --stack-name "${USER}-demo-container-ec2" \
+  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/demo-container:2" \
   --template-file EC2InstanceWithDockerSample.yaml \
-  --tags "Name=${USER}-malware-cryptominer-container-ec2"
+  --tags "Name=${USER}-demo-container-ec2"
 
-# aws cloudformation delete-stack --stack-name ${USER}-malware-cryptominer-container-ec2
+# aws cloudformation delete-stack --stack-name ${USER}-demo-container-ec2
 ```
 
 <!-- x-release-please-end -->
@@ -157,7 +157,7 @@ Run in Kubernetes:
 # Test release: 1.1
 # Test release: 1
 
-kubectl run malware-cryptominer --image=quay.io/petr_ruzicka/malware-cryptominer-container:2.1.0
+kubectl run demo-app --image=quay.io/petr_ruzicka/demo-container:2.1.0
 ```
 
 <!-- x-release-please-end -->
