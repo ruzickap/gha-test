@@ -4,7 +4,6 @@
 [![Commit Check](https://github.com/ruzickap/gha-test/actions/workflows/commit-check.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/commit-check.yml)
 [![MegaLinter](https://github.com/ruzickap/gha-test/actions/workflows/mega-linter.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/mega-linter.yml)
 [![Release Please](https://github.com/ruzickap/gha-test/actions/workflows/release-please.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/release-please.yml)
-[![Renovate](https://github.com/ruzickap/gha-test/actions/workflows/renovate.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/renovate.yml)
 [![Scorecards](https://github.com/ruzickap/gha-test/actions/workflows/scorecards.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/scorecards.yml)
 [![Semantic Pull Request](https://github.com/ruzickap/gha-test/actions/workflows/semantic-pull-request.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/semantic-pull-request.yml)
 [![Stale](https://github.com/ruzickap/gha-test/actions/workflows/stale.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/stale.yml)
