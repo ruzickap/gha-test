@@ -4,7 +4,6 @@
 [![Commit Check](https://github.com/ruzickap/gha-test/actions/workflows/commit-check.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/commit-check.yml)
 [![MegaLinter](https://github.com/ruzickap/gha-test/actions/workflows/mega-linter.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/mega-linter.yml)
 [![Release Please](https://github.com/ruzickap/gha-test/actions/workflows/release-please.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/release-please.yml)
-[![Renovate](https://github.com/ruzickap/gha-test/actions/workflows/renovate.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/renovate.yml)
 [![Scorecards](https://github.com/ruzickap/gha-test/actions/workflows/scorecards.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/scorecards.yml)
 [![Semantic Pull Request](https://github.com/ruzickap/gha-test/actions/workflows/semantic-pull-request.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/semantic-pull-request.yml)
 [![Stale](https://github.com/ruzickap/gha-test/actions/workflows/stale.yml/badge.svg)](https://github.com/ruzickap/gha-test/actions/workflows/stale.yml)
@@ -15,11 +14,11 @@ Version test
 
 [//]: # (x-release-please-start-version)
 
-* Full Release: 2.1.0
+* Full Release: 2.1.1
 
 ```bash
 cat << EOF
-* Full Release: 2.1.0
+* Full Release: 2.1.1
 EOF
 ```
 
@@ -93,19 +92,19 @@ echo "Test: $(date +'%F')"
 
 <!-- x-release-please-start-version -->
 ```bash
-kubectl run demo-app --image=quay.io/petr_ruzicka/demo-container:2.1.0
+kubectl run demo-app --image=quay.io/petr_ruzicka/malware-cryptominer-container:2.1.1
 ```
 <!-- x-release-please-end -->
 
 <!-- x-release-please-start-major -->
 ```bash
-kubectl run demo-app --image=quay.io/petr_ruzicka/demo-container:2
+kubectl run demo-app --image=quay.io/petr_ruzicka/malware-cryptominer-container:2
 ```
 <!-- x-release-please-end -->
 
 <!-- x-release-please-start-minor -->
 ```bash
-kubectl run demo-app --image=quay.io/petr_ruzicka/demo-container:1.1
+kubectl run demo-app --image=quay.io/petr_ruzicka/malware-cryptominer-container:1.1
 ```
 <!-- x-release-please-end -->
 
@@ -114,7 +113,7 @@ kubectl run demo-app --image=quay.io/petr_ruzicka/demo-container:1.1
 ---
 
 * Container Image:
-  * [quay.io/petr_ruzicka/demo-container:2.0.0](https://quay.io/petr_ruzicka/demo-container:2.0.0)
+  * [quay.io/petr_ruzicka/malware-cryptominer-container:2.0.0](https://quay.io/petr_ruzicka/malware-cryptominer-container:2.0.0)
 
 <!-- x-release-please-start-version -->
 
@@ -123,7 +122,7 @@ export AWS_DEFAULT_REGION="eu-central-1"
 
 aws cloudformation deploy --capabilities CAPABILITY_IAM \
   --stack-name "${USER}-demo-container-ec2" \
-  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/demo-container:2.1.0" \
+  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/malware-cryptominer-container:2.1.1" \
   --template-file EC2InstanceWithDockerSample.yaml \
   --tags "Name=${USER}-demo-container-ec2"
 
@@ -139,7 +138,7 @@ export AWS_DEFAULT_REGION="eu-central-2"
 
 aws cloudformation deploy --capabilities CAPABILITY_IAM \
   --stack-name "${USER}-demo-container-ec2" \
-  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/demo-container:2" \
+  --parameter-overrides "ContainerImage=quay.io/petr_ruzicka/malware-cryptominer-container:2" \
   --template-file EC2InstanceWithDockerSample.yaml \
   --tags "Name=${USER}-demo-container-ec2"
 
@@ -153,11 +152,11 @@ Run in Kubernetes:
 <!-- x-release-please-start-version -->
 
 ```bash
-# Test release: 2.1.0
+# Test release: 2.1.1
 # Test release: 1.1
 # Test release: 1
 
-kubectl run demo-app --image=quay.io/petr_ruzicka/demo-container:2.1.0
+kubectl run demo-app --image=quay.io/petr_ruzicka/malware-cryptominer-container:2.1.1
 ```
 
 <!-- x-release-please-end -->
