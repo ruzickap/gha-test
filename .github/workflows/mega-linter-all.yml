@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter
-        uses: oxsecurity/megalinter@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter c_cpp
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/c_cpp@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/c_cpp@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -40,7 +40,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter ci_light
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/ci_light@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/ci_light@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -51,7 +51,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter cupcake
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/cupcake@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/cupcake@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -62,7 +62,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter documentation
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/documentation@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/documentation@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -73,7 +73,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter dotnet
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/dotnet@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/dotnet@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -84,7 +84,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter dotnetweb
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/dotnetweb@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/dotnetweb@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -95,7 +95,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter formatters
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/formatters@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/formatters@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -106,7 +106,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter go
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/go@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/go@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -117,7 +117,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter java
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/java@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/java@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -128,7 +128,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter javascript
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/javascript@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/javascript@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -139,7 +139,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter php
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/php@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/php@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -150,7 +150,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter python
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/python@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/python@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -161,7 +161,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter ruby
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/ruby@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/ruby@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -172,7 +172,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter rust
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/rust@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/rust@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -183,7 +183,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter salesforce
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/salesforce@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/salesforce@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -194,7 +194,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter security
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/security@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/security@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -205,7 +205,7 @@ jobs:
     steps:
       - name: 💡 MegaLinter swift
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/swift@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/swift@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -216,6 +216,6 @@ jobs:
     steps:
       - name: 💡 MegaLinter terraform
         # renovate: datasource=github-tags depName=oxsecurity/megalinter
-        uses: oxsecurity/megalinter/flavors/terraform@0e3ce9b9c8c10effb9b269509cc47ca17cae31c7 # v9.5.0
+        uses: oxsecurity/megalinter/flavors/terraform@ef3e84b8b836d76db562d0f3ed7da61e8fd538bc # v9.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
