@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0 (2026-07-21)
+
+
+### Features
+
+* add default repository files and CI workflows ([#1](https://github.com/ruzickap/gha-test/issues/1)) ([9cd878a](https://github.com/ruzickap/gha-test/commit/9cd878a51045e6a65fb9d2c2553ff15250a6c8b2))
+
 ## [2.2.0](https://github.com/ruzickap/gha-test/compare/v2.1.0...v2.2.0) (2025-12-03)
 
 
