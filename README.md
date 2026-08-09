@@ -91,24 +91,28 @@ echo "Test: $(date +'%F')"
 ```
 
 <!-- x-release-please-start-version -->
+
 ```bash
 kubectl run demo-app --image=quay.io/petr_ruzicka/malware-cryptominer-container:2.1.1
 ```
+
 <!-- x-release-please-end -->
 
 <!-- x-release-please-start-major -->
+
 ```bash
 kubectl run demo-app --image=quay.io/petr_ruzicka/malware-cryptominer-container:2
 ```
+
 <!-- x-release-please-end -->
 
 <!-- x-release-please-start-minor -->
+
 ```bash
 kubectl run demo-app --image=quay.io/petr_ruzicka/malware-cryptominer-container:1.1
 ```
-<!-- x-release-please-end -->
 
-[Pod limit on Node - AWS EKS](https://stackoverflow.com/questions/57970896/pod-limit-on-node-aws-eks/57971006)
+<!-- x-release-please-end -->
 
 ---
 
