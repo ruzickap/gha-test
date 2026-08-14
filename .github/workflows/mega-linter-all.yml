@@ -14,7 +14,7 @@ permissions:
 jobs:
   # Default MegaLinter (all linters)
   mega-linter:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter
@@ -24,7 +24,7 @@ jobs:
 
   # Optimized for pure C/C++ projects
   mega-linter-c_cpp:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter c_cpp
@@ -35,7 +35,7 @@ jobs:
 
   # Optimized for CI items (Dockerfile, Jenkinsfile, JSON/YAML schemas, XML)
   mega-linter-ci_light:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter ci_light
@@ -46,7 +46,7 @@ jobs:
 
   # MegaLinter for the most commonly used languages
   mega-linter-cupcake:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter cupcake
@@ -57,7 +57,7 @@ jobs:
 
   # MegaLinter for documentation projects
   mega-linter-documentation:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter documentation
@@ -68,7 +68,7 @@ jobs:
 
   # Optimized for C, C++, C# or VB based projects
   mega-linter-dotnet:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter dotnet
@@ -79,7 +79,7 @@ jobs:
 
   # Optimized for C, C++, C# or VB based projects with JS/TS
   mega-linter-dotnetweb:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter dotnetweb
@@ -90,7 +90,7 @@ jobs:
 
   # Contains only formatters
   mega-linter-formatters:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter formatters
@@ -101,7 +101,7 @@ jobs:
 
   # Optimized for GO based projects
   mega-linter-go:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter go
@@ -112,7 +112,7 @@ jobs:
 
   # Optimized for JAVA based projects
   mega-linter-java:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter java
@@ -123,7 +123,7 @@ jobs:
 
   # Optimized for JAVASCRIPT or TYPESCRIPT based projects
   mega-linter-javascript:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter javascript
@@ -134,7 +134,7 @@ jobs:
 
   # Optimized for PHP based projects
   mega-linter-php:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter php
@@ -145,7 +145,7 @@ jobs:
 
   # Optimized for PYTHON based projects
   mega-linter-python:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter python
@@ -156,7 +156,7 @@ jobs:
 
   # Optimized for RUBY based projects
   mega-linter-ruby:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter ruby
@@ -167,7 +167,7 @@ jobs:
 
   # Optimized for RUST based projects
   mega-linter-rust:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter rust
@@ -178,7 +178,7 @@ jobs:
 
   # Optimized for Salesforce based projects
   mega-linter-salesforce:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter salesforce
@@ -189,7 +189,7 @@ jobs:
 
   # Optimized for security
   mega-linter-security:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter security
@@ -200,7 +200,7 @@ jobs:
 
   # Optimized for SWIFT based projects
   mega-linter-swift:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter swift
@@ -211,7 +211,7 @@ jobs:
 
   # Optimized for TERRAFORM based projects
   mega-linter-terraform:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 30
     steps:
       - name: 💡 MegaLinter terraform
