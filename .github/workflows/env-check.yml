@@ -67,7 +67,7 @@ jobs:
           lshw
 
   ubuntu-colors:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-firewall
     timeout-minutes: 5
     steps:
       - name: Install kubecolor
